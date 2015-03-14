@@ -1,5 +1,5 @@
 package chromage.server;
-import chromage.shared.Actions;
+
 import chromage.shared.Constants;
 import chromage.shared.GameState;
 import chromage.shared.RateLimitedLoop;
@@ -107,34 +107,34 @@ public class GameSession extends Thread {
 	private void modifyState(String s) {
 		try{
 			int clientKeys = Integer.parseInt(s);
-			if((clientKeys & Actions.UP) != 0){
-				state.y--;
-			}
-			if((clientKeys & Actions.LEFT) != 0){
-				state.x--;
-			}
-			if((clientKeys & Actions.DOWN) != 0){
-				state.y++;
-			}
-			if((clientKeys & Actions.RIGHT) != 0){
-				state.x++;
-			}
-			if((clientKeys & Actions.JUMP) != 0){
-				state.x = 100;
-				state.y = 100;
-			}
-			if(state.x < 0){
-				state.x = 0;
-			}
-			if(state.y < 0){
-				state.y = 0;
-			}
-			if(state.x > Constants.MAX_WIDTH){
-				state.x = Constants.MAX_WIDTH;
-			}
-			if(state.y > Constants.MAX_HEIGHT){
-				state.y = Constants.MAX_HEIGHT;
-			}
+//			if((clientKeys & Actions.UP) != 0){
+//				state.y--;
+//			}
+//			if((clientKeys & Actions.LEFT) != 0){
+//				state.x--;
+//			}
+//			if((clientKeys & Actions.DOWN) != 0){
+//				state.y++;
+//			}
+//			if((clientKeys & Actions.RIGHT) != 0){
+//				state.x++;
+//			}
+//			if((clientKeys & Actions.JUMP) != 0){
+//				state.x = 100;
+//				state.y = 100;
+//			}
+//			if(state.x < 0){
+//				state.x = 0;
+//			}
+//			if(state.y < 0){
+//				state.y = 0;
+//			}
+//			if(state.x > Constants.MAX_WIDTH){
+//				state.x = Constants.MAX_WIDTH;
+//			}
+//			if(state.y > Constants.MAX_HEIGHT){
+//				state.y = Constants.MAX_HEIGHT;
+//			}
 		}
 		catch(NumberFormatException e){}
 	}
@@ -143,6 +143,7 @@ public class GameSession extends Thread {
 		System.out.println("Waiting for players to connect...");
 		waitForPlayers();
 		System.out.println("Starting game loop...");
+
 		executeGameLoop();
 		System.out.println("Ending game...");
 		terminateConnections();

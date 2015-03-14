@@ -1,18 +1,10 @@
 package chromage.client;
 
-import chromage.shared.Actions;
-import chromage.shared.Constants;
-import chromage.shared.Entity;
-import chromage.shared.RateLimitedLoop;
+import chromage.shared.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
