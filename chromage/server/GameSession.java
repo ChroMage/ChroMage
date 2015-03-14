@@ -1,10 +1,10 @@
 package chromage.server;
 
-import chromage.shared.*;
+import chromage.shared.Constants;
+import chromage.shared.GameState;
+import chromage.shared.Mage;
+import chromage.shared.RateLimitedLoop;
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class GameSession extends Thread {
@@ -48,6 +48,7 @@ public class GameSession extends Thread {
 
 	public void connectPlayer(PlayerThread player) {
 		players.add(player);
+		state.awaitedPlayers = expectedNumberOfPlayers - players.size();
 	}
 
 	public boolean allPlayersReady() {

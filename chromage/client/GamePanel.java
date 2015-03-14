@@ -108,7 +108,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 					}
 					sender.userInput = userInput;
 					repaint();
-					if (model.state.livingPlayers == 1) {
+					if (model.state.livingPlayers == 1 || !model.isAlive() || !sender.isAlive()) {
 						delegate.returnToLobby();
 						setBreak();
 					}
@@ -116,6 +116,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 			}.runInBackground();
 		} catch(Exception ex) {
 			ex.printStackTrace();
+			delegate.returnToLobby();
 		}
 		getParent().revalidate();
 		getParent().repaint();
@@ -124,7 +125,6 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		System.out.println("Called");
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR(this.getWidth())),
 			             (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR(this.getHeight())));
@@ -132,6 +132,13 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 		for(Entity e : model.state.entities){
 			e.draw(g, HEIGHT_FACTOR(this.getHeight()), WIDTH_FACTOR(this.getWidth()));
 		}
+		if (model.state.awaitedPlayers != 0) {
+			System.out.println("Awaiting");
+			g.setColor(Color.BLACK);
+			g.drawString("Awaiting players, need " + model.state.awaitedPlayers + " more.",
+					(int)(this.getWidth()/2*WIDTH_FACTOR(this.getWidth())), (int)(this.getHeight()/2*HEIGHT_FACTOR(this.getHeight())));
+		}
+		System.out.println("Called");
 	}
 	
 	public static void drawCircle(JPanel panel, int dx, int dy, Graphics g) {

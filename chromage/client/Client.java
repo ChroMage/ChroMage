@@ -50,11 +50,12 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 
 			// read handshake
 			fromServer.readLine();
+			mainWindow.setContentPane(new LobbyMenu(this));
 		} catch (IOException e) {
 			e.printStackTrace();
+			returnToLobby();
 		}
 		System.out.println("Initiating connection to " + ipAddress + ", " + port);
-		mainWindow.setContentPane(new LobbyMenu(this));
 	}
 
 	@Override
@@ -104,6 +105,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			returnToLobby();
 		}
 	}
 

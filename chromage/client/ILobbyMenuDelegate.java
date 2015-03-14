@@ -13,4 +13,5 @@ public interface ILobbyMenuDelegate {
     public void joinGame(UUID id, MageType mageType);
     public ArrayList<GameInfo> getGameList();
     public void createGame(int numberOfPlayers, String name, MageType mageType);
+    public void returnToLobby();
 }

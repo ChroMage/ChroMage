@@ -12,6 +12,7 @@ public class GameState implements Serializable {
 	public int x, y;
     private long currentTick;
     public int livingPlayers;
+    public int awaitedPlayers;
 	public ArrayList<Entity> entities;
 
     /** Default constructor. */
