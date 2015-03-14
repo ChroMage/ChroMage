@@ -99,6 +99,13 @@ public class Entity implements Serializable {
 		}
 	}
 	
+	public void update(ArrayList<Entity> entities){
+		applyGravity();
+		applyFriction();
+		updatePosition(entities);
+		applyHits(entities);
+	}
+	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
 			this.velocity.y += 2;

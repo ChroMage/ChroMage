@@ -4,7 +4,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.function.Predicate;
 
 public class GameState implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -40,10 +39,7 @@ public class GameState implements Serializable {
             if (e instanceof Mage) {
                 count++;
             }
-    		e.applyFriction();
-    		e.applyGravity();
-    		e.updatePosition(entities);
-    		e.applyHits(entities);
+    		e.update(entities);
     	}
         livingPlayers = count;
 
