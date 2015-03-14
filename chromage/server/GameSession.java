@@ -77,15 +77,26 @@ public class GameSession extends Thread {
 				System.out.println("Player " + p + " wants to leave.");
 				return;
 			}
-				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
-				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
+			System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
+			System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
 
-				Point2D.Double a = accelerationForInput(p.getCurrentInputState());
-				p.mage.addUpRightVelocity((int)a.x, (int)a.y);
+			Point2D.Double a = accelerationForInput(p.getCurrentInputState());
+			p.mage.addUpRightVelocity((int)a.x, (int)a.y);
+			
+			//process spell casts
+			Spell spell = p.getCurrentInputState().spell;
+			processSpellForPlayer(spell, p);
 
-				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
-					p.resetCurrentInputState();
-				}
+			if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
+				p.resetCurrentInputState();
+			}
+		}
+	}
+
+	private void processSpellForPlayer(Spell spell, PlayerThread p) {
+		Point2D mouseLocation = p.getCurrentInputState().mouseLocation;
+		if (spell.equals(Spell.LEFT)){
+			state.addProjectile((int)mouseLocation.getX(), (int)mouseLocation.getY(), p.mage.getVelocity().x, p.mage.getVelocity().y);
 		}
 	}
 

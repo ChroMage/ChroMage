@@ -11,8 +11,8 @@ public class Projectile extends Entity implements Serializable {
 	boolean isGravitated = false;
 	
 	public Projectile(int x, int y, int width, int height){
-		this.position = new Point(x, y);
-		this.velocity = new Point2D.Double(0, 0);
+		this.setPosition(new Point(x, y));
+		this.setVelocity(new Point2D.Double(0, 0));
 		this.width = width;
 		this.height = height;
 		this.color = Color.PINK;

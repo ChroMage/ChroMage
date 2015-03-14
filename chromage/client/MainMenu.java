@@ -23,10 +23,10 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
 	public UserInput userInput = new UserInput();
 
  	public void mouseMoved(MouseEvent e) {
- 		userInput.point2D.setLocation(e.getX(), e.getY());
+ 		userInput.mouseLocation.setLocation(e.getX()/WIDTH_FACTOR(getWidth()), e.getY() / HEIGHT_FACTOR(getHeight()));
  	}
  	public void mouseDragged(MouseEvent e) {
- 		userInput.point2D.setLocation(e.getX(), e.getY());
+ 		userInput.mouseLocation.setLocation(e.getX()/WIDTH_FACTOR(getWidth()), e.getY()/ HEIGHT_FACTOR(getHeight()));
  	}
  	public void mousePressed(MouseEvent e) {
  	 	switch(e.getButton()) {

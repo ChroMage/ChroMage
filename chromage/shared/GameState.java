@@ -4,6 +4,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -51,7 +53,7 @@ public class GameState implements Serializable {
 
     public void spreadPlayers(ArrayList<Mage> players){
     	for (Mage m : players) {
-            m.position = new Point(1000, 1000);
+            m.setPosition(new Point(1000, 1000));
         }
     }
     
@@ -68,6 +70,12 @@ public class GameState implements Serializable {
         //Add projectile
         entities.add(new Projectile(3000, 1000, 70, 70));
 	}
+    
+    public void addProjectile(int x, int y, double vx, double vy){
+    	Projectile p = new Projectile(x, y, 70, 70);
+    	p.setVelocity(new Point2D.Double(vx, vy));
+        entities.add(p);
+    }
 
 	public String serializeToString() throws IOException{
 	     ByteArrayOutputStream bo = new ByteArrayOutputStream();

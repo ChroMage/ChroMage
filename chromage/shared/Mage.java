@@ -7,16 +7,16 @@ import java.io.Serializable;
 public class Mage extends Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
 
-	public static final int DEFAULT_HEIGHT = 100;
-	public static final int DEFAULT_WIDTH = 200;
+	public static final int DEFAULT_HEIGHT = 300;
+	public static final int DEFAULT_WIDTH = 100;
 
 	public Mage(Color color){
 		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, color);
 	}
 
 	public Mage(int x, int y, int width, int height, Color color){
-		this.position = new Point(x, y);
-		this.velocity = new Point2D.Double(0, 0);
+		this.setPosition(new Point(x, y));
+		this.setVelocity(new Point2D.Double(0, 0));
 		this.width = width;
 		this.height = height;
 		this.color = color;

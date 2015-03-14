@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 public class Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
-    protected Point position = new Point(2000,2000);
-	protected Point2D.Double velocity = new Point2D.Double(0,0);
+    private Point position = new Point(2000,2000);
+	private Point2D.Double velocity = new Point2D.Double(0,0);
 
 	protected int width = 100;
 	protected int height = 100;
@@ -21,8 +21,8 @@ public class Entity implements Serializable {
 	protected boolean isGrounded = false;
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
-		int x = (int)(position.x*widthFactor);
-		int y = (int)(position.y*heightFactor);
+		int x = (int)(getPosition().x*widthFactor);
+		int y = (int)(getPosition().y*heightFactor);
 		g.setColor(color);
 		g.fillRect(x, y, (int) (width * widthFactor), (int) (height * heightFactor));
 	}
@@ -39,66 +39,66 @@ public class Entity implements Serializable {
 	
 	public void addUpRightVelocity(int x, int y){
 		if(isMobile){
-			this.velocity.x += x;
-			this.velocity.y -= y;
+			this.getVelocity().x += x;
+			this.getVelocity().y -= y;
 		}
 		if((type & Constants.MAGE_TYPE) != 0){
-			if(Math.abs(this.velocity.x) > .4){
-				this.velocity.x -= .5*Math.signum(this.velocity.x);
+			if(Math.abs(this.getVelocity().x) > .4){
+				this.getVelocity().x -= .5*Math.signum(this.getVelocity().x);
 			}
 			else{
-				this.velocity.x = 0;
+				this.getVelocity().x = 0;
 			}
 			int maxXVelocity = 15;
-			if(this.velocity.x > maxXVelocity){
-				this.velocity.x = maxXVelocity;
+			if(this.getVelocity().x > maxXVelocity){
+				this.getVelocity().x = maxXVelocity;
 			}
-			if(this.velocity.x < -1*maxXVelocity){
-				this.velocity.x = -1*maxXVelocity;
+			if(this.getVelocity().x < -1*maxXVelocity){
+				this.getVelocity().x = -1*maxXVelocity;
 			}
 		}
 	}
 	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
-			this.velocity.y += 2;
+			this.getVelocity().y += 2;
 		}
 	}
 	
 	protected Rectangle2D.Double getHitbox(){
-		return new Rectangle2D.Double(position.x, position.y, width, height);
+		return new Rectangle2D.Double(getPosition().x, getPosition().y, width, height);
 	}
 
 	public void updatePosition(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
 		if(isMobile){
-			this.position.x += this.velocity.x;
-			this.position.y += this.velocity.y;
+			this.getPosition().x += this.getVelocity().x;
+			this.getPosition().y += this.getVelocity().y;
 			for(Entity e : entities){
 				if(((type & Constants.MAGE_TYPE) != 0)){
 					isGrounded = false;
 					//Stop the object on top of immobile objects
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
-						this.velocity.y = 0;
-						this.position.y = e.position.y - this.height;
+						this.getVelocity().y = 0;
+						this.getPosition().y = e.getPosition().y - this.height;
 						isGrounded = true;
 					}
 					
 					//Stop the object on hitting ceiling
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
-						this.velocity.y = 0;
-						this.position.y = e.position.y + e.height + 1;
+						this.getVelocity().y = 0;
+						this.getPosition().y = e.getPosition().y + e.height + 1;
 					}
 					
 					//stop when hitting a wall going right
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
-						this.velocity.x = 0;
-						this.position.x = e.position.x - this.width - 1;
+						this.getVelocity().x = 0;
+						this.getPosition().x = e.getPosition().x - this.width - 1;
 					}
 					
 					//stop when hitting a wall going left
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
-						this.velocity.x = 0;
-						this.position.x = e.position.x + e.width + 1;
+						this.getVelocity().x = 0;
+						this.getPosition().x = e.getPosition().x + e.width + 1;
 					}
 				}
 				else if(((e.type & Constants.BLOCK_TYPE) != 0) && getHitbox().intersects(e.getHitbox())){
@@ -134,14 +134,14 @@ public class Entity implements Serializable {
 		//if object bottom is under my top
 		//and its left is left of my right
 		//and its right is right of my left
-		int myTop = position.y;
-		int myBottom = position.y + height;
-		int myRight = position.x + width;
-		int myLeft = position.x;
-		int wallTop = wall.position.y;
-		int wallBottom = wall.position.y + wall.height;
-		int wallRight = wall.position.x + wall.width;
-		int wallLeft = wall.position.x;
+		int myTop = getPosition().y;
+		int myBottom = getPosition().y + height;
+		int myRight = getPosition().x + width;
+		int myLeft = getPosition().x;
+		int wallTop = wall.getPosition().y;
+		int wallBottom = wall.getPosition().y + wall.height;
+		int wallRight = wall.getPosition().x + wall.width;
+		int wallLeft = wall.getPosition().x;
 		if(		wallBottom < myBottom				
 				&& wallBottom > myTop	
 				&& wallLeft < myRight	
@@ -157,14 +157,14 @@ public class Entity implements Serializable {
 		//and object bottom is below my top
 		//and its right is right of my left
 		//and its right is left of my right
-		int myTop = position.y;
-		int myBottom = position.y + height;
-		int myRight = position.x + width;
-		int myLeft = position.x;
-		int wallTop = wall.position.y;
-		int wallBottom = wall.position.y + wall.height;
-		int wallRight = wall.position.x + wall.width;
-		int wallLeft = wall.position.x;
+		int myTop = getPosition().y;
+		int myBottom = getPosition().y + height;
+		int myRight = getPosition().x + width;
+		int myLeft = getPosition().x;
+		int wallTop = wall.getPosition().y;
+		int wallBottom = wall.getPosition().y + wall.height;
+		int wallRight = wall.getPosition().x + wall.width;
+		int wallLeft = wall.getPosition().x;
 		if(		wallTop < myBottom				
 				&& wallBottom > myTop	
 				&& wallRight < myRight	
@@ -179,14 +179,14 @@ public class Entity implements Serializable {
 		//and object bottom is below my top
 		//and its left is left of my right
 		//and its left is right of my left
-		int myTop = position.y;
-		int myBottom = position.y + height;
-		int myRight = position.x + width;
-		int myLeft = position.x;
-		int wallTop = wall.position.y;
-		int wallBottom = wall.position.y + wall.height;
-		int wallRight = wall.position.x + wall.width;
-		int wallLeft = wall.position.x;
+		int myTop = getPosition().y;
+		int myBottom = getPosition().y + height;
+		int myRight = getPosition().x + width;
+		int myLeft = getPosition().x;
+		int wallTop = wall.getPosition().y;
+		int wallBottom = wall.getPosition().y + wall.height;
+		int wallRight = wall.getPosition().x + wall.width;
+		int wallLeft = wall.getPosition().x;
 		if(		wallTop < myBottom				
 				&& wallBottom > myTop	
 				&& wallLeft < myRight	
@@ -201,14 +201,14 @@ public class Entity implements Serializable {
 		//and object top is above my bottom
 		//and its left is left of my right
 		//and its right is right of my left
-		int myTop = position.y;
-		int myBottom = position.y + height;
-		int myRight = position.x + width;
-		int myLeft = position.x;
-		int wallTop = wall.position.y;
-		int wallBottom = wall.position.y + wall.height;
-		int wallRight = wall.position.x + wall.width;
-		int wallLeft = wall.position.x;
+		int myTop = getPosition().y;
+		int myBottom = getPosition().y + height;
+		int myRight = getPosition().x + width;
+		int myLeft = getPosition().x;
+		int wallTop = wall.getPosition().y;
+		int wallBottom = wall.getPosition().y + wall.height;
+		int wallRight = wall.getPosition().x + wall.width;
+		int wallLeft = wall.getPosition().x;
 		if(		wallTop > myTop				
 				&& wallTop < myBottom	
 				&& wallLeft < myRight	
@@ -217,5 +217,21 @@ public class Entity implements Serializable {
 		}
 		
 		return false;
+	}
+
+	public Point getPosition() {
+		return position;
+	}
+
+	public void setPosition(Point position) {
+		this.position = position;
+	}
+
+	public Point2D.Double getVelocity() {
+		return velocity;
+	}
+
+	public void setVelocity(Point2D.Double velocity) {
+		this.velocity = velocity;
 	}
 }
