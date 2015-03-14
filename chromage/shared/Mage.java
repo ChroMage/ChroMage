@@ -2,11 +2,7 @@ package chromage.shared;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.ArrayList;
-
-import chromage.server.PlayerThread;
 
 public class Mage extends Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -34,6 +30,7 @@ public class Mage extends Entity implements Serializable {
 		hp -= dmg;
 		if(hp <= 0) {
 			hp = 0;
+			this.setShouldBeRemoved(true);
 		}
 	}
 	public Mage(MageType mageType){
