@@ -20,14 +20,20 @@ public class GameState implements Serializable {
         this.x = Constants.MAX_WIDTH / 2;
         this.y = Constants.MAX_HEIGHT / 2;
         this.isGameOver = false;
+    }
+
+    public void initialize(ArrayList<Mage> players) {
         generateMap();
+        for (Mage m : players) {
+            entities.add(m);
+        }
     }
 
     /**
      * Called exactly once per tick.
      */
     public void update(){
-    	for(Entity e : entities){
+    	for(Entity e : entities) {
     		e.applyGravity();
     		e.updatePosition();
     	}
@@ -37,7 +43,8 @@ public class GameState implements Serializable {
     public long getCurrentTick() {
         return currentTick;
     }
-    
+
+
     private void generateMap() {
     	// Add border blocks
         entities.add(new Block(-10, 3700, 4010, 310));

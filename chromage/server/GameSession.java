@@ -1,9 +1,9 @@
 package chromage.server;
 
-import chromage.shared.Constants;
-import chromage.shared.GameState;
-import chromage.shared.RateLimitedLoop;
+import chromage.shared.*;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class GameSession extends Thread {
@@ -68,6 +68,7 @@ public class GameSession extends Thread {
 	}
 
 	public void processInput() {
+		System.out.println("Processing input");
 		int inputTimeoutTicks = 6;
 		for (PlayerThread p : players) {
 			if (p.wantsTermination()) {
@@ -75,15 +76,32 @@ public class GameSession extends Thread {
 				System.out.println("Player " + p + " wants to leave.");
 				return;
 			}
-			if (p.getCurrentInputState() != 0) {
+			if (!p.getCurrentInputState().equals(new UserInput())) {
 				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
 				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
-				modifyState(Integer.toString(p.getCurrentInputState()));
+
+				Point2D.Double a = accelerationForInput(p.getCurrentInputState());
+				p.mage.addUpRightVelocity((int)a.x, (int)a.y);
+
 				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
 					p.resetCurrentInputState();
 				}
 			}
 		}
+	}
+
+	public Point2D.Double accelerationForInput(UserInput input) {
+		int x = 0, y = 0;
+		switch (input.horizontalDirection) {
+			case LEFT: x = -1; break;
+            case NONE: x = 0; break;
+			case RIGHT: x = 1; break;
+		}
+		switch (input.verticalDirection) {
+			case JUMP: y = -1; break;
+			case NONE: y = 0; break;
+		}
+		return new Point2D.Double(x,y);
 	}
 
 	public void executeGameLoop() {
@@ -104,45 +122,21 @@ public class GameSession extends Thread {
 		}
 	}
 
-	private void modifyState(String s) {
-		try{
-			int clientKeys = Integer.parseInt(s);
-//			if((clientKeys & Actions.UP) != 0){
-//				state.y--;
-//			}
-//			if((clientKeys & Actions.LEFT) != 0){
-//				state.x--;
-//			}
-//			if((clientKeys & Actions.DOWN) != 0){
-//				state.y++;
-//			}
-//			if((clientKeys & Actions.RIGHT) != 0){
-//				state.x++;
-//			}
-//			if((clientKeys & Actions.JUMP) != 0){
-//				state.x = 100;
-//				state.y = 100;
-//			}
-//			if(state.x < 0){
-//				state.x = 0;
-//			}
-//			if(state.y < 0){
-//				state.y = 0;
-//			}
-//			if(state.x > Constants.MAX_WIDTH){
-//				state.x = Constants.MAX_WIDTH;
-//			}
-//			if(state.y > Constants.MAX_HEIGHT){
-//				state.y = Constants.MAX_HEIGHT;
-//			}
+	public void prepareGame() {
+		ArrayList<Mage> mages = new ArrayList<Mage>();
+		for (PlayerThread p : players) {
+			p.mage = new Mage(Color.RED);
+			mages.add(p.mage);
 		}
-		catch(NumberFormatException e){}
+		state.initialize(mages);
 	}
 
 	public void run() {
 		System.out.println("Waiting for players to connect...");
 		waitForPlayers();
 		System.out.println("Starting game loop...");
+
+		prepareGame();
 
 		executeGameLoop();
 		System.out.println("Ending game...");

@@ -2,6 +2,7 @@ package chromage.client;
 
 import chromage.shared.Constants;
 import chromage.shared.RateLimitedLoop;
+import chromage.shared.UserInput;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,11 +13,10 @@ import java.io.IOException;
 public class SenderThread extends Thread {
 
     DataOutputStream output;
-    public int keyState;
+    public UserInput userInput = new UserInput();
     public boolean isRunning;
 
     public SenderThread(DataOutputStream output) {
-        keyState = 0;
         isRunning = true;
         this.output = output;
     }
@@ -32,8 +32,9 @@ public class SenderThread extends Thread {
         new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
             public void body() {
                 try {
-                    output.writeBytes(keyState + "\n");
-                    System.out.println("sending: " + keyState);
+                    UserInput u = SenderThread.this.userInput;
+                    output.writeBytes(u.serializeToString() + "\n");
+                    System.out.println("sending: " + u.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                     setBreak();
