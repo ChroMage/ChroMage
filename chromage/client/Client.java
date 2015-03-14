@@ -6,15 +6,18 @@ import chromage.shared.GameState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-public class Client extends JPanel implements KeyListener{
+public class Client extends JPanel implements KeyListener, MouseMotionListener, MouseListener {
 
 	public static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static final int SCREEN_HEIGHT = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -22,30 +25,58 @@ public class Client extends JPanel implements KeyListener{
 	public static final double HEIGHT_FACTOR =  (SCREEN_HEIGHT + 0.0) / Constants.MAX_HEIGHT;
 			
 	public static int val = 0;
-	static GameState state;
+	public UserInput userInput = new UserInput();
 	public void keyTyped(KeyEvent e) {
  		switch(e.getKeyChar()) {
- 			case 'w': val = val | Actions.UP; break;
- 			case 'a': val = val | Actions.LEFT; break;
- 			case 's': val = val | Actions.DOWN; break;
- 			case 'd': val = val | Actions.RIGHT; break;
- 			case ' ': val = val | Actions.JUMP; break;
+ 			case 'w': userInput.verticalDirection = VerticalDirection.JUMP; break;
+ 			case 'a': userInput.horizontalDirection = HorizontalDirection.LEFT; break;
+ 			case 'd': userInput.horizontalDirection = HorizontalDirection.RIGHT; break;
+ 			case ' ': userInput.verticalDirection = VerticalDirection.JUMP; break;
  		}
  	}
  	public void keyReleased(KeyEvent e) {
  		switch(e.getKeyChar()) {
  			//keep all values except the released one
- 			case 'w': val &= ~Actions.UP; break;
- 			case 'a': val &= ~Actions.LEFT; break;
- 			case 's': val &= ~Actions.DOWN; break;
- 			case 'd': val &= ~Actions.RIGHT; break;
- 			case ' ': val &= ~Actions.JUMP;  break;
+ 			case 'w': userInput.verticalDirection = VerticalDirection.NONE; break;
+ 			case 'a': userInput.horizontalDirection = HorizontalDirection.NONE; break;
+ 			case 'd': userInput.horizontalDirection = HorizontalDirection.NONE; break;
+ 			case ' ': userInput.verticalDirection = VerticalDirection.NONE; break;
  		}
  	}
  	public void keyPressed(KeyEvent e) {
-
  	}
+ 	public void mouseMoved(MouseEvent e) {
+ 		userInput.point2D.setLocation(e.getX(), e.getY());
+ 	}
+ 	public void mouseDragged(MouseEvent e) {
+ 		userInput.point2D.setLocation(e.getX(), e.getY());
+ 	}
+ 	 public void mousePressed(MouseEvent e) {
+ 	 	switch(e.getButton()) {
+ 	 		case MouseEvent.BUTTON1: userInput.spell = Spell.LEFT; break;
+ 	 		case MouseEvent.BUTTON2: userInput.spell = Spell.RIGHT; break;
+ 	 		case MouseEvent.BUTTON3: userInput.spell = Spell.MIDDLE; break;
+ 	 	}
+    }
+    public void mouseReleased(MouseEvent e) {
+    	switch(e.getButton()) {
+ 	 		case MouseEvent.BUTTON1: userInput.spell = Spell.NONE; break;
+ 	 		case MouseEvent.BUTTON2: userInput.spell = Spell.NONE; break;
+ 	 		case MouseEvent.BUTTON3: userInput.spell = Spell.NONE; break;
+ 	 	}
+    }
+    public void mouseClicked(MouseEvent e) {
+
+    }
+    public void mouseEntered(MouseEvent e) {
+    	//set flag to positive
+    }
+    public void mouseExited(MouseEvent e) {
+    	//set flag to negative
+    }
  	public Client() {
+ 		addMouseListener(this);
+ 		addMouseMotionListener(this);
  		addKeyListener(this);
  	}
  	public boolean isFocusable() {
