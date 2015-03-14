@@ -48,7 +48,7 @@ public class Iceball extends Spell {
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 6;
+		return 20;
 	}
 
 	@Override

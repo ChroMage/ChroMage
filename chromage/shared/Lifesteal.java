@@ -48,7 +48,7 @@ public class Lifesteal extends Spell {
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 2;
+		return 5;
 	}
 
 	@Override
