@@ -100,7 +100,7 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 
 		final JFrame frame = new JFrame();
 	 	frame.setTitle("Key");
-	 	frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+	 	frame.setSize(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 	Container contentPane = frame.getContentPane();
 	 	contentPane.add(new Client());
