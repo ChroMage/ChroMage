@@ -25,6 +25,8 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 	public DataOutputStream toServer;
 	public BufferedReader fromServer;
 
+	IGamePanelDelegate delegate;
+
  	public void mouseMoved(MouseEvent e) {
  		userInput.mouseLocation.setLocation(e.getX()/WIDTH_FACTOR(getWidth()), e.getY() / HEIGHT_FACTOR(getHeight()));
  	}
@@ -54,7 +56,8 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
     public void mouseExited(MouseEvent e) {
     	//set flag to negative
     }
- 	public GamePanel(DataOutputStream toServer, BufferedReader fromServer) {
+ 	public GamePanel(IGamePanelDelegate delegate, DataOutputStream toServer, BufferedReader fromServer) {
+		this.delegate = delegate;
 		System.out.println("creating game panel");
 		this.toServer = toServer;
 		this.fromServer = fromServer;
@@ -101,6 +104,10 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 					}
 					sender.userInput = userInput;
 					repaint();
+					if (model.state.livingPlayers == 1) {
+						delegate.returnToLobby();
+						setBreak();
+					}
 				}
 			}.runInBackground();
 		} catch(Exception ex) {

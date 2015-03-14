@@ -31,6 +31,7 @@ public class LobbyMenu extends JPanel implements AncestorListener {
 
         JButton newGameButton = new JButton("Create");
         JButton joinGameButton = new JButton("Join");
+        JButton refreshGameButton = new JButton("Refresh");
         JLabel gameSizeLabel = new JLabel("Game Size");
         gameSizeField = new JTextField("2");
         JLabel gameNameLabel = new JLabel("Game Name");
@@ -48,6 +49,7 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         add(gameList);
         add(newGameButton);
         add(joinGameButton);
+        add(refreshGameButton);
         typeRadio.add(orange);
         typeRadio.add(green);
         typeRadio.add(purple);
@@ -73,6 +75,14 @@ public class LobbyMenu extends JPanel implements AncestorListener {
                     LobbyMenu.this.delegate.joinGame(LobbyMenu.this.games.get(selected).getUuid(),
                                                      LobbyMenu.this.getMageType());
                 }
+            }
+        });
+
+        refreshGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LobbyMenu.this.games = LobbyMenu.this.delegate.getGameList();
+                LobbyMenu.this.gameList.setListData(LobbyMenu.this.games.toArray());
             }
         });
 
