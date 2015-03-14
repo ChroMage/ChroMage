@@ -27,7 +27,6 @@ public class Projectile extends Entity implements Serializable {
 
 	@Override
 	public void applyHits(ArrayList<Entity> entities) {
-		System.out.println("Applying hits");
 		//for each projectile, check if it should activate
 			for(Entity target : entities){
 				if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
