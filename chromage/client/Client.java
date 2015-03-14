@@ -84,7 +84,7 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 	public static void main(String args[]) throws Exception {
 
 		// TODO: Make these configurable
-		String ipAddress = "127.0.0.1";
+		String ipAddress = "10.136.44.31";
 		int port = 9877;
 		String input;
 		String output = null;

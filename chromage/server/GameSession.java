@@ -63,7 +63,7 @@ public class GameSession extends Thread {
 	}
 
 	public void sendUpdates() {
-		for (PlayerThread p : players) {
+		for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
 			p.sendUpdate(state);
 		}
 	}
@@ -77,7 +77,6 @@ public class GameSession extends Thread {
 				System.out.println("Player " + p + " wants to leave.");
 				return;
 			}
-			if (!p.getCurrentInputState().equals(new UserInput())) {
 				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
 				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
 
@@ -87,7 +86,6 @@ public class GameSession extends Thread {
 				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
 					p.resetCurrentInputState();
 				}
-			}
 		}
 	}
 
@@ -99,6 +97,7 @@ public class GameSession extends Thread {
 			case RIGHT: x = 1; break;
 		}
 		switch (input.verticalDirection) {
+
 			case JUMP:
 				if(jumpTick > 0) {
 					y = 1*jumptick--;				
@@ -107,6 +106,7 @@ public class GameSession extends Thread {
 					y = 0;
 				break;
 			case NONE: y = 0; jumpTick = 5; break;
+
 		}
 		return new Point2D.Double(x,y);
 	}
