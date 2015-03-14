@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -14,7 +15,7 @@ public class Entity implements Serializable {
 	protected int width = 100;
 	protected int height = 100;
 	protected Color color = Color.MAGENTA;
-	protected boolean canBeMoved = true;
+	protected boolean isMobile = true;
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(position.x*widthFactor);
@@ -28,7 +29,7 @@ public class Entity implements Serializable {
 	}
 	
 	public void addUpRightVelocity(int x, int y){
-		if(canBeMoved){
+		if(isMobile){
 			this.velocity.x += x;
 			this.velocity.y -= y;
 		}
@@ -40,11 +41,33 @@ public class Entity implements Serializable {
 		}
 	}
 
-	public void updatePosition() {
-		if(canBeMoved){
-			System.out.println("Dropping " + this.position.y + " at rate " + this.velocity.y);
+	public void updatePosition(ArrayList<Entity> entities) {
+		if(isMobile){
+			System.out.println("Dropping from " + this.position.y + " at rate " + this.velocity.y);
 			this.position.x += this.velocity.x;
 			this.position.y += this.velocity.y;
+			for(Entity e : entities){
+				//Stop the object on top of immobile objects
+				if(!e.isMobile && overlapsTheTopOf(e)){
+					this.velocity.y = 0;
+					this.position.y = e.position.y - this.height + 4;
+				}
+			}
 		}
+	}
+
+	private boolean overlapsTheTopOf(Entity e) {
+		//if object top is under my top
+		//and object top is above my bottom
+		//and its left is left of my right
+		//and its right is right of my left
+		if(		e.position.y > position.y				
+				&& e.position.y < (position.y + height)	
+				&& e.position.x < position.x + width	
+				&& e.position.x + e.width > position.x){
+			return true;
+		}
+		
+		return false;
 	}
 }
