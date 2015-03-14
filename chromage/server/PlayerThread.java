@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.UUID;
 
 /**
@@ -70,15 +71,18 @@ public class PlayerThread extends Thread {
         shouldListenInLobby = false;
     }
 
-
     public void sendUpdate(GameState state) {
         this.state = state;
         try {
             String serialization = state.serializeToString();
 //            System.out.println("Sending to " + playerNumber +": " + state.x + ", " + state.y);
             toClient.writeBytes(serialization + '\n');
+        } catch (SocketException ex) {
+            server.disconnectPlayer(this);
+            wantsTermination = true;
         } catch (IOException e) {
             server.disconnectPlayer(this);
+            wantsTermination = true;
             e.printStackTrace();
         }
     }
@@ -121,9 +125,9 @@ public class PlayerThread extends Thread {
         shouldKeepProcessing = true;
         while (shouldKeepProcessing) {
             String clientMessage = fromClient.readLine();
+            if (clientMessage == null) break;
             try {
                 UserInput userInput = UserInput.deserializeFromString(clientMessage);
-                System.out.println("Client " + playerNumber + " sent: " + userInput.toString());
                 if (clientMessage == null) {
                     break;
                 }
@@ -135,6 +139,7 @@ public class PlayerThread extends Thread {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                server.disconnectPlayer(this);
             }
         }
         System.out.println("Terminating connection.");

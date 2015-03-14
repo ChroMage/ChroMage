@@ -1,6 +1,5 @@
 package chromage.server;
 
-import chromage.server.PlayerThread;
 import chromage.shared.*;
 
 import java.awt.*;
@@ -59,12 +58,17 @@ public class GameSession extends Thread {
 		return true;
 	}
 
-	public void waitForPlayers() {
+	public boolean waitForPlayers() {
 		while (players.size() < expectedNumberOfPlayers && !allPlayersReady()) {
+			for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
+				if (p.wantsTermination())
+					return false;
+			}
 			System.out.println("waiting");
 			// wait until all the players have joined the game.
             sendUpdates();
 		}
+		return true;
 	}
 
 	public void sendUpdates() {
@@ -74,7 +78,6 @@ public class GameSession extends Thread {
 	}
 
 	public void processInput() {
-		System.out.println("Processing input");
 		int inputTimeoutTicks = 6;
 		for (PlayerThread p : players) {
 			if (p.wantsTermination()) {
@@ -83,12 +86,10 @@ public class GameSession extends Thread {
 				return;
 			}
 
-				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
-				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
-				p.mage.setVelocityWithInput(p.getCurrentInputState());
-				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
-					p.resetCurrentInputState();
-				}
+			p.mage.setVelocityWithInput(p.getCurrentInputState());
+			if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
+				p.resetCurrentInputState();
+			}
 			
 			//process spell casts
 			p.mage.castSpell(p.getCurrentInputState(), state);
@@ -101,6 +102,13 @@ public class GameSession extends Thread {
 
 	public void executeGameLoop() {
 		new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+			public boolean shouldContinue() {
+				for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
+					if (p.wantsTermination())
+						return false;
+				}
+				return true;
+			}
 			public void body() {
 				processInput();
 				state.update();
@@ -128,13 +136,12 @@ public class GameSession extends Thread {
 
 	public void run() {
 		System.out.println("Waiting for players to connect...");
-		waitForPlayers();
-		System.out.println("Starting game loop...");
-
-		prepareGame();
-
-		executeGameLoop();
-		System.out.println("Ending game...");
+		if (waitForPlayers()) {
+			System.out.println("Starting game loop...");
+			prepareGame();
+			executeGameLoop();
+			System.out.println("Ending game...");
+		}
 		terminateConnections();
 	}
 
