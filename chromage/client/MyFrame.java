@@ -1,12 +1,8 @@
 package chromage.client;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class MyFrame extends JPanel implements KeyListener {
 
@@ -53,7 +49,7 @@ public class MyFrame extends JPanel implements KeyListener {
 	    System.out.println(keyCode + " w,a,s,d: " + (int)'w' + " " + (int)'a' + " " + (int)'s' + " " + (int)'d');
   }
 
-  public boolean isFocusTraversable() {
+  public boolean isFocusable() {
     return true;
   }
 

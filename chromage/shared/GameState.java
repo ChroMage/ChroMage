@@ -11,6 +11,7 @@ public class GameState implements Serializable {
 
     public boolean isGameOver;
 	public int x, y;
+    private long currentTick;
 	public ArrayList<Entity> entities;
 
     /** Default constructor. */
@@ -21,12 +22,20 @@ public class GameState implements Serializable {
         this.isGameOver = false;
         generateMap();
     }
-    
+
+    /**
+     * Called exactly once per tick.
+     */
     public void update(){
     	for(Entity e : entities){
     		e.applyGravity();
     		e.updatePosition();
     	}
+        currentTick++;
+    }
+
+    public long getCurrentTick() {
+        return currentTick;
     }
     
     private void generateMap() {
