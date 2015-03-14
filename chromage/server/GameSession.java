@@ -100,12 +100,13 @@ public class GameSession extends Thread {
 
 			case JUMP:
 				if(jumpTick > 0) {
-					y = 1*jumpTick--;				
+					jumpTick--;		
+					y = 3;
 				}
 				else 
 					y = 0;
 				break;
-			case NONE: y = 0; jumpTick = 6; break;
+			case NONE: y = 0; jumpTick = 8; break;
 
 		}
 		return new Point2D.Double(x,y);
