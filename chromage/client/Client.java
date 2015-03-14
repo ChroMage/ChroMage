@@ -23,7 +23,7 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 	
 	public static int val = 0;
 
-	public UserInput userInput = new UserInput();
+	public static UserInput userInput = new UserInput();
 
 	public void keyTyped(KeyEvent e) {
  		switch(e.getKeyChar()) {
@@ -111,10 +111,9 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 				return model.state.x != -5;
 			}
 			public void body() {
-				System.out.println("rendering");
 				render(model, frame);
-				sender.keyState = val;
 				sender.isRunning = (model.state.x != -5);
+				sender.userInput = Client.userInput;
 			}
 		}.run();
 

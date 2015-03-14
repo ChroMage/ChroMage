@@ -1,6 +1,8 @@
 package chromage.server;
 
 import chromage.shared.GameState;
+import chromage.shared.Mage;
+import chromage.shared.UserInput;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -17,7 +19,7 @@ public class PlayerThread extends Thread {
 
     private Socket socket;
 
-    private int currentInputState;
+    private UserInput currentInputState;
     private boolean wantsTermination;
     private boolean shouldKeepProcessing;
     private int playerNumber;
@@ -25,6 +27,7 @@ public class PlayerThread extends Thread {
     private boolean isReady;
     private GameState state = new GameState();
     private Server server;
+    public Mage mage;
 
     BufferedReader fromClient;
     DataOutputStream toClient;
@@ -32,9 +35,8 @@ public class PlayerThread extends Thread {
     public PlayerThread(Socket socket, Server server) {
         this.socket = socket;
         this.wantsTermination = false;
-        this.currentInputState = 0;
-        this.playerNumber = playerNumber;
         this.lastUpdateTick = 0;
+        resetCurrentInputState();
         this.server = server;
     }
 
@@ -55,10 +57,6 @@ public class PlayerThread extends Thread {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static boolean isTerminationCommand(String message) {
-        return "14".equals(message);
     }
 
     public void initiateHandshake() throws IOException {
@@ -82,8 +80,10 @@ public class PlayerThread extends Thread {
     }
 
     public void enterLobby() throws IOException {
+        System.out.println("Entered lobby");
         while (true) {
             String clientMessage = fromClient.readLine();
+            System.out.println("Lobby: got message " + clientMessage);
             // TODO: actually come up with protocol for joining game etc.
             String[] parts = clientMessage.split(" ");
             String action = parts[0];
@@ -111,17 +111,20 @@ public class PlayerThread extends Thread {
         shouldKeepProcessing = true;
         while (shouldKeepProcessing) {
             String clientMessage = fromClient.readLine();
-            if (!"0".equals(clientMessage)) {
-                System.out.println("Client " + playerNumber + " sent: " + clientMessage);
-            }
-            if (clientMessage == null) {
-                break;
-            }
-            if (isTerminationCommand(clientMessage)) {
-                wantsTermination = true;
-            } else {
-                currentInputState = Integer.parseInt(clientMessage);
-                lastUpdateTick = state.getCurrentTick();
+            try {
+                UserInput userInput = UserInput.deserializeFromString(clientMessage);
+                System.out.println("Client " + playerNumber + " sent: " + userInput.toString());
+                if (clientMessage == null) {
+                    break;
+                }
+                if (userInput.wantsTermination()) {
+                    wantsTermination = true;
+                } else {
+                    currentInputState = userInput;
+                    lastUpdateTick = state.getCurrentTick();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         System.out.println("Terminating connection.");
@@ -136,6 +139,6 @@ public class PlayerThread extends Thread {
     }
 
     public boolean wantsTermination() { return wantsTermination; }
-    public int getCurrentInputState() { return currentInputState; }
-    public void resetCurrentInputState() { currentInputState = 0; }
+    public UserInput getCurrentInputState() { return currentInputState; }
+    public void resetCurrentInputState() { currentInputState = new UserInput(); }
 }

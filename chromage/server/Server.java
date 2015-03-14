@@ -50,6 +50,7 @@ public class Server extends Thread {
         lobbyPlayers.remove(player);
         game.connectPlayer(player);
         game.start();
+        System.out.println("started game");
         return true;
     }
 
