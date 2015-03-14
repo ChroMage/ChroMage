@@ -1,6 +1,10 @@
 package chromage.client;
 
+import chromage.shared.Constants;
+import chromage.shared.RateLimitedLoop;
+
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * Created by ahruss on 3/13/15.
@@ -18,25 +22,23 @@ public class SenderThread extends Thread {
     }
 
     public void run() {
-        int desiredTickLengthMillis = 1000 / 60;
 
-        while (isRunning) {
-            long startTime = System.currentTimeMillis();
-            try {
-                output.writeBytes(keyState + "\n");
-                System.out.println("sending: " + keyState);
-            } catch (Exception e) {
-                e.printStackTrace();
-                break;
-            }
-            long endTime = System.currentTimeMillis();
-            if (endTime - startTime < desiredTickLengthMillis) {
+        try {
+            output.writeBytes("new test 1 red-blue");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+            public void body() {
                 try {
-                    Thread.sleep(desiredTickLengthMillis - (endTime - startTime));
-                } catch (InterruptedException e) {
+                    output.writeBytes(keyState + "\n");
+                    System.out.println("sending: " + keyState);
+                } catch (Exception e) {
                     e.printStackTrace();
+                    setBreak();
                 }
             }
-        }
+        }.run();
     }
 }

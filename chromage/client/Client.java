@@ -3,6 +3,7 @@ package chromage.client;
 import chromage.shared.Actions;
 import chromage.shared.Constants;
 import chromage.shared.GameState;
+import chromage.shared.RateLimitedLoop;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,12 +64,12 @@ public class Client extends JPanel implements KeyListener{
 		DataOutputStream serverIn = new DataOutputStream(clientSocket.getOutputStream());
 		BufferedReader serverOut = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-		SenderThread sender = new SenderThread(serverIn);
-		ModelThread model = new ModelThread(serverOut);
+		final SenderThread sender = new SenderThread(serverIn);
+		final ModelThread model = new ModelThread(serverOut);
 		sender.start();
 		model.start();
 
-	 	JFrame frame = new JFrame();
+		final JFrame frame = new JFrame();
 	 	frame.setTitle("Key");
 	 	frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -76,24 +77,18 @@ public class Client extends JPanel implements KeyListener{
 	 	contentPane.add(new Client());
 	 	frame.setVisible(true);
 
-		int desiredTickLengthMillis = 1000 / 60;
-	 	while (model.state.x != -5) {
-            long startTime = System.currentTimeMillis();
-
-			drawCircle(frame, model.state.x, model.state.y);
-			sender.keyState = val;
-
-			sender.isRunning = (model.state.x != -5);
-
-			long endTime = System.currentTimeMillis();
-			if (endTime - startTime < desiredTickLengthMillis) {
-				try {
-					Thread.sleep(desiredTickLengthMillis - (endTime - startTime));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+			public boolean shouldContinue() {
+				return model.state.x != -5;
 			}
-	 	}
+			public void body() {
+				System.out.println("rendering");
+				drawCircle(frame, model.state.x, model.state.y);
+				sender.keyState = val;
+				sender.isRunning = (model.state.x != -5);
+			}
+		}.run();
+
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 

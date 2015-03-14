@@ -24,6 +24,11 @@ public class ModelThread extends Thread {
             input.readLine();
             System.out.println("Handshake successful");
 
+            String joined = input.readLine();
+            if (!"success".equals(joined)) {
+                throw new Exception();
+            }
+
             while (true) {
                 try {
                     String output = input.readLine();

@@ -8,12 +8,24 @@ public class GameState implements Serializable {
 
     public boolean isGameOver;
 	public int x, y;
+    private long currentTick;
 
     /** Default constructor. */
     public GameState() {
         this.x = Constants.MAX_WIDTH / 2;
         this.y = Constants.MAX_HEIGHT / 2;
         this.isGameOver = false;
+    }
+
+    /**
+     * Called exactly once per tick.
+     */
+    public void update() {
+        currentTick++;
+    }
+
+    public long getCurrentTick() {
+        return currentTick;
     }
     
     public String serializeToString() throws IOException{
