@@ -96,7 +96,7 @@ public class GameSession extends Thread {
 	private void processSpellForPlayer(Spell spell, PlayerThread p) {
 		Point2D mouseLocation = p.getCurrentInputState().mouseLocation;
 		if (spell.equals(Spell.LEFT)){
-			state.addProjectile((int)mouseLocation.getX(), (int)mouseLocation.getY(), p.mage.getVelocity().x, p.mage.getVelocity().y);
+			state.addProjectile(p.mage.getPosition().x + p.mage.getWidth() + 2, p.mage.getPosition().y, 20, -20);
 		}
 	}
 

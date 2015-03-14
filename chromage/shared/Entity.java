@@ -14,6 +14,30 @@ public class Entity implements Serializable {
 	private Point2D.Double velocity = new Point2D.Double(0,0);
 
 	protected int width = 100;
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
 	protected int height = 100;
 	protected Color color = Color.MAGENTA;
 	protected boolean isMobile = true;
