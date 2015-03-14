@@ -90,7 +90,7 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
 					} else {
 						userInput.horizontalDirection = HorizontalDirection.NONE;
 					}
-					if (Client.keyboardInput.keyDown(KeyEvent.VK_W)) {
+					if (Client.keyboardInput.keyDown(KeyEvent.VK_W) || Client.keyboardInput.keyDown(KeyEvent.VK_SPACE)) {
 						userInput.verticalDirection = VerticalDirection.JUMP;
 					}
 					else {
@@ -112,7 +112,7 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR(this.getWidth())),
 			             (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR(this.getHeight())));
-		drawCircle(this, model.state.x, model.state.y, g);
+		//drawCircle(this, model.state.x, model.state.y, g);
 		for(Entity e : model.state.entities){
 			e.draw(g, HEIGHT_FACTOR(this.getHeight()), WIDTH_FACTOR(this.getWidth()));
 		}
