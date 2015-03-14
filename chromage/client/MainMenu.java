@@ -31,8 +31,8 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
  	public void mousePressed(MouseEvent e) {
  	 	switch(e.getButton()) {
  	 		case MouseEvent.BUTTON1: userInput.spell = Spell.LEFT; break;
- 	 		case MouseEvent.BUTTON2: userInput.spell = Spell.RIGHT; break;
- 	 		case MouseEvent.BUTTON3: userInput.spell = Spell.MIDDLE; break;
+ 	 		case MouseEvent.BUTTON2: userInput.spell = Spell.MIDDLE; break;
+ 	 		case MouseEvent.BUTTON3: userInput.spell = Spell.RIGHT; break;
  	 	}
     }
     public void mouseReleased(MouseEvent e) {
