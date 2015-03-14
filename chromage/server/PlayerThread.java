@@ -2,8 +2,10 @@ package chromage.server;
 
 import chromage.shared.GameState;
 import chromage.shared.Mage;
+import chromage.shared.MageType;
 import chromage.shared.UserInput;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,7 +32,6 @@ public class PlayerThread extends Thread {
     private GameState state = new GameState();
     private Server server;
     public Mage mage;
-
     BufferedReader fromClient;
     DataOutputStream toClient;
 
@@ -106,14 +107,16 @@ public class PlayerThread extends Thread {
             else if ("new".equals(action) && parts.length == 4) {
                 server.createAndJoinGame(this, parts[1], Integer.parseInt(parts[2]));
                 toClient.writeBytes("success\n");
-                // TODO: setClass(parts[3]);
+                mage = new Mage(Color.RED);
+                mage.mageType = MageType.valueOf(parts[3]);
                 break;
             }
             else if ("join".equals(action) && parts.length == 3) {
                 if (server.joinGame(this, UUID.fromString(parts[1]))) {
                     toClient.writeBytes("success\n");
                 } else toClient.writeBytes("failure\n");
-                // TODO: setClass(parts[2]);
+                mage = new Mage(Color.RED);
+                mage.mageType = MageType.valueOf(parts[2]);
                 break;
             }
         }

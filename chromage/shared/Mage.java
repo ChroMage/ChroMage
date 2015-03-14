@@ -25,6 +25,7 @@ public class Mage extends Entity implements Serializable {
 	public Spell leftSpell = new Fireball();
 	public Spell middleSpell = new Blink();
 	public Spell rightSpell = new Iceball();
+	public MageType mageType;
 	public boolean isDead() {
 		return hp == 0;
 	}
