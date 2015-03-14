@@ -7,10 +7,14 @@ import java.io.Serializable;
 
 public class Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
-	Point position = new Point(2000,2000);
-	int width = 100;
-	int height = 100;
-	Color color = Color.MAGENTA;
+    protected Point position = new Point(2000,2000);
+	public Point getPosition() {
+		return position;
+	}
+
+	protected int width = 100;
+	protected int height = 100;
+	protected Color color = Color.MAGENTA;
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(position.x*widthFactor);

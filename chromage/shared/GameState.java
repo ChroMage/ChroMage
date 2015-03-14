@@ -22,7 +22,10 @@ public class GameState implements Serializable {
     }
     
     private void generateMap() {
-        entities.add(new Block(500, 3000, 3000, 100));
+        entities.add(new Block(-10, 3700, 4010, 310));
+        entities.add(new Block(-10, -10, 4010, 310));
+        entities.add(new Block(-10, -10, 310, 4010));
+        entities.add(new Block(3700, -10, 310, 4010));
 	}
 
 	public String serializeToString() throws IOException{
