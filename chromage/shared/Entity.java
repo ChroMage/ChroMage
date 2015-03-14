@@ -53,7 +53,7 @@ public class Entity implements Serializable {
 	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
-			this.velocity.y += .01;
+			this.velocity.y += .2;
 		}
 	}
 	

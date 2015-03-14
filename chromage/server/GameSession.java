@@ -19,6 +19,7 @@ public class GameSession extends Thread {
 	private int expectedNumberOfPlayers;
 	private long currentTick;
 	private boolean isGameRunning;
+	private int jumpTick;
 
 	public GameState getGameState() { return state; }
 
@@ -98,8 +99,14 @@ public class GameSession extends Thread {
 			case RIGHT: x = 1; break;
 		}
 		switch (input.verticalDirection) {
-			case JUMP: y = -1; break;
-			case NONE: y = 0; break;
+			case JUMP:
+				if(jumpTick > 0) {
+					y = 1*jumptick--;				
+				}
+				else 
+					y = 0;
+				break;
+			case NONE: y = 0; jumpTick = 5; break;
 		}
 		return new Point2D.Double(x,y);
 	}
