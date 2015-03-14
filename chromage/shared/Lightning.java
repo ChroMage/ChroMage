@@ -48,7 +48,7 @@ public class Lightning extends Spell {
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 20;
+		return 70;
 	}
 
 	@Override

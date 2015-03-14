@@ -83,6 +83,10 @@ public class Mage extends Entity implements Serializable {
 			break;
 
 		}
+		slowAmount += 0.02;
+		if(slowAmount >= 1.0) {
+			slowAmount = 1.0;
+		}
 		velocity.setLocation(velocity.getX() + x, velocity.getY() - y);
 	}
 	
