@@ -3,16 +3,6 @@ package chromage.client;
 import chromage.shared.MageType;
 
 import javax.swing.*;
-
-import chromage.client.ConnectMenu;
-import chromage.client.GameInfo;
-import chromage.client.GamePanel;
-import chromage.client.IConnectMenuDelegate;
-import chromage.client.ILobbyMenuDelegate;
-import chromage.client.Keyboard;
-import chromage.client.LobbyMenu;
-
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,7 +11,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate {
+public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePanelDelegate {
 
 	public static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static final int SCREEN_HEIGHT = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
@@ -74,7 +64,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate {
 			String line = fromServer.readLine();
 			if ("success".equals(line)) {
 				System.out.println("Setting content pane to game");
-				mainWindow.setContentPane(new GamePanel(toServer, fromServer));
+				mainWindow.setContentPane(new GamePanel(this, toServer, fromServer));
 			} else {
 				System.out.println("Didn't get success from server, instead got: " + line);
 			}
@@ -108,12 +98,25 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate {
 			String line = fromServer.readLine();
 			if ("success".equals(line)) {
 				System.out.println("Setting content pane to game");
-				mainWindow.setContentPane(new GamePanel(toServer, fromServer));
+				mainWindow.setContentPane(new GamePanel(this, toServer, fromServer));
 			} else {
 				System.out.println("Didn't get success from server, instead got: " + line);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void returnToLobby() {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Returning to lobby");
+		mainWindow.setContentPane(new ConnectMenu(this));
+		mainWindow.getContentPane().getParent().revalidate();
+		mainWindow.getContentPane().getParent().repaint();
 	}
 }

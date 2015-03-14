@@ -42,6 +42,7 @@ public class ModelThread extends Thread {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    break;
                 }
             }
         } catch (Exception e) {

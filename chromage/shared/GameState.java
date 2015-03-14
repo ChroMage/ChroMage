@@ -12,7 +12,7 @@ public class GameState implements Serializable {
     public boolean isGameOver;
 	public int x, y;
     private long currentTick;
-    private int livingPlayers;
+    public int livingPlayers;
 	public ArrayList<Entity> entities;
 
     /** Default constructor. */
@@ -35,18 +35,23 @@ public class GameState implements Serializable {
      * Called exactly once per tick.
      */
     public void update(){
+        int count = 0;
     	for(Entity e : entities) {
+            if (e instanceof Mage) {
+                count++;
+            }
     		e.applyFriction();
     		e.applyGravity();
     		e.updatePosition(entities);
     		e.applyHits(entities);
     	}
-    	entities.removeIf(new Predicate<Entity>() {
-            @Override
-            public boolean test(Entity entity) {
-                return entity.shouldBeRemoved();
-            }
-        });
+        livingPlayers = count;
+
+        ArrayList<Entity> toRemove = new ArrayList<Entity>();
+        for (Entity e : entities) {
+            if (e.shouldBeRemoved()) toRemove.add(e);
+        }
+        entities.removeAll(toRemove);
         currentTick++;
     }
 
