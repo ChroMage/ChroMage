@@ -42,6 +42,10 @@ public class Entity implements Serializable {
 	protected Color color = Color.MAGENTA;
 	protected boolean isMobile = true;
 	protected int type = 0;
+	public int getType() {
+		return type;
+	}
+
 	protected boolean isGrounded = false;
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
@@ -89,7 +93,7 @@ public class Entity implements Serializable {
 		}
 	}
 	
-	protected Rectangle2D.Double getHitbox(){
+	public Rectangle2D.Double getHitbox(){
 		return new Rectangle2D.Double(getPosition().x, getPosition().y, width, height);
 	}
 
