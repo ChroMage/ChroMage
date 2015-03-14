@@ -37,6 +37,7 @@ public class Server extends Thread {
         System.out.println(expectedNumberOfPlayers);
         games.put(gameUuid, game);
         joinGame(host, gameUuid);
+        game.start();
     }
 
     public boolean joinGame(PlayerThread player, UUID uuid) {
@@ -49,7 +50,6 @@ public class Server extends Thread {
         }
         lobbyPlayers.remove(player);
         game.connectPlayer(player);
-        game.start();
         System.out.println("started game");
         return true;
     }

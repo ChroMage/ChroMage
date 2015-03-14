@@ -25,24 +25,23 @@ public class ModelThread extends Thread {
             System.out.println("Handshake successful");
 
             String joined = input.readLine();
-            if (!"success".equals(joined)) {
-                throw new Exception();
-            }
+//            if (!"success".equals(joined)) {
+//                throw new Exception();
+//            }
 
             while (true) {
                 try {
                     String output = input.readLine();
+                    System.out.println(output);
                     state = GameState.deserializeFromString(output);
                     if (state != null) {
                         System.out.println("client: receive(x, y): " + state.x + ", " + state.y);
                     }
                     if (state != null && state.x == -5) {  //if bye or terminate received, end connection
                         System.out.println("receive: exit.");
-                        break;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    break;
                 }
             }
         } catch (Exception e) {

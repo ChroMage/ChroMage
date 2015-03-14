@@ -62,7 +62,7 @@ public class GameSession extends Thread {
 	}
 
 	public void sendUpdates() {
-		for (PlayerThread p : players) {
+		for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
 			p.sendUpdate(state);
 		}
 	}
