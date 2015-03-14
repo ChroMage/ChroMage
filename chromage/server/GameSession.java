@@ -105,7 +105,7 @@ public class GameSession extends Thread {
 				else 
 					y = 0;
 				break;
-			case NONE: y = 0; jumpTick = 5; break;
+			case NONE: y = 0; jumpTick = 6; break;
 
 		}
 		return new Point2D.Double(x,y);

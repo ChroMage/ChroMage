@@ -66,7 +66,7 @@ public class GameState implements Serializable {
         entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
         
         //Add projectile
-        entities.add(new Projectile(3000, 1000, 40, 40));
+        entities.add(new Projectile(3000, 1000, 70, 70));
 	}
 
 	public String serializeToString() throws IOException{

@@ -105,6 +105,7 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 	 	Container contentPane = frame.getContentPane();
 	 	contentPane.add(new Client());
 	 	frame.setVisible(true);
+	 	frame.setAlwaysOnTop(true);
 
 		new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
 			public boolean shouldContinue() {
@@ -134,8 +135,8 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 		int y = (int)(dy*HEIGHT_FACTOR(frame.getHeight()));
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR(frame.getWidth())), (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR(frame.getHeight())));
-		g.setColor(Color.BLACK);
-		g.fillOval(x, y, (int) (100 * WIDTH_FACTOR(frame.getWidth())), (int) (100 * HEIGHT_FACTOR(frame.getHeight())));
+		//g.setColor(Color.BLACK);
+		//g.fillOval(x, y, (int) (100 * WIDTH_FACTOR(frame.getWidth())), (int) (100 * HEIGHT_FACTOR(frame.getHeight())));
 	}
 	
  	public static void drawLineTo(JFrame frame, int dx, int dy) {

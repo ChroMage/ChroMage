@@ -48,12 +48,19 @@ public class Entity implements Serializable {
 			else{
 				this.velocity.x = 0;
 			}
+			int maxXVelocity = 15;
+			if(this.velocity.x > maxXVelocity){
+				this.velocity.x = maxXVelocity;
+			}
+			if(this.velocity.x < -1*maxXVelocity){
+				this.velocity.x = -1*maxXVelocity;
+			}
 		}
 	}
 	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
-			this.velocity.y += .2;
+			this.velocity.y += .5;
 		}
 	}
 	
