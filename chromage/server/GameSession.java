@@ -1,5 +1,6 @@
 package chromage.server;
 
+import chromage.server.PlayerThread;
 import chromage.shared.*;
 
 import java.awt.*;
@@ -19,7 +20,6 @@ public class GameSession extends Thread {
 	private int expectedNumberOfPlayers;
 	private long currentTick;
 	private boolean isGameRunning;
-	private int jumpTick;
 
 	public GameState getGameState() { return state; }
 
@@ -79,37 +79,11 @@ public class GameSession extends Thread {
 			}
 				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
 				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
-
-				Point2D.Double a = accelerationForInput(p.getCurrentInputState());
-				p.mage.addUpRightVelocity((int)a.x, (int)a.y);
-
+				p.mage.setVelocityWithInput(p.getCurrentInputState());
 				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
 					p.resetCurrentInputState();
 				}
 		}
-	}
-
-	public Point2D.Double accelerationForInput(UserInput input) {
-		int x = 0, y = 0;
-		switch (input.horizontalDirection) {
-			case LEFT: x = -1; break;
-            case NONE: x = 0; break;
-			case RIGHT: x = 1; break;
-		}
-		switch (input.verticalDirection) {
-
-			case JUMP:
-				if(jumpTick > 0) {
-					jumpTick--;		
-					y = 7;
-				}
-				else 
-					y = 0;
-				break;
-			case NONE: y = 0; jumpTick = 8; break;
-
-		}
-		return new Point2D.Double(x,y);
 	}
 
 	public void executeGameLoop() {

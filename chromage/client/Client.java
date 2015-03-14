@@ -1,6 +1,10 @@
 package chromage.client;
 
 import javax.swing.*;
+
+import chromage.client.Keyboard;
+import chromage.client.MainMenu;
+
 import java.awt.*;
 
 public class Client {

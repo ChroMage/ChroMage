@@ -9,6 +9,9 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.UUID;
 
+import chromage.server.GameSession;
+import chromage.server.PlayerThread;
+
 /**
  * Created by ahruss on 3/13/15.
  */

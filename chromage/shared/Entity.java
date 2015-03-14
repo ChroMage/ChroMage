@@ -12,7 +12,7 @@ public class Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
     protected Point position = new Point(2000,2000);
 	protected Point2D.Double velocity = new Point2D.Double(0,0);
-
+	
 	protected int width = 100;
 	protected int height = 100;
 	protected Color color = Color.MAGENTA;
@@ -27,6 +27,9 @@ public class Entity implements Serializable {
 		g.fillRect(x, y, (int) (width * widthFactor), (int) (height * heightFactor));
 	}
 	
+	public void zeroVerticalVelocity() {
+		velocity.setLocation(velocity.getX(), 0.0);
+	}
 	public boolean isAffectedByGravity(){
 		return false;
 	}
@@ -42,6 +45,8 @@ public class Entity implements Serializable {
 			this.velocity.x += x;
 			this.velocity.y -= y;
 		}
+	}
+	public void applyFriction() {
 		if((type & Constants.MAGE_TYPE) != 0){
 			if(Math.abs(this.velocity.x) > .4){
 				this.velocity.x -= .5*Math.signum(this.velocity.x);
@@ -73,9 +78,9 @@ public class Entity implements Serializable {
 		if(isMobile){
 			this.position.x += this.velocity.x;
 			this.position.y += this.velocity.y;
+			if (velocity.y < 0) isGrounded = false;
 			for(Entity e : entities){
 				if(((type & Constants.MAGE_TYPE) != 0)){
-					isGrounded = false;
 					//Stop the object on top of immobile objects
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
 						this.velocity.y = 0;
