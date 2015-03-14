@@ -66,6 +66,13 @@ public class Server extends Thread {
         stream.writeBytes(list.toString() + "\n");
     }
 
+    public void disconnectPlayer(PlayerThread p) {
+        if (lobbyPlayers.contains(p)) {
+            lobbyPlayers.remove(p);
+            p.terminateConnection();
+        }
+    }
+
     public void run() {
         System.out.println("Waiting for connections");
         while (true) {
