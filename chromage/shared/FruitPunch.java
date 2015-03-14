@@ -50,7 +50,7 @@ public class FruitPunch extends Spell {
 	@Override
 	public int getWidth() {
 		// TODO Auto-generated method stub
-		return 50;
+		return 100;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class FruitPunch extends Spell {
 		int x = (int) (mage.getPosition().getX() + direction.getX()/direction.distance(0, 0)*mage.getHeight());
 		int y = (int) (mage.getPosition().getY() + direction.getY()/direction.distance(0, 0)*mage.getHeight());
 		Projectile p = new Projectile(x, y, 
-				0, (int)(direction.y/direction.distance(0,0)*getSpeed()),
+				0, -50,
 				        getWidth(), getHeight(), 
 				        getDamage(), getSlow(), getColor());
 		p.isGravitated = isAffectedByGravity();
