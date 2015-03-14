@@ -4,6 +4,7 @@ import chromage.shared.*;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class GameSession extends Thread {
@@ -112,23 +113,51 @@ public class GameSession extends Thread {
 				launchX = p.mage.getPosition().x - 72;
 			}
 			if (spell.equals(Spell.LEFT)){
-				//cast a fireball
-				state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.ORANGE);
-				p.mage.setCoolDown(5);
+				castBlink(p, p.getCurrentInputState().mouseLocation.x, p.getCurrentInputState().mouseLocation.y);
 			}
 			else if (spell.equals(Spell.RIGHT)){
-				//cast an ice ball
-				state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.BLUE);
-				p.mage.setCoolDown(30);
+				castIceball(p, launchX, launchY, mouseXMinusMageX, mouseYMinusMageY);
 			}
 			else if (spell.equals(Spell.MIDDLE)){
-				//cast a lightning bolt
-				state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.YELLOW);
-				p.mage.setCoolDown(30);
+				castLightning(p, launchX, launchY, mouseXMinusMageX, mouseYMinusMageY);
 			}
 		}
 		else{
 			p.mage.decrementCooldown();
+		}
+	}
+
+	private void castFireball(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.ORANGE);
+		p.mage.setCoolDown(5);
+	}
+	private void castIceball(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.BLUE);
+		p.mage.setCoolDown(30);
+	}
+	private void castLightning(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.YELLOW);
+		p.mage.setCoolDown(90);
+	}
+	private void castLifesteal(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.GREEN);
+		p.mage.setCoolDown(0);
+	}
+	private void castBlink(PlayerThread p, double mouseX, double mouseY) {
+		Rectangle2D.Double newHitBox = new Rectangle2D.Double(mouseX, mouseY, p.mage.getWidth(), p.mage.getHeight());
+		boolean canBlink = true;
+		for(Entity e: state.entities){
+			if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){
+				canBlink = false;
+			}
+		}
+		if(canBlink){
+			p.mage.setPosition(new Point((int)mouseX, (int)mouseY));
+			p.mage.setCoolDown(60);
 		}
 	}
 
