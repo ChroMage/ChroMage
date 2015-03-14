@@ -30,6 +30,10 @@ public class GameSession extends Thread {
 		state = new GameState();
 	}
 
+	public String getGameName() {
+		return name;
+	}
+
 	public boolean isGameRunning() {
 		return isGameRunning;
 	}
@@ -149,5 +153,9 @@ public class GameSession extends Thread {
 		executeGameLoop();
 		System.out.println("Ending game...");
 		terminateConnections();
+	}
+
+	public int connectedPlayers() {
+		return players.size();
 	}
 }
