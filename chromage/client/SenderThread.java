@@ -24,7 +24,7 @@ public class SenderThread extends Thread {
     public void run() {
 
         try {
-            output.writeBytes("new test 2 a\n");
+            output.writeBytes("new test 1 a\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
