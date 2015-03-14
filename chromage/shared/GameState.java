@@ -4,7 +4,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.function.Predicate;
 
 public class GameState implements Serializable {
     static final long serialVersionUID = -50077493051991117L;

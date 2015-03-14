@@ -102,6 +102,10 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 					else {
 						userInput.verticalDirection = VerticalDirection.NONE;
 					}
+
+					if (Keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
+						userInput.spell = SpellInput.MIDDLE;
+					}
 					sender.userInput = userInput;
 					repaint();
 					if (model.state.livingPlayers == 1) {
