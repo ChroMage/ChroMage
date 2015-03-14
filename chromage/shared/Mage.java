@@ -2,7 +2,11 @@ package chromage.shared;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import chromage.server.PlayerThread;
 
 public class Mage extends Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -17,8 +21,19 @@ public class Mage extends Entity implements Serializable {
 	private int coolDown = 0;
 	public int hp = 500;
 	public int mana = 300;
+	public Spell leftSpell;
+	public Spell middleSpell;
+	public Spell rightSpell;
+	public boolean isDead() {
+		return hp == 0;
+	}
 
-
+	public void takeDamage(int dmg) {
+		hp -= dmg;
+		if(hp <= 0) {
+			hp = 0;
+		}
+	}
 	public Mage(Color color){
 		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, color);
 	}
@@ -82,5 +97,37 @@ public class Mage extends Entity implements Serializable {
 
 	public void setCoolDown(int i) {
 		coolDown = i;
+	}
+	public void castSpell(UserInput input, GameState state) {
+		if(getCoolDown() <= 0){
+			if (input.spell.equals(SpellInput.LEFT)){ 
+				state.entities.add(leftSpell.createProjectile(this, input.mouseLocation));
+			}
+			else if (input.spell.equals(SpellInput.RIGHT)){ 
+				state.entities.add(rightSpell.createProjectile(this, input.mouseLocation));
+			}
+			else if (input.spell.equals(SpellInput.MIDDLE)){
+				Projectile middle = middleSpell.createProjectile(this, input.mouseLocation);
+				if(middle == null) {
+					Rectangle2D.Double newHitBox = new Rectangle2D.Double(input.mouseLocation.getX(), input.mouseLocation.getY(), getWidth(), getHeight());
+					boolean canBlink = true;
+					for(Entity e: state.entities){
+						if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){
+							canBlink = false;
+						}
+					}
+					if(canBlink){
+						setPosition(new Point((int)input.mouseLocation.getX(), (int)input.mouseLocation.getY()));
+						setCoolDown(60);
+					}
+				}
+				else {
+					state.entities.add(middle);
+				}
+			}
+		}
+		else{
+			decrementCooldown();
+		}
 	}
 }

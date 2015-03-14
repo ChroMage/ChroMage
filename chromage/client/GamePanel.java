@@ -33,16 +33,16 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
  	}
  	public void mousePressed(MouseEvent e) {
  	 	switch(e.getButton()) {
- 	 		case MouseEvent.BUTTON1: userInput.spell = Spell.LEFT; break;
- 	 		case MouseEvent.BUTTON2: userInput.spell = Spell.MIDDLE; break;
- 	 		case MouseEvent.BUTTON3: userInput.spell = Spell.RIGHT; break;
+ 	 		case MouseEvent.BUTTON1: userInput.spell = SpellInput.LEFT; break;
+ 	 		case MouseEvent.BUTTON2: userInput.spell = SpellInput.MIDDLE; break;
+ 	 		case MouseEvent.BUTTON3: userInput.spell = SpellInput.RIGHT; break;
  	 	}
     }
     public void mouseReleased(MouseEvent e) {
     	switch(e.getButton()) {
-	 		case MouseEvent.BUTTON1: userInput.spell = Spell.NONE; break;
-	 		case MouseEvent.BUTTON2: userInput.spell = Spell.NONE; break;
-	 		case MouseEvent.BUTTON3: userInput.spell = Spell.NONE; break;
+	 		case MouseEvent.BUTTON1: userInput.spell = SpellInput.NONE; break;
+	 		case MouseEvent.BUTTON2: userInput.spell = SpellInput.NONE; break;
+	 		case MouseEvent.BUTTON3: userInput.spell = SpellInput.NONE; break;
 	 	}
     }
     public void mouseClicked(MouseEvent e) {

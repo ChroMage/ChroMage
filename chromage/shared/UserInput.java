@@ -8,7 +8,7 @@ public class UserInput implements Serializable {
 	public Point2D.Double mouseLocation;
 	public HorizontalDirection horizontalDirection;
 	public VerticalDirection verticalDirection;
-	public Spell spell;
+	public SpellInput spell;
 	public boolean wantsTermination;
 
 	public boolean wantsTermination() {
@@ -23,7 +23,7 @@ public class UserInput implements Serializable {
 		mouseLocation = new Point2D.Double(0.0, 0.0);
 		horizontalDirection = HorizontalDirection.NONE;
 		verticalDirection = VerticalDirection.NONE;
-		spell = Spell.NONE;
+		spell = SpellInput.NONE;
 	}
 
 	public String serializeToString() throws IOException {

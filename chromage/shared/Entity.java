@@ -55,7 +55,8 @@ public class Entity implements Serializable {
 		g.setColor(color);
 		g.fillRect(x, y, (int) (width * widthFactor), (int) (height * heightFactor));
 	}
-	
+	public void takeDamage(int dmg) {
+	}
 	public void zeroVerticalVelocity() {
 		velocity.setLocation(velocity.getX(), 0.0);
 	}
@@ -148,18 +149,7 @@ public class Entity implements Serializable {
 
 
 	public void applyHits(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
-		//for each projectile, check if it should activate
-		if(((type & Constants.PROJECTILE_TYPE) != 0)){
-			for(Entity target : entities){
-				if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
-					/*
-					 * insert collision damage and effect code here
-					 */
-					System.out.println("COLLISION! DELETING PROJECTILE!");
-					toBeRemoved.add(this);
-				}
-			}
-		}
+		
 	}
 	
 	//Ignore how ugly my overlap code is!

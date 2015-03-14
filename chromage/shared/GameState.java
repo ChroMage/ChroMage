@@ -68,11 +68,6 @@ public class GameState implements Serializable {
         //Add mages
         entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
 	}
-    
-    public void addProjectile(int x, int y, double vx, double vy, Color color){
-    	Projectile p = new Projectile(x, y, vx, vy, color);
-        entities.add(p);
-    }
 
 	public String serializeToString() throws IOException{
 	     ByteArrayOutputStream bo = new ByteArrayOutputStream();
