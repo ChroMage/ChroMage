@@ -128,7 +128,6 @@ public class GameSession extends Thread {
 	public void prepareGame() {
 		ArrayList<Mage> mages = new ArrayList<Mage>();
 		for (PlayerThread p : players) {
-			p.mage = new Mage(Color.RED);
 			mages.add(p.mage);
 		}
 		state.initialize(mages);

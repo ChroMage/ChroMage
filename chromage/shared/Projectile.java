@@ -19,6 +19,7 @@ public class Projectile extends Entity implements Serializable {
 		this.damage = damage;
 		this.setVelocity(new Point2D.Double(vx, vy));
 		this.type = Constants.PROJECTILE_TYPE;
+		this.color = color;
 	}
 	
 	public boolean isAffectedByGravity(){

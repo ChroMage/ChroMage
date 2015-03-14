@@ -36,8 +36,11 @@ public class Mage extends Entity implements Serializable {
 			hp = 0;
 		}
 	}
-	public Mage(Color color){
-		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, color);
+	public Mage(MageType mageType){
+		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color);
+		leftSpell = mageType.leftSpell;
+		middleSpell = mageType.middleSpell;
+		rightSpell = mageType.rightSpell;
 	}
 
 	public Mage(int x, int y, int width, int height, Color color){

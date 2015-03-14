@@ -105,18 +105,18 @@ public class PlayerThread extends Thread {
                 server.sendGameList(toClient);
             }
             else if ("new".equals(action) && parts.length == 4) {
+                mage = new Mage(MageType.valueOf(parts[3]));
                 server.createAndJoinGame(this, parts[1], Integer.parseInt(parts[2]));
                 toClient.writeBytes("success\n");
-                mage = new Mage(Color.RED);
-                mage.mageType = MageType.valueOf(parts[3]);
+                
                 break;
             }
             else if ("join".equals(action) && parts.length == 3) {
+                mage = new Mage(MageType.valueOf(parts[2]));
                 if (server.joinGame(this, UUID.fromString(parts[1]))) {
                     toClient.writeBytes("success\n");
                 } else toClient.writeBytes("failure\n");
-                mage = new Mage(Color.RED);
-                mage.mageType = MageType.valueOf(parts[2]);
+                
                 break;
             }
         }
