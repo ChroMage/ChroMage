@@ -12,6 +12,15 @@ public abstract class RateLimitedLoop implements Runnable {
         executionsPerSecond = rate;
     }
 
+    public void runInBackground() {
+        new Thread() {
+            public void run() {
+                RateLimitedLoop.this.run();
+            }
+        }.start();
+    }
+
+
     public abstract void body();
 
     protected void setBreak() {
