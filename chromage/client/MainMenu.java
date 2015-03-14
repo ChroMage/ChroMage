@@ -83,8 +83,7 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
 				public void body() {
 					Keyboard.getInstance().poll();
 					System.out.println("A is down: " + Keyboard.isKeyDown(KeyEvent.VK_A));
-					if (Keyboard.isKeyDown(KeyEvent.VK_A)
-							&& Keyboard.isKeyDown(KeyEvent.VK_D)) {
+					if (Keyboard.isKeyDown(KeyEvent.VK_A) && Keyboard.isKeyDown(KeyEvent.VK_D)) {
 						userInput.horizontalDirection = HorizontalDirection.NONE;
 					} else if (Keyboard.isKeyDown(KeyEvent.VK_A)) {
 						userInput.horizontalDirection = HorizontalDirection.LEFT;
@@ -115,7 +114,7 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR(this.getWidth())),
 			             (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR(this.getHeight())));
-		drawCircle(this, model.state.x, model.state.y, g);
+		//drawCircle(this, model.state.x, model.state.y, g);
 		for(Entity e : model.state.entities){
 			e.draw(g, HEIGHT_FACTOR(this.getHeight()), WIDTH_FACTOR(this.getWidth()));
 		}

@@ -10,7 +10,7 @@ public class Client {
 
 	public static void main(String args[]) throws Exception {
 		final JFrame frame = new JFrame();
-	 	frame.setTitle("Key");
+	 	frame.setTitle("ChroMage");
 	 	frame.setSize(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 	Container contentPane = frame.getContentPane();
