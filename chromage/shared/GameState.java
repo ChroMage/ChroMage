@@ -30,6 +30,7 @@ public class GameState implements Serializable {
     	for(Entity e : entities){
     		e.applyGravity();
     		e.updatePosition(entities);
+    		e.applyHits(entities);
     	}
         currentTick++;
     }
