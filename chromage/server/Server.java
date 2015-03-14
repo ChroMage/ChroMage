@@ -6,9 +6,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
-import chromage.server.GameSession;
-import chromage.server.PlayerThread;
-
 /**
  * Created by ahruss on 3/13/15.
  */
@@ -22,7 +19,6 @@ public class Server extends Thread {
     public Server() {
         games = new Hashtable<UUID, GameSession>();
         lobbyPlayers = new ArrayList<PlayerThread>();
-        games.put(UUID.randomUUID(), new GameSession("test-game"));
     }
 
     public static void main(String args[]) throws IOException {
