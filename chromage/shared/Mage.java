@@ -17,9 +17,10 @@ public class Mage extends Entity implements Serializable {
 
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int DEFAULT_WIDTH = 100;
-	
+	public static final int MAX_HP = 500;
+
 	private int coolDown = 0;
-	public int hp = 500;
+	public int hp = MAX_HP;
 	public int mana = 300;
 	public Spell leftSpell;
 	public Spell middleSpell;
@@ -98,6 +99,7 @@ public class Mage extends Entity implements Serializable {
 	public void setCoolDown(int i) {
 		coolDown = i;
 	}
+
 	public void castSpell(UserInput input, GameState state) {
 		if(getCoolDown() <= 0){
 			if (input.spell.equals(SpellInput.LEFT)){ 
@@ -129,5 +131,20 @@ public class Mage extends Entity implements Serializable {
 		else{
 			decrementCooldown();
 		}
+	}
+
+
+	public void draw(Graphics g, double heightFactor, double widthFactor) {
+		int x = (int)(getPosition().x*widthFactor);
+		int y = (int)(getPosition().y*heightFactor);
+		int scaledWidth = (int) (width * widthFactor);
+		int scaledHeight = (int) (height * heightFactor);
+		g.setColor(color);
+		g.fillRect(x, y, scaledWidth, scaledHeight);
+		g.setColor(Color.white);
+		g.fillRect(x, y - 5, scaledWidth, 5);
+		g.setColor(Color.green);
+		g.fillRect(x, y - 25, scaledWidth * hp / MAX_HP, 10);
+
 	}
 }

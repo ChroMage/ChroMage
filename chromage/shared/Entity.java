@@ -146,10 +146,7 @@ public class Entity implements Serializable {
 		}
 	}
 
-
-
 	public void applyHits(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
-		
 	}
 	
 	//Ignore how ugly my overlap code is!
