@@ -101,7 +101,7 @@ public class GameSession extends Thread {
 			case JUMP:
 				if(jumpTick > 0) {
 					jumpTick--;		
-					y = 3;
+					y = 7;
 				}
 				else 
 					y = 0;

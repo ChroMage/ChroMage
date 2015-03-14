@@ -18,6 +18,7 @@ public class Entity implements Serializable {
 	protected Color color = Color.MAGENTA;
 	protected boolean isMobile = true;
 	protected int type = 0;
+	protected boolean isGrounded = false;
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(position.x*widthFactor);
@@ -60,7 +61,7 @@ public class Entity implements Serializable {
 	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
-			this.velocity.y += .5;
+			this.velocity.y += 2;
 		}
 	}
 	
@@ -74,10 +75,12 @@ public class Entity implements Serializable {
 			this.position.y += this.velocity.y;
 			for(Entity e : entities){
 				if(((type & Constants.MAGE_TYPE) != 0)){
+					isGrounded = false;
 					//Stop the object on top of immobile objects
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
 						this.velocity.y = 0;
 						this.position.y = e.position.y - this.height;
+						isGrounded = true;
 					}
 					
 					//Stop the object on hitting ceiling
