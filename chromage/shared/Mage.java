@@ -22,9 +22,9 @@ public class Mage extends Entity implements Serializable {
 	private int coolDown = 0;
 	public int hp = MAX_HP;
 	public int mana = 300;
-	public Spell leftSpell;
-	public Spell middleSpell;
-	public Spell rightSpell;
+	public Spell leftSpell = new Fireball();
+	public Spell middleSpell = new Blink();
+	public Spell rightSpell = new Iceball();
 	public boolean isDead() {
 		return hp == 0;
 	}
@@ -102,29 +102,22 @@ public class Mage extends Entity implements Serializable {
 
 	public void castSpell(UserInput input, GameState state) {
 		if(getCoolDown() <= 0){
+			Spell s = null;
 			if (input.spell.equals(SpellInput.LEFT)){ 
-				state.entities.add(leftSpell.createProjectile(this, input.mouseLocation));
+				s = leftSpell;
 			}
 			else if (input.spell.equals(SpellInput.RIGHT)){ 
-				state.entities.add(rightSpell.createProjectile(this, input.mouseLocation));
+				s = rightSpell; 
 			}
-			else if (input.spell.equals(SpellInput.MIDDLE)){
-				Projectile middle = middleSpell.createProjectile(this, input.mouseLocation);
-				if(middle == null) {
-					Rectangle2D.Double newHitBox = new Rectangle2D.Double(input.mouseLocation.getX(), input.mouseLocation.getY(), getWidth(), getHeight());
-					boolean canBlink = true;
-					for(Entity e: state.entities){
-						if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){
-							canBlink = false;
-						}
-					}
-					if(canBlink){
-						setPosition(new Point((int)input.mouseLocation.getX(), (int)input.mouseLocation.getY()));
-						setCoolDown(60);
-					}
-				}
-				else {
-					state.entities.add(middle);
+			else if (input.spell.equals(SpellInput.MIDDLE)) {
+				s = middleSpell;
+			}
+			if (s != null) {
+				Projectile projectile = s.createProjectile(this, input.mouseLocation, state);
+				setCoolDown(s.getCoolDown());
+				mana -= s.getManaCost();
+				if (projectile != null) {
+					state.entities.add(projectile);
 				}
 			}
 		}

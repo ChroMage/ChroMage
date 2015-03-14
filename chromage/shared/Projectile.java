@@ -18,6 +18,7 @@ public class Projectile extends Entity implements Serializable {
 		this.height = h;
 		this.damage = damage;
 		this.setVelocity(new Point2D.Double(vx, vy));
+		this.type = Constants.PROJECTILE_TYPE;
 	}
 	
 	public boolean isAffectedByGravity(){
@@ -25,6 +26,7 @@ public class Projectile extends Entity implements Serializable {
 	}
 	
 	public void applyHits(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
+		System.out.println("Applying hits");
 		//for each projectile, check if it should activate
 			for(Entity target : entities){
 				if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
