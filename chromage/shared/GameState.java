@@ -1,13 +1,10 @@
 package chromage.shared;
 
 import javax.xml.bind.DatatypeConverter;
-
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 public class GameState implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -37,14 +34,18 @@ public class GameState implements Serializable {
      * Called exactly once per tick.
      */
     public void update(){
-    	ArrayList<Entity> toBeRemoved = new ArrayList<Entity>();
     	for(Entity e : entities) {
     		e.applyFriction();
     		e.applyGravity();
-    		e.updatePosition(entities, toBeRemoved);
-    		e.applyHits(entities, toBeRemoved);
+    		e.updatePosition(entities);
+    		e.applyHits(entities);
     	}
-    	entities.removeAll(toBeRemoved);
+    	entities.removeIf(new Predicate<Entity>() {
+            @Override
+            public boolean test(Entity entity) {
+                return entity.shouldBeRemoved();
+            }
+        });
         currentTick++;
     }
 

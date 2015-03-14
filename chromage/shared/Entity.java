@@ -48,6 +48,11 @@ public class Entity implements Serializable {
 	}
 
 	protected boolean isGrounded = false;
+	private boolean shouldBeRemoved = false;
+	public void setShouldBeRemoved(boolean v) {
+		shouldBeRemoved = v;
+	}
+	public boolean shouldBeRemoved() { return shouldBeRemoved; }
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(getPosition().x*widthFactor);
@@ -104,7 +109,7 @@ public class Entity implements Serializable {
 		return new Rectangle2D.Double(getPosition().x, getPosition().y, width, height);
 	}
 
-	public void updatePosition(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
+	public void updatePosition(ArrayList<Entity> entities) {
 		if(isMobile){
 			this.position.x += this.velocity.x;
 			this.position.y += this.velocity.y;
@@ -140,13 +145,13 @@ public class Entity implements Serializable {
 					/*
 					 * insert code here for projectile hits wall
 					 */
-					toBeRemoved.add(this);
+					this.setShouldBeRemoved(true);
 				}
 			}
 		}
 	}
 
-	public void applyHits(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
+	public void applyHits(ArrayList<Entity> entities) {
 
 	}
 	
