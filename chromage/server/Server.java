@@ -13,7 +13,6 @@ import java.util.UUID;
  * Created by ahruss on 3/13/15.
  */
 public class Server extends Thread {
-
     private ServerSocket socket;
     private int port = 9877;
 
@@ -71,7 +70,6 @@ public class Server extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             try {
                 socket.close();
             } catch (IOException e) {
