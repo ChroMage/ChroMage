@@ -145,13 +145,14 @@ public class Entity implements Serializable {
 		}
 	}
 
-
-
 	public void applyHits(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
 		//for each projectile, check if it should activate
 		if(((type & Constants.PROJECTILE_TYPE) != 0)){
 			for(Entity target : entities){
 				if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
+					if (target instanceof Mage) {
+						((Mage)target).hp -= ((Projectile)this).damage;
+					}
 					/*
 					 * insert collision damage and effect code here
 					 */
