@@ -11,6 +11,6 @@ public class Block extends Entity implements Serializable {
 		this.width = width;
 		this.height = height;
 		this.color = Color.GRAY;
-		canBeMoved = false;
+		isMobile = false;
 	}
 }
