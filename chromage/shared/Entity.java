@@ -41,6 +41,14 @@ public class Entity implements Serializable {
 			this.velocity.x += x;
 			this.velocity.y -= y;
 		}
+		if((type & Constants.MAGE_TYPE) != 0){
+			if(Math.abs(this.velocity.x) > .4){
+				this.velocity.x -= .5*Math.signum(this.velocity.x);
+			}
+			else{
+				this.velocity.x = 0;
+			}
+		}
 	}
 	
 	public void applyGravity(){
@@ -62,25 +70,25 @@ public class Entity implements Serializable {
 				//Stop the object on top of immobile objects
 				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
 					this.velocity.y = 0;
-					this.position.y = e.position.y - this.height + 4;
+					this.position.y = e.position.y - this.height;
 				}
 				
 				//Stop the object on hitting ceiling
 				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
 					this.velocity.y = 0;
-					this.position.y = e.position.y + e.height;
+					this.position.y = e.position.y + e.height + 1;
 				}
 				
 				//stop when hitting a wall going right
 				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
 					this.velocity.x = 0;
-					this.position.x = e.position.x - this.width;
+					this.position.x = e.position.x - this.width - 1;
 				}
 				
 				//stop when hitting a wall going left
 				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
 					this.velocity.x = 0;
-					this.position.x = e.position.x + e.width;
+					this.position.x = e.position.x + e.width + 1;
 				}
 			}
 		}
@@ -89,11 +97,11 @@ public class Entity implements Serializable {
 
 
 	public void applyHits(ArrayList<Entity> entities) {
+		//for each projectile, check if it should activate
 		for(Entity source : entities){
-			//for each projectile, check if it should activate
 			if(((source.type & Constants.PROJECTILE_TYPE) != 0)){
 				for(Entity target : entities){
-					if(source.canCollideWith(target)){
+					if(source.canCollideWith(target) && source.getHitbox().intersects(target.getHitbox())){
 						/*
 						 * insert collision damage and effect code here
 						 */
