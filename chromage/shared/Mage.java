@@ -20,6 +20,7 @@ public class Mage extends Entity implements Serializable {
 		this.width = width;
 		this.height = height;
 		this.color = color;
+		type = Constants.MAGE_TYPE;
 	}
 	
 	public boolean isAffectedByGravity(){

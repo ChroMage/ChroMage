@@ -3,6 +3,7 @@ package chromage.shared;
 import javax.xml.bind.DatatypeConverter;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class GameState implements Serializable {
 
     public void initialize(ArrayList<Mage> players) {
         generateMap();
+        spreadPlayers(players);
         for (Mage m : players) {
             entities.add(m);
         }
@@ -36,6 +38,7 @@ public class GameState implements Serializable {
     	for(Entity e : entities) {
     		e.applyGravity();
     		e.updatePosition(entities);
+    		e.applyHits(entities);
     	}
         currentTick++;
     }
@@ -44,7 +47,12 @@ public class GameState implements Serializable {
         return currentTick;
     }
 
-
+    public void spreadPlayers(ArrayList<Mage> players){
+    	for (Mage m : players) {
+            m.position = new Point(1000, 1000);
+        }
+    }
+    
     private void generateMap() {
     	// Add border blocks
         entities.add(new Block(-10, 3700, 4010, 310));
