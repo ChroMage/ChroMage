@@ -92,6 +92,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate {
 
 	@Override
 	public void createGame(int numberOfPlayers, String name, MageType mageType) {
+		System.out.println("Trying to create game");
 		try {
 			toServer.writeBytes("new " + name + " " + numberOfPlayers + " " + mageType + "\n");
 			String line = fromServer.readLine();
