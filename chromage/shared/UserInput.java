@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 import java.io.*;
 
 public class UserInput implements Serializable {
-	public Point2D point2D;
+	public Point2D.Double mouseLocation;
 	public HorizontalDirection horizontalDirection;
 	public VerticalDirection verticalDirection;
 	public Spell spell;
@@ -20,7 +20,7 @@ public class UserInput implements Serializable {
 	}
 
 	public UserInput() {
-		point2D = new Point2D.Double(0.0, 0.0);
+		mouseLocation = new Point2D.Double(0.0, 0.0);
 		horizontalDirection = HorizontalDirection.NONE;
 		verticalDirection = VerticalDirection.NONE;
 		spell = Spell.NONE;
