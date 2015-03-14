@@ -2,9 +2,11 @@ package chromage.client;
 
 import chromage.shared.Actions;
 import chromage.shared.Constants;
+import chromage.shared.Entity;
 import chromage.shared.GameState;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.event.KeyEvent;
@@ -21,11 +23,17 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 
 	public static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static final int SCREEN_HEIGHT = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
-	public static final double WIDTH_FACTOR =  (SCREEN_WIDTH + 0.0) / Constants.MAX_WIDTH;
-	public static final double HEIGHT_FACTOR =  (SCREEN_HEIGHT + 0.0) / Constants.MAX_HEIGHT;
-			
+	private static double WIDTH_FACTOR(int frameWidth){
+		return (frameWidth + 0.0) / Constants.MAX_WIDTH;
+	}
+	private static double HEIGHT_FACTOR(int frameHeight){
+		return (frameHeight + 0.0) / Constants.MAX_HEIGHT;
+	}
+	
 	public static int val = 0;
+
 	public UserInput userInput = new UserInput();
+
 	public void keyTyped(KeyEvent e) {
  		switch(e.getKeyChar()) {
  			case 'w': userInput.verticalDirection = VerticalDirection.JUMP; break;
@@ -111,7 +119,8 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 	 	while (model.state.x != -5) {
             long startTime = System.currentTimeMillis();
 
-			drawCircle(frame, model.state.x, model.state.y);
+            //draw all objects to screen
+            render(model, frame);
 			sender.keyState = val;
 
 			sender.isRunning = (model.state.x != -5);
@@ -128,20 +137,28 @@ public class Client extends JPanel implements KeyListener, MouseMotionListener, 
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
-	public static void drawCircle(JFrame frame, int dx, int dy) {
+	private static void render(ModelThread model, JFrame frame) {
 		Graphics g = frame.getGraphics();
-		int x = (int)(dx*WIDTH_FACTOR);
-		int y = (int)(dy*HEIGHT_FACTOR);
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR), (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR));
-		g.setColor(Color.BLACK);
-		g.fillOval(x, y, (int) (100 * WIDTH_FACTOR), (int) (100 * HEIGHT_FACTOR));
+		drawCircle(frame, model.state.x, model.state.y, g);
+		for(Entity e : model.state.entities){
+			e.draw(g, HEIGHT_FACTOR(frame.getHeight()), WIDTH_FACTOR(frame.getWidth()));
+		}
 		g.dispose();
 	}
+	
+	public static void drawCircle(JFrame frame, int dx, int dy, Graphics g) {
+		int x = (int)(dx*WIDTH_FACTOR(frame.getWidth()));
+		int y = (int)(dy*HEIGHT_FACTOR(frame.getHeight()));
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR(frame.getWidth())), (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR(frame.getHeight())));
+		g.setColor(Color.BLACK);
+		g.fillOval(x, y, (int) (100 * WIDTH_FACTOR(frame.getWidth())), (int) (100 * HEIGHT_FACTOR(frame.getHeight())));
+	}
+	
  	public static void drawLineTo(JFrame frame, int dx, int dy) {
  	    Graphics g = frame.getGraphics();
- 	    int x = (int)(dx*WIDTH_FACTOR);
- 	    int y = (int)(dy*HEIGHT_FACTOR);
+ 	    int x = (int)(dx*WIDTH_FACTOR(frame.getWidth()));
+ 	    int y = (int)(dy*HEIGHT_FACTOR(frame.getHeight()));
  	    g.drawLine(0, 0, x, y);
  	    g.dispose();
  	}
