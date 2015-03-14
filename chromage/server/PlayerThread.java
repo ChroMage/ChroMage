@@ -22,6 +22,7 @@ public class PlayerThread extends Thread {
     private UserInput currentInputState;
     private boolean wantsTermination;
     private boolean shouldKeepProcessing;
+    private boolean shouldListenInLobby;
     private int playerNumber;
     private long lastUpdateTick;
     private boolean isReady;
@@ -64,7 +65,9 @@ public class PlayerThread extends Thread {
     }
 
     public void terminateConnection() {
+        wantsTermination = true;
         shouldKeepProcessing = false;
+        shouldListenInLobby = false;
     }
 
 
@@ -75,14 +78,20 @@ public class PlayerThread extends Thread {
 //            System.out.println("Sending to " + playerNumber +": " + state.x + ", " + state.y);
             toClient.writeBytes(serialization + '\n');
         } catch (IOException e) {
+            server.disconnectPlayer(this);
             e.printStackTrace();
         }
     }
 
     public void enterLobby() throws IOException {
+        if (wantsTermination) return;
         System.out.println("Entered lobby");
-        while (true) {
+        shouldListenInLobby = true;
+        while (shouldListenInLobby) {
             String clientMessage = fromClient.readLine();
+            if (clientMessage == null) {
+                server.disconnectPlayer(this);
+            }
             System.out.println("Lobby: got message " + clientMessage);
             // TODO: actually come up with protocol for joining game etc.
             String[] parts = clientMessage.split(" ");
@@ -107,6 +116,7 @@ public class PlayerThread extends Thread {
     }
 
     public void listenForUpdates() throws IOException {
+        if (wantsTermination) return;
         // Send initial connection info
         shouldKeepProcessing = true;
         while (shouldKeepProcessing) {

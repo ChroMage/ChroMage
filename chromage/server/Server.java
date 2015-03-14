@@ -4,10 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.UUID;
+import java.util.*;
 
 import chromage.server.GameSession;
 import chromage.server.PlayerThread;
@@ -19,12 +16,13 @@ public class Server extends Thread {
     private ServerSocket socket;
     private int port = 9877;
 
-    private Dictionary<UUID, GameSession> games;
+    private Hashtable<UUID, GameSession> games;
     private ArrayList<PlayerThread> lobbyPlayers;
 
     public Server() {
         games = new Hashtable<UUID, GameSession>();
         lobbyPlayers = new ArrayList<PlayerThread>();
+        games.put(UUID.randomUUID(), new GameSession("test-game"));
     }
 
     public static void main(String args[]) throws IOException {
@@ -35,6 +33,7 @@ public class Server extends Thread {
 
     public void createAndJoinGame(PlayerThread host, String name, int expectedNumberOfPlayers) {
         UUID gameUuid = UUID.randomUUID();
+        name = name.replace(" ", "").replace("\n", "").replace(",", "");
         GameSession game = new GameSession(name);
         game.setExpectedNumberOfPlayers(expectedNumberOfPlayers);
         System.out.println(expectedNumberOfPlayers);
@@ -57,8 +56,24 @@ public class Server extends Thread {
         return true;
     }
 
-    public void sendGameList(DataOutputStream stream) {
-        // TODO: empty method body
+    public void sendGameList(DataOutputStream stream) throws IOException {
+        Dictionary<UUID, GameSession> cloned = (Hashtable<UUID, GameSession>)games.clone();
+        Enumeration<UUID> keyEnumeration = cloned.keys();
+
+        StringBuffer list = new StringBuffer();
+        while (keyEnumeration.hasMoreElements()) {
+            UUID id = keyEnumeration.nextElement();
+            GameSession session = cloned.get(id);
+            list.append(id + " " + session.getGameName() + " " + session.connectedPlayers() + ",");
+        }
+        stream.writeBytes(list.toString() + "\n");
+    }
+
+    public void disconnectPlayer(PlayerThread p) {
+        if (lobbyPlayers.contains(p)) {
+            lobbyPlayers.remove(p);
+            p.terminateConnection();
+        }
     }
 
     public void run() {

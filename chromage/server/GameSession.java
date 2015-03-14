@@ -5,6 +5,7 @@ import chromage.shared.*;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class GameSession extends Thread {
@@ -28,6 +29,10 @@ public class GameSession extends Thread {
 		players = new ArrayList<PlayerThread>();
 		isGameRunning = true;
 		state = new GameState();
+	}
+
+	public String getGameName() {
+		return name;
 	}
 
 	public boolean isGameRunning() {
@@ -77,12 +82,84 @@ public class GameSession extends Thread {
 				System.out.println("Player " + p + " wants to leave.");
 				return;
 			}
+
 				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
 				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
 				p.mage.setVelocityWithInput(p.getCurrentInputState());
 				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
 					p.resetCurrentInputState();
 				}
+			
+			//process spell casts
+			Spell spell = p.getCurrentInputState().spell;
+			processSpellForPlayer(spell, p);
+
+			if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
+				p.resetCurrentInputState();
+			}
+		}
+	}
+
+	private void processSpellForPlayer(Spell spell, PlayerThread p) {
+		Point2D mouseLocation = p.getCurrentInputState().mouseLocation;
+		if(p.mage.getCoolDown() <= 0){
+			double mouseXMinusMageX = p.getCurrentInputState().mouseLocation.x-p.mage.getPosition().x; 
+			double mouseYMinusMageY = p.getCurrentInputState().mouseLocation.y-p.mage.getPosition().y;
+			boolean facingRight = mouseXMinusMageX > 0;
+			int launchX = 0;
+			int launchY = p.mage.getPosition().y - 72;
+			if(facingRight){
+				launchX = p.mage.getPosition().x + p.mage.getWidth() + 2;
+			}
+			else{
+				launchX = p.mage.getPosition().x - 72;
+			}
+			if (spell.equals(Spell.LEFT)){
+				castBlink(p, p.getCurrentInputState().mouseLocation.x, p.getCurrentInputState().mouseLocation.y);
+			}
+			else if (spell.equals(Spell.RIGHT)){
+				castIceball(p, launchX, launchY, mouseXMinusMageX, mouseYMinusMageY);
+			}
+			else if (spell.equals(Spell.MIDDLE)){
+				castLightning(p, launchX, launchY, mouseXMinusMageX, mouseYMinusMageY);
+			}
+		}
+		else{
+			p.mage.decrementCooldown();
+		}
+	}
+
+	private void castFireball(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.ORANGE);
+		p.mage.setCoolDown(5);
+	}
+	private void castIceball(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.BLUE);
+		p.mage.setCoolDown(30);
+	}
+	private void castLightning(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.YELLOW);
+		p.mage.setCoolDown(90);
+	}
+	private void castLifesteal(PlayerThread p, int launchX, int launchY,
+			double mouseXMinusMageX, double mouseYMinusMageY) {
+		state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.GREEN);
+		p.mage.setCoolDown(0);
+	}
+	private void castBlink(PlayerThread p, double mouseX, double mouseY) {
+		Rectangle2D.Double newHitBox = new Rectangle2D.Double(mouseX, mouseY, p.mage.getWidth(), p.mage.getHeight());
+		boolean canBlink = true;
+		for(Entity e: state.entities){
+			if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){
+				canBlink = false;
+			}
+		}
+		if(canBlink){
+			p.mage.setPosition(new Point((int)mouseX, (int)mouseY));
+			p.mage.setCoolDown(60);
 		}
 	}
 
@@ -123,5 +200,9 @@ public class GameSession extends Thread {
 		executeGameLoop();
 		System.out.println("Ending game...");
 		terminateConnections();
+	}
+
+	public int connectedPlayers() {
+		return players.size();
 	}
 }
