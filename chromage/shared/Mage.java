@@ -10,11 +10,13 @@ public class Mage extends Entity implements Serializable {
 	//added
 	private boolean secondJump = false;
 	private boolean firstJump = false;
-
+	private double slowAmount = 1.0;
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int DEFAULT_WIDTH = 100;
-	public static final int MAX_HP = 500;
-
+	public static final int MAX_HP = 300;
+	public Point2D.Double getVelocity() {
+		return new Point2D.Double(velocity.x*slowAmount, velocity.y*slowAmount);
+	}
 	private int coolDown = 0;
 	public int hp = MAX_HP;
 	public int mana = 300;
@@ -26,8 +28,9 @@ public class Mage extends Entity implements Serializable {
 		return hp == 0;
 	}
 
-	public void takeDamage(int dmg) {
+	public void takeDamage(int dmg, int slowAmount) {
 		hp -= dmg;
+		this.slowAmount = slowAmount/100.0;
 		if(hp <= 0) {
 			hp = 0;
 			this.setShouldBeRemoved(true);

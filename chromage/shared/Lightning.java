@@ -30,7 +30,7 @@ public class Lightning extends Spell {
 	@Override
 	public int getSlow() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 100;
 	}
 
 	@Override
@@ -48,19 +48,19 @@ public class Lightning extends Spell {
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 15;
+		return 20;
 	}
 
 	@Override
 	public int getWidth() {
 		// TODO Auto-generated method stub
-		return 70;
+		return 150;
 	}
 
 	@Override
 	public int getHeight() {
 		// TODO Auto-generated method stub
-		return 70;
+		return 150;
 	}
 
 	@Override

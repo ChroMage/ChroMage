@@ -25,7 +25,7 @@ public abstract class Spell implements Serializable{
 		Projectile p = new Projectile(x, y, 
 						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
 				        getWidth(), getHeight(), 
-				        getDamage(), getColor());
+				        getDamage(), getSlow(), getColor());
 		p.isGravitated = isAffectedByGravity();
 		return p;
 	}

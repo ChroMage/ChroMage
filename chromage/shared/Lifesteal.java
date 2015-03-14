@@ -30,7 +30,7 @@ public class Lifesteal extends Spell {
 	@Override
 	public int getSlow() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 90;
 	}
 
 	@Override

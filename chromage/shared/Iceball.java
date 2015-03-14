@@ -30,7 +30,7 @@ public class Iceball extends Spell {
 	@Override
 	public int getSlow() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 30;
 	}
 
 	@Override

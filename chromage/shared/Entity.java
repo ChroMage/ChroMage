@@ -60,7 +60,7 @@ public class Entity implements Serializable {
 		g.setColor(color);
 		g.fillRect(x, y, (int) (width * widthFactor), (int) (height * heightFactor));
 	}
-	public void takeDamage(int dmg) {
+	public void takeDamage(int dmg, int slowAmount) {
 	}
 	public void zeroVerticalVelocity() {
 		velocity.setLocation(velocity.getX(), 0.0);
@@ -77,31 +77,31 @@ public class Entity implements Serializable {
 	
 	public void addUpRightVelocity(int x, int y){
 		if(isMobile){
-			this.getVelocity().x += x;
-			this.getVelocity().y -= y;
+			this.velocity.x += x;
+			this.velocity.y -= y;
 		}
 	}
 	public void applyFriction() {
 		if((type & Constants.MAGE_TYPE) != 0){
-			if(Math.abs(this.getVelocity().x) > .4){
-				this.getVelocity().x -= .5*Math.signum(this.getVelocity().x);
+			if(Math.abs(this.velocity.x) > .4){
+				this.velocity.x -= .5*Math.signum(this.velocity.x);
 			}
 			else{
-				this.getVelocity().x = 0;
+				this.velocity.x = 0;
 			}
 			int maxXVelocity = 15;
-			if(this.getVelocity().x > maxXVelocity){
-				this.getVelocity().x = maxXVelocity;
+			if(this.velocity.x > maxXVelocity){
+				this.velocity.x = maxXVelocity;
 			}
-			if(this.getVelocity().x < -1*maxXVelocity){
-				this.getVelocity().x = -1*maxXVelocity;
+			if(this.velocity.x < -1*maxXVelocity){
+				this.velocity.x = -1*maxXVelocity;
 			}
 		}
 	}
 	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
-			this.getVelocity().y += 2;
+			this.velocity.y += 2;
 		}
 	}
 	
@@ -111,33 +111,33 @@ public class Entity implements Serializable {
 
 	public void updatePosition(ArrayList<Entity> entities) {
 		if(isMobile){
-			this.position.x += this.velocity.x;
-			this.position.y += this.velocity.y;
+			this.position.x += this.getVelocity().x;
+			this.position.y += this.getVelocity().y;
 			if (velocity.y < 0) isGrounded = false;
 			for(Entity e : entities){
 				if(((type & Constants.MAGE_TYPE) != 0)){
 					//Stop the object on top of immobile objects
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
-						this.getVelocity().y = 0;
-						this.getPosition().y = e.getPosition().y - this.height + 1;
+						this.velocity.y = 0;
+						this.position.y = e.getPosition().y - this.height + 1;
 						isGrounded = true;
 					}
 					
 					//Stop the object on hitting ceiling
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
-						this.getVelocity().y = 0;
+						this.velocity.y = 0;
 						this.getPosition().y = e.getPosition().y + e.height + 1;
 					}
 					
 					//stop when hitting a wall going right
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
-						this.getVelocity().x = 0;
+						this.velocity.x = 0;
 						this.getPosition().x = e.getPosition().x - this.width - 1;
 					}
 					
 					//stop when hitting a wall going left
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
-						this.getVelocity().x = 0;
+						this.velocity.x = 0;
 						this.getPosition().x = e.getPosition().x + e.width + 1;
 					}
 				}

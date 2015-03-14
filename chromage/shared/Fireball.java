@@ -31,7 +31,7 @@ public class Fireball extends Spell {
 	@Override
 	public int getSlow() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 100;
 	}
 
 	@Override
