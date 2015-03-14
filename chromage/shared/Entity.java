@@ -52,19 +52,114 @@ public class Entity implements Serializable {
 					this.velocity.y = 0;
 					this.position.y = e.position.y - this.height + 4;
 				}
+				
+				//Stop the object on hitting ceiling
+				if(!e.isMobile && overlapsTheBottomOf(e)){
+					this.velocity.y = 0;
+					this.position.y = e.position.y + e.height;
+				}
+				
+				//stop when hitting a wall going right
+				if(!e.isMobile && overlapsLeftOf(e)){
+					this.velocity.x = 0;
+					this.position.x = e.position.x - this.width;
+				}
+				
+				//stop when hitting a wall going left
+				if(!e.isMobile && overlapsRightOf(e)){
+					this.velocity.x = 0;
+					this.position.x = e.position.x + e.width;
+				}
 			}
 		}
 	}
 
-	private boolean overlapsTheTopOf(Entity e) {
+	
+	//Ignore how ugly my overlap code is!
+	private boolean overlapsTheBottomOf(Entity wall) {
+		//and object bottom is above my bottom
+		//if object bottom is under my top
+		//and its left is left of my right
+		//and its right is right of my left
+		int myTop = position.y;
+		int myBottom = position.y + height;
+		int myRight = position.x + width;
+		int myLeft = position.x;
+		int wallTop = wall.position.y;
+		int wallBottom = wall.position.y + wall.height;
+		int wallRight = wall.position.x + wall.width;
+		int wallLeft = wall.position.x;
+		if(		wallBottom < myBottom				
+				&& wallBottom > myTop	
+				&& wallLeft < myRight	
+				&& wallRight > myLeft){
+			return true;
+		}
+		
+		return false;
+	}
+
+	private boolean overlapsRightOf(Entity wall) {
+		//if object top is above my bottom
+		//and object bottom is below my top
+		//and its right is right of my left
+		//and its right is left of my right
+		int myTop = position.y;
+		int myBottom = position.y + height;
+		int myRight = position.x + width;
+		int myLeft = position.x;
+		int wallTop = wall.position.y;
+		int wallBottom = wall.position.y + wall.height;
+		int wallRight = wall.position.x + wall.width;
+		int wallLeft = wall.position.x;
+		if(		wallTop < myBottom				
+				&& wallBottom > myTop	
+				&& wallRight < myRight	
+				&& wallRight > myLeft){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean overlapsLeftOf(Entity wall) {
+		//if object top is above my bottom
+		//and object bottom is below my top
+		//and its left is left of my right
+		//and its left is right of my left
+		int myTop = position.y;
+		int myBottom = position.y + height;
+		int myRight = position.x + width;
+		int myLeft = position.x;
+		int wallTop = wall.position.y;
+		int wallBottom = wall.position.y + wall.height;
+		int wallRight = wall.position.x + wall.width;
+		int wallLeft = wall.position.x;
+		if(		wallTop < myBottom				
+				&& wallBottom > myTop	
+				&& wallLeft < myRight	
+				&& wallLeft > myLeft){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean overlapsTheTopOf(Entity wall) {
 		//if object top is under my top
 		//and object top is above my bottom
 		//and its left is left of my right
 		//and its right is right of my left
-		if(		e.position.y > position.y				
-				&& e.position.y < (position.y + height)	
-				&& e.position.x < position.x + width	
-				&& e.position.x + e.width > position.x){
+		int myTop = position.y;
+		int myBottom = position.y + height;
+		int myRight = position.x + width;
+		int myLeft = position.x;
+		int wallTop = wall.position.y;
+		int wallBottom = wall.position.y + wall.height;
+		int wallRight = wall.position.x + wall.width;
+		int wallLeft = wall.position.x;
+		if(		wallTop > myTop				
+				&& wallTop < myBottom	
+				&& wallLeft < myRight	
+				&& wallRight > myLeft){
 			return true;
 		}
 		
