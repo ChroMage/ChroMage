@@ -4,7 +4,17 @@ package chromage.client;
  */
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-public class KeyboardInput implements KeyListener {
+public class Keyboard implements KeyListener {
+    private static Keyboard  instance = null;
+    public static Keyboard getInstance() {
+        if (instance == null) {
+            instance = new Keyboard ();
+        }
+        return instance;
+    }
+    public static boolean isKeyDown(int keyCode) {
+        return getInstance().keyDown(keyCode);
+    }
     private static final int KEY_COUNT = 256;
     private enum KeyState {
         RELEASED, // Not down
@@ -15,7 +25,7 @@ public class KeyboardInput implements KeyListener {
     private boolean[] currentKeys = null;
     // Polled keyboard state
     private KeyState[] keys = null;
-    public KeyboardInput() {
+    public Keyboard () {
         currentKeys = new boolean[KEY_COUNT];
         keys = new KeyState[KEY_COUNT];
         for (int i = 0; i < KEY_COUNT; ++i) {

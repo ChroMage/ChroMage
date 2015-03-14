@@ -81,16 +81,19 @@ public class MainMenu extends JPanel implements AncestorListener, MouseListener,
 			new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
 				@Override
 				public void body() {
-					Client.keyboardInput.poll();
-					System.out.println("A is down: " + Client.keyboardInput.keyDown(KeyEvent.VK_A));
-					if (Client.keyboardInput.keyDown(KeyEvent.VK_A)) {
+					Keyboard.getInstance().poll();
+					System.out.println("A is down: " + Keyboard.isKeyDown(KeyEvent.VK_A));
+					if (Keyboard.isKeyDown(KeyEvent.VK_A)
+							&& Keyboard.isKeyDown(KeyEvent.VK_D)) {
+						userInput.horizontalDirection = HorizontalDirection.NONE;
+					} else if (Keyboard.isKeyDown(KeyEvent.VK_A)) {
 						userInput.horizontalDirection = HorizontalDirection.LEFT;
-					} else if (Client.keyboardInput.keyDown(KeyEvent.VK_D)) {
+					} else if (Keyboard.isKeyDown(KeyEvent.VK_D)) {
 						userInput.horizontalDirection = HorizontalDirection.RIGHT;
 					} else {
 						userInput.horizontalDirection = HorizontalDirection.NONE;
 					}
-					if (Client.keyboardInput.keyDown(KeyEvent.VK_W)) {
+					if (Keyboard.isKeyDown(KeyEvent.VK_W) || Keyboard.isKeyDown(KeyEvent.VK_SPACE)) {
 						userInput.verticalDirection = VerticalDirection.JUMP;
 					}
 					else {

@@ -8,9 +8,7 @@ public class Client {
 	public static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
 	public static final int SCREEN_HEIGHT = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
 
-	public static KeyboardInput keyboardInput;
 	public static void main(String args[]) throws Exception {
-		keyboardInput = new KeyboardInput();
 		final JFrame frame = new JFrame();
 	 	frame.setTitle("Key");
 	 	frame.setSize(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
@@ -21,6 +19,6 @@ public class Client {
 	 	frame.setVisible(true);
 		frame.setFocusable(true);
 		frame.requestFocusInWindow();
-		frame.addKeyListener(keyboardInput);
+		frame.addKeyListener(Keyboard.getInstance());
 	}
 }
