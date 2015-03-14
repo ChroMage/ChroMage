@@ -12,6 +12,7 @@ public class GameState implements Serializable {
     public boolean isGameOver;
 	public int x, y;
     private long currentTick;
+    private int livingPlayers;
 	public ArrayList<Entity> entities;
 
     /** Default constructor. */
