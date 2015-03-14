@@ -95,8 +95,36 @@ public class GameSession extends Thread {
 
 	private void processSpellForPlayer(Spell spell, PlayerThread p) {
 		Point2D mouseLocation = p.getCurrentInputState().mouseLocation;
-		if (spell.equals(Spell.LEFT)){
-			state.addProjectile(p.mage.getPosition().x + p.mage.getWidth() + 2, p.mage.getPosition().y, 20, -20);
+		if(p.mage.getCoolDown() <= 0){
+			double mouseXMinusMageX = p.getCurrentInputState().mouseLocation.x-p.mage.getPosition().x; 
+			double mouseYMinusMageY = p.getCurrentInputState().mouseLocation.y-p.mage.getPosition().y;
+			boolean facingRight = mouseXMinusMageX > 0;
+			int launchX = 0;
+			int launchY = p.mage.getPosition().y - 72;
+			if(facingRight){
+				launchX = p.mage.getPosition().x + p.mage.getWidth() + 2;
+			}
+			else{
+				launchX = p.mage.getPosition().x - 72;
+			}
+			if (spell.equals(Spell.LEFT)){
+				//cast a fireball
+				state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.ORANGE);
+				p.mage.setCoolDown(5);
+			}
+			else if (spell.equals(Spell.RIGHT)){
+				//cast an ice ball
+				state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.BLUE);
+				p.mage.setCoolDown(30);
+			}
+			else if (spell.equals(Spell.MIDDLE)){
+				//cast a lightning bolt
+				state.addProjectile(launchX, launchY, mouseXMinusMageX, mouseYMinusMageY, Color.YELLOW);
+				p.mage.setCoolDown(30);
+			}
+		}
+		else{
+			p.mage.decrementCooldown();
 		}
 	}
 

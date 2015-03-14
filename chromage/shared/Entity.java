@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
     private Point position = new Point(2000,2000);
-	private Point2D.Double velocity = new Point2D.Double(0,0);
+	public Point2D.Double velocity = new Point2D.Double(0,0);
 
 	protected int width = 100;
 	public int getWidth() {
@@ -103,7 +103,7 @@ public class Entity implements Serializable {
 					//Stop the object on top of immobile objects
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
 						this.getVelocity().y = 0;
-						this.getPosition().y = e.getPosition().y - this.height;
+						this.getPosition().y = e.getPosition().y - this.height + 1;
 						isGrounded = true;
 					}
 					

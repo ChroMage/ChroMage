@@ -9,6 +9,8 @@ public class Mage extends Entity implements Serializable {
 
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int DEFAULT_WIDTH = 100;
+	
+	private int coolDown = 0;
 
 	public Mage(Color color){
 		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, color);
@@ -25,5 +27,19 @@ public class Mage extends Entity implements Serializable {
 	
 	public boolean isAffectedByGravity(){
 		return true;
+	}
+
+	public void decrementCooldown() {
+		if(coolDown > 0){
+			coolDown--;
+		}
+	}
+	
+	public int getCoolDown(){
+		return coolDown;
+	}
+
+	public void setCoolDown(int i) {
+		coolDown = i;
 	}
 }

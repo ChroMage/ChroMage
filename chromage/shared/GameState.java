@@ -66,14 +66,10 @@ public class GameState implements Serializable {
         
         //Add mages
         entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
-        
-        //Add projectile
-        entities.add(new Projectile(3000, 1000, 70, 70));
 	}
     
-    public void addProjectile(int x, int y, double vx, double vy){
-    	Projectile p = new Projectile(x, y, 70, 70);
-    	p.setVelocity(new Point2D.Double(vx, vy));
+    public void addProjectile(int x, int y, double vx, double vy, Color color){
+    	Projectile p = new Projectile(x, y, vx, vy, color);
         entities.add(p);
     }
 
