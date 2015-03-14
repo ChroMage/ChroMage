@@ -38,7 +38,7 @@ public class GameState implements Serializable {
     	ArrayList<Entity> toBeRemoved = new ArrayList<Entity>();
     	for(Entity e : entities) {
     		e.applyGravity();
-    		e.updatePosition(entities);
+    		e.updatePosition(entities, toBeRemoved);
     		e.applyHits(entities, toBeRemoved);
     	}
     	entities.removeAll(toBeRemoved);

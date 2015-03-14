@@ -68,34 +68,41 @@ public class Entity implements Serializable {
 		return new Rectangle2D.Double(position.x, position.y, width, height);
 	}
 
-	public void updatePosition(ArrayList<Entity> entities) {
+	public void updatePosition(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
 		if(isMobile){
-			System.out.println("Dropping from " + this.position.y + " at rate " + this.velocity.y);
 			this.position.x += this.velocity.x;
 			this.position.y += this.velocity.y;
 			for(Entity e : entities){
-				//Stop the object on top of immobile objects
-				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
-					this.velocity.y = 0;
-					this.position.y = e.position.y - this.height;
+				if(((type & Constants.MAGE_TYPE) != 0)){
+					//Stop the object on top of immobile objects
+					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
+						this.velocity.y = 0;
+						this.position.y = e.position.y - this.height;
+					}
+					
+					//Stop the object on hitting ceiling
+					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
+						this.velocity.y = 0;
+						this.position.y = e.position.y + e.height + 1;
+					}
+					
+					//stop when hitting a wall going right
+					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
+						this.velocity.x = 0;
+						this.position.x = e.position.x - this.width - 1;
+					}
+					
+					//stop when hitting a wall going left
+					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
+						this.velocity.x = 0;
+						this.position.x = e.position.x + e.width + 1;
+					}
 				}
-				
-				//Stop the object on hitting ceiling
-				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
-					this.velocity.y = 0;
-					this.position.y = e.position.y + e.height + 1;
-				}
-				
-				//stop when hitting a wall going right
-				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
-					this.velocity.x = 0;
-					this.position.x = e.position.x - this.width - 1;
-				}
-				
-				//stop when hitting a wall going left
-				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
-					this.velocity.x = 0;
-					this.position.x = e.position.x + e.width + 1;
+				else if(((e.type & Constants.BLOCK_TYPE) != 0) && getHitbox().intersects(e.getHitbox())){
+					/*
+					 * insert code here for projectile hits wall
+					 */
+					toBeRemoved.add(this);
 				}
 			}
 		}
