@@ -68,6 +68,7 @@ public class Server extends Thread {
 
     public void disconnectPlayer(PlayerThread p) {
         if (lobbyPlayers.contains(p)) {
+            System.out.println("Disconnecting player " + p);
             lobbyPlayers.remove(p);
             p.terminateConnection();
         }
