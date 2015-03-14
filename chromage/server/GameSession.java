@@ -76,7 +76,6 @@ public class GameSession extends Thread {
 				System.out.println("Player " + p + " wants to leave.");
 				return;
 			}
-			if (!p.getCurrentInputState().equals(new UserInput())) {
 				System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
 				System.out.println("Ticks since last client update: " + (state.getCurrentTick() - p.getLastUpdateTick()));
 
@@ -86,7 +85,6 @@ public class GameSession extends Thread {
 				if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
 					p.resetCurrentInputState();
 				}
-			}
 		}
 	}
 
@@ -98,7 +96,7 @@ public class GameSession extends Thread {
 			case RIGHT: x = 1; break;
 		}
 		switch (input.verticalDirection) {
-			case JUMP: y = -1; break;
+			case JUMP: y = 5; break;
 			case NONE: y = 0; break;
 		}
 		return new Point2D.Double(x,y);

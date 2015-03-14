@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ public class Entity implements Serializable {
 	protected int height = 100;
 	protected Color color = Color.MAGENTA;
 	protected boolean isMobile = true;
+	protected int type = 0;
 	
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(position.x*widthFactor);
@@ -28,10 +30,24 @@ public class Entity implements Serializable {
 		return false;
 	}
 	
+	public boolean canCollideWith(Entity e){
+		//collide if I am a projectile and they aren't
+		return ((e.type & Constants.PROJECTILE_TYPE) == 0)
+			&& ((type & Constants.PROJECTILE_TYPE) != 0);
+	}
+	
 	public void addUpRightVelocity(int x, int y){
 		if(isMobile){
 			this.velocity.x += x;
 			this.velocity.y -= y;
+		}
+		if((type & Constants.MAGE_TYPE) != 0){
+			if(Math.abs(this.velocity.x) > .4){
+				this.velocity.x -= .5*Math.signum(this.velocity.x);
+			}
+			else{
+				this.velocity.x = 0;
+			}
 		}
 	}
 	
@@ -39,6 +55,10 @@ public class Entity implements Serializable {
 		if(isAffectedByGravity()){
 			this.velocity.y += .01;
 		}
+	}
+	
+	protected Rectangle2D.Double getHitbox(){
+		return new Rectangle2D.Double(position.x, position.y, width, height);
 	}
 
 	public void updatePosition(ArrayList<Entity> entities) {
@@ -48,32 +68,50 @@ public class Entity implements Serializable {
 			this.position.y += this.velocity.y;
 			for(Entity e : entities){
 				//Stop the object on top of immobile objects
-				if(!e.isMobile && overlapsTheTopOf(e)){
+				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
 					this.velocity.y = 0;
-					this.position.y = e.position.y - this.height + 4;
+					this.position.y = e.position.y - this.height;
 				}
 				
 				//Stop the object on hitting ceiling
-				if(!e.isMobile && overlapsTheBottomOf(e)){
+				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
 					this.velocity.y = 0;
-					this.position.y = e.position.y + e.height;
+					this.position.y = e.position.y + e.height + 1;
 				}
 				
 				//stop when hitting a wall going right
-				if(!e.isMobile && overlapsLeftOf(e)){
+				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
 					this.velocity.x = 0;
-					this.position.x = e.position.x - this.width;
+					this.position.x = e.position.x - this.width - 1;
 				}
 				
 				//stop when hitting a wall going left
-				if(!e.isMobile && overlapsRightOf(e)){
+				if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
 					this.velocity.x = 0;
-					this.position.x = e.position.x + e.width;
+					this.position.x = e.position.x + e.width + 1;
 				}
 			}
 		}
 	}
 
+
+
+	public void applyHits(ArrayList<Entity> entities) {
+		//for each projectile, check if it should activate
+		for(Entity source : entities){
+			if(((source.type & Constants.PROJECTILE_TYPE) != 0)){
+				for(Entity target : entities){
+					if(source.canCollideWith(target) && source.getHitbox().intersects(target.getHitbox())){
+						/*
+						 * insert collision damage and effect code here
+						 */
+						System.out.println("COLLISION! DELETING PROJECTILE!");
+						source = null;
+					}
+				}
+			}
+		}
+	}
 	
 	//Ignore how ugly my overlap code is!
 	private boolean overlapsTheBottomOf(Entity wall) {
