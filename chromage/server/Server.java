@@ -47,7 +47,7 @@ public class Server extends Thread {
 	}
 
 	public void waitForPlayers() {
-		int expectedNumberOfPlayers = 2;
+		int expectedNumberOfPlayers = 1;
 		int numberOfPlayers = 0;
 		while (numberOfPlayers < expectedNumberOfPlayers) {
 			try {
