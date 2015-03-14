@@ -35,7 +35,7 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                LobbyMenu.this.delegate.createGame(1, "", MageType.TODO);
+                LobbyMenu.this.delegate.createGame(3, "", MageType.TODO);
             }
         });
 
