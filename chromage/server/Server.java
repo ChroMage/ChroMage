@@ -88,8 +88,8 @@ public class Server extends Thread {
 				if (p.getCurrentInputState() != 0) {
 					System.out.println("Player " + p + " current input: " + p.getCurrentInputState());
 
-//					for (int i = 0; i < moveFactor; ++i)
-                        modifyState("" + p.getCurrentInputState());
+					//for (int i = 0; i < moveFactor; ++i)
+                    modifyState("" + p.getCurrentInputState());
 
 					System.out.println("Time since last client update: " + (System.currentTimeMillis() - p.getLastUpdateTime()));
 					if (System.currentTimeMillis() - p.getLastUpdateTime() > inputTimeoutTicks*desiredTickLengthMillis) {
@@ -97,6 +97,7 @@ public class Server extends Thread {
 					}
 				}
 			}
+            state.update();
 			for (PlayerThread p : players) {
                 p.sendUpdate(state);
             }

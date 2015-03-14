@@ -2,6 +2,7 @@ package chromage.shared;
 
 import javax.xml.bind.DatatypeConverter;
 
+import java.awt.Color;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -21,11 +22,22 @@ public class GameState implements Serializable {
         generateMap();
     }
     
+    public void update(){
+    	for(Entity e : entities){
+    		e.applyGravity();
+    		e.updatePosition();
+    	}
+    }
+    
     private void generateMap() {
+    	// Add border blocks
         entities.add(new Block(-10, 3700, 4010, 310));
         entities.add(new Block(-10, -10, 4010, 310));
         entities.add(new Block(-10, -10, 310, 4010));
         entities.add(new Block(3700, -10, 310, 4010));
+        
+        //Add mages
+        entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
 	}
 
 	public String serializeToString() throws IOException{
