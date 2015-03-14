@@ -53,7 +53,7 @@ public class Entity implements Serializable {
 	
 	public void applyGravity(){
 		if(isAffectedByGravity()){
-			this.velocity.y += .01;
+			this.velocity.y += .03;
 		}
 	}
 	
@@ -96,18 +96,16 @@ public class Entity implements Serializable {
 
 
 
-	public void applyHits(ArrayList<Entity> entities) {
+	public void applyHits(ArrayList<Entity> entities, ArrayList<Entity> toBeRemoved) {
 		//for each projectile, check if it should activate
-		for(Entity source : entities){
-			if(((source.type & Constants.PROJECTILE_TYPE) != 0)){
-				for(Entity target : entities){
-					if(source.canCollideWith(target) && source.getHitbox().intersects(target.getHitbox())){
-						/*
-						 * insert collision damage and effect code here
-						 */
-						System.out.println("COLLISION! DELETING PROJECTILE!");
-						source = null;
-					}
+		if(((type & Constants.PROJECTILE_TYPE) != 0)){
+			for(Entity target : entities){
+				if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
+					/*
+					 * insert collision damage and effect code here
+					 */
+					System.out.println("COLLISION! DELETING PROJECTILE!");
+					toBeRemoved.add(this);
 				}
 			}
 		}

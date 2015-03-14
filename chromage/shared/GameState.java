@@ -35,11 +35,13 @@ public class GameState implements Serializable {
      * Called exactly once per tick.
      */
     public void update(){
+    	ArrayList<Entity> toBeRemoved = new ArrayList<Entity>();
     	for(Entity e : entities) {
     		e.applyGravity();
     		e.updatePosition(entities);
-    		e.applyHits(entities);
+    		e.applyHits(entities, toBeRemoved);
     	}
+    	entities.removeAll(toBeRemoved);
         currentTick++;
     }
 
@@ -62,6 +64,9 @@ public class GameState implements Serializable {
         
         //Add mages
         entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
+        
+        //Add projectile
+        entities.add(new Projectile(3000, 1000, 40, 40));
 	}
 
 	public String serializeToString() throws IOException{
