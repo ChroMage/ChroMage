@@ -10,18 +10,22 @@ public class GameState implements Serializable {
 
     public boolean isGameOver;
 	public int x, y;
-	public ArrayList<Entity> blocks;
+	public ArrayList<Entity> entities;
 
     /** Default constructor. */
     public GameState() {
-    	blocks = new ArrayList<Entity>();
+    	entities = new ArrayList<Entity>();
         this.x = Constants.MAX_WIDTH / 2;
         this.y = Constants.MAX_HEIGHT / 2;
         this.isGameOver = false;
-        blocks.add(new Block(2000, 2000, 200, 200));
+        generateMap();
     }
     
-    public String serializeToString() throws IOException{
+    private void generateMap() {
+        entities.add(new Block(500, 3000, 3000, 100));
+	}
+
+	public String serializeToString() throws IOException{
 	     ByteArrayOutputStream bo = new ByteArrayOutputStream();
 	     ObjectOutputStream so = new ObjectOutputStream(bo);
 	     so.writeObject(this);

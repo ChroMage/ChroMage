@@ -2,9 +2,11 @@ package chromage.client;
 
 import chromage.shared.Actions;
 import chromage.shared.Constants;
+import chromage.shared.Entity;
 import chromage.shared.GameState;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -22,7 +24,6 @@ public class Client extends JPanel implements KeyListener{
 	public static final double HEIGHT_FACTOR =  (SCREEN_HEIGHT + 0.0) / Constants.MAX_HEIGHT;
 			
 	public static int val = 0;
-	static GameState state;
 	public void keyTyped(KeyEvent e) {
  		switch(e.getKeyChar()) {
  			case 'w': val = val | Actions.UP; break;
@@ -80,7 +81,8 @@ public class Client extends JPanel implements KeyListener{
 	 	while (model.state.x != -5) {
             long startTime = System.currentTimeMillis();
 
-			drawCircle(frame, model.state.x, model.state.y);
+            //draw all objects to screen
+            render(model, frame);
 			sender.keyState = val;
 
 			sender.isRunning = (model.state.x != -5);
@@ -97,15 +99,21 @@ public class Client extends JPanel implements KeyListener{
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 
-	public static void drawCircle(JFrame frame, int dx, int dy) {
+	private static void render(ModelThread model, JFrame frame) {
 		Graphics g = frame.getGraphics();
+		drawCircle(frame, model.state.x, model.state.y, g);
+		for(Entity e : model.state.entities){
+			e.draw(g, HEIGHT_FACTOR, WIDTH_FACTOR);
+		}
+		g.dispose();
+	}
+	public static void drawCircle(JFrame frame, int dx, int dy, Graphics g) {
 		int x = (int)(dx*WIDTH_FACTOR);
 		int y = (int)(dy*HEIGHT_FACTOR);
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR), (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR));
 		g.setColor(Color.BLACK);
 		g.fillOval(x, y, (int) (100 * WIDTH_FACTOR), (int) (100 * HEIGHT_FACTOR));
-		g.dispose();
 	}
  	public static void drawLineTo(JFrame frame, int dx, int dy) {
  	    Graphics g = frame.getGraphics();
