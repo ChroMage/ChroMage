@@ -11,7 +11,7 @@ public class Mage extends Entity implements Serializable {
 	public static final int DEFAULT_WIDTH = 200;
 
 	public Mage(Color color){
-		this(0,0, DEFAULT_WIDTH, DEFAULT_HEIGHT, color);
+		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, color);
 	}
 
 	public Mage(int x, int y, int width, int height, Color color){
