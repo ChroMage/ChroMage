@@ -89,7 +89,7 @@ public class Lightning extends Spell {
 		Projectile p = new Projectile(x, y, 
 						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
 				        getWidth(), getHeight(), 
-				        getDamage(), getSlow(), getColor()) {
+				        getDamage(), getSlow(), getColor(), mage) {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void update(ArrayList<Entity> e) {
 				super.update(e);

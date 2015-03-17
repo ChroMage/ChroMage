@@ -85,7 +85,7 @@ public class Blink extends Spell {
 	}
 	
 	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
-		Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, mage.getWidth(), mage.getHeight());
+		Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, 1, 1);
 		boolean canBlink = true;
 		for(Entity e: state.entities){
 			if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){

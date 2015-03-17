@@ -1,6 +1,8 @@
 package chromage.shared;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class Lifesteal extends Spell {
 
@@ -50,6 +52,10 @@ public class Lifesteal extends Spell {
 		// TODO Auto-generated method stub
 		return 3;
 	}
+	
+	public int getHeal() {
+		return 2;
+	}
 
 	@Override
 	public int getWidth() {
@@ -80,5 +86,23 @@ public class Lifesteal extends Spell {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
+	
+	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
+		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
+		int x = (int) (mage.getPosition().getX() + direction.getX()/direction.distance(0, 0)*mage.getHeight());
+		int y = (int) (mage.getPosition().getY() + direction.getY()/direction.distance(0, 0)*mage.getHeight());
+		Projectile p = new Projectile(x, y, 
+						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
+				        getWidth(), getHeight(), 
+				        getDamage(), getSlow(), getColor(), mage) {
+			private static final long serialVersionUID = 188689086533652783L;
+			public void hitTarget(Entity target){
+				target.takeDamage(getDamage(), getSlow());
+				owner.hp += getHeal();
+				owner.hp = Math.min(owner.hp, Mage.MAX_HP);
+			}
+		};
+		p.isGravitated = isAffectedByGravity();
+		return p;
+	}
 }

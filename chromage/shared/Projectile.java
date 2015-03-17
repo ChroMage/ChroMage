@@ -10,7 +10,8 @@ public class Projectile extends Entity implements Serializable {
 	boolean isGravitated = false;
 	int damage = 1;
 	int slowAmount = 100;
-	public Projectile(int x, int y, double vx, double vy, int w, int h, int damage, int slowAmount, Color color){
+	Mage owner = null;
+	public Projectile(int x, int y, double vx, double vy, int w, int h, int damage, int slowAmount, Color color, Mage owner){
 		this.setPosition(new Point(x,y));
 		this.width = w;
 		this.height = h;
@@ -19,6 +20,7 @@ public class Projectile extends Entity implements Serializable {
 		this.setVelocity(new Point2D.Double(vx, vy));
 		this.type = Constants.PROJECTILE_TYPE;
 		this.color = color;
+		this.owner = owner;
 	}
 	
 	public boolean isAffectedByGravity(){
@@ -30,9 +32,13 @@ public class Projectile extends Entity implements Serializable {
 		//for each projectile, check if it should activate
 		for(Entity target : entities){
 			if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
-				target.takeDamage(damage, slowAmount);
+				hitTarget(target);
 				setShouldBeRemoved(true);
 			}
 		}
+	}
+	
+	public void hitTarget(Entity target){
+		target.takeDamage(damage, slowAmount);
 	}
 }

@@ -81,10 +81,7 @@ public class FruitPunch extends Spell {
 		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
 		int x = (int) (mage.getPosition().getX() + direction.getX()/direction.distance(0, 0)*mage.getHeight());
 		int y = (int) (mage.getPosition().getY() + direction.getY()/direction.distance(0, 0)*mage.getHeight());
-		Projectile p = new Projectile(x, y, 
-				0, -50,
-				        getWidth(), getHeight(), 
-				        getDamage(), getSlow(), getColor());
+		Projectile p = new Projectile(x, y, 0, -50, getWidth(), getHeight(),  getDamage(), getSlow(), getColor(), mage);
 		p.isGravitated = isAffectedByGravity();
 		return p;
 	}
