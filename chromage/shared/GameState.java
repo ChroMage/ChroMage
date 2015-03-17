@@ -9,7 +9,6 @@ public class GameState implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
 
     public boolean isGameOver;
-	public int x, y;
     private long currentTick;
     public int livingPlayers;
     public int awaitedPlayers;
@@ -18,8 +17,6 @@ public class GameState implements Serializable {
     /** Default constructor. */
     public GameState() {
     	entities = new ArrayList<Entity>();
-        this.x = Constants.MAX_WIDTH / 2;
-        this.y = Constants.MAX_HEIGHT / 2;
         this.isGameOver = false;
     }
 
