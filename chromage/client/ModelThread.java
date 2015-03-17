@@ -32,10 +32,10 @@ public class ModelThread extends Thread {
             while (true) {
                 try {
                     String output = input.readLine();
-                    System.out.println(output);
+                    //System.out.println(output);
                     state = GameState.deserializeFromString(output);
                     if (state != null) {
-                        System.out.println("client: receive(x, y): " + state.x + ", " + state.y);
+                        //System.out.println("client: receive(x, y): " + state.x + ", " + state.y);
                     }
                     if (state != null && state.x == -5) {  //if bye or terminate received, end connection
                         System.out.println("receive: exit.");

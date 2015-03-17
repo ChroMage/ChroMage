@@ -86,7 +86,6 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 				@Override
 				public void body() {
 					Keyboard.getInstance().poll();
-					System.out.println("A is down: " + Keyboard.isKeyDown(KeyEvent.VK_A));
 					if (Keyboard.isKeyDown(KeyEvent.VK_A) && Keyboard.isKeyDown(KeyEvent.VK_D)) {
 						userInput.horizontalDirection = HorizontalDirection.NONE;
 					} else if (Keyboard.isKeyDown(KeyEvent.VK_A)) {
@@ -138,7 +137,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 			g.drawString("Awaiting players, need " + model.state.awaitedPlayers + " more.",
 					(int)(this.getWidth()/2*WIDTH_FACTOR(this.getWidth())), (int)(this.getHeight()/2*HEIGHT_FACTOR(this.getHeight())));
 		}
-		System.out.println("Called");
+		//System.out.println("Called");
 	}
 	
 	public static void drawCircle(JPanel panel, int dx, int dy, Graphics g) {
