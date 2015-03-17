@@ -32,7 +32,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 	public void run() throws Exception {
 		mainWindow = new JFrame();
 	 	mainWindow.setTitle("ChroMage");
-	 	mainWindow.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+	 	mainWindow.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 	 	mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainWindow.setContentPane(new ConnectMenu(this));
 	 	mainWindow.setVisible(true);

@@ -32,7 +32,7 @@ public class FruitPunch extends Spell {
 	@Override
 	public int getCoolDown() {
 		// TODO Auto-generated method stub
-		return 40;
+		return 25;
 	}
 
 	@Override
