@@ -60,10 +60,12 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int players = getGameSize();
+                if (players == -1) return;
                 LobbyMenu.this.delegate.createGame(
-                        LobbyMenu.this.getGameSize(),
-                        LobbyMenu.this.getGameName(),
-                        LobbyMenu.this.getMageType());
+                        players,
+                        getGameName(),
+                        getMageType());
             }
         });
 
@@ -107,7 +109,12 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         return gameNameField.getText();
     }
     public int getGameSize() {
-        return Integer.parseInt(gameSizeField.getText());
+        try {
+            return Integer.parseInt(gameSizeField.getText());
+        } catch (NumberFormatException e) {
+            gameSizeField.setText("2");
+            return -1;
+        }
     }
 
     public void ancestorMoved(AncestorEvent e) {}

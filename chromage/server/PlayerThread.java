@@ -5,7 +5,6 @@ import chromage.shared.Mage;
 import chromage.shared.MageType;
 import chromage.shared.UserInput;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -123,7 +122,7 @@ public class PlayerThread extends Thread {
     }
 
     public void listenForUpdates() throws IOException {
-        if (wantsTermination) return;
+        if (wantsTermination || state.shouldTerminate()) return;
         // Send initial connection info
         shouldKeepProcessing = true;
         while (shouldKeepProcessing) {
@@ -141,6 +140,7 @@ public class PlayerThread extends Thread {
                     lastUpdateTick = state.getCurrentTick();
                 }
             } catch (Exception e) {
+                System.out.println("Exception: " + clientMessage);
                 e.printStackTrace();
                 server.disconnectPlayer(this);
             }

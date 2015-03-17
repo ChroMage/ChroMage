@@ -1,7 +1,6 @@
 package chromage.client;
 
 import chromage.shared.Constants;
-import chromage.shared.HorizontalDirection;
 import chromage.shared.RateLimitedLoop;
 import chromage.shared.UserInput;
 
@@ -31,12 +30,15 @@ public class SenderThread extends Thread {
         }
 
         new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+            public boolean shouldContinue() {
+                return isRunning;
+            }
             public void body() {
                 try {
-                    UserInput u = SenderThread.this.userInput;
+                    UserInput u = userInput;
                     output.writeBytes(u.serializeToString() + "\n");
-                    if (u.horizontalDirection != HorizontalDirection.NONE)
                     System.out.println("sending: " + u.toString());
+                    if (userInput.wantsTermination()) setBreak();
                 } catch (Exception e) {
                     e.printStackTrace();
                     setBreak();

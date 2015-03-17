@@ -6,12 +6,15 @@ import chromage.shared.Mage;
 import chromage.shared.RateLimitedLoop;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class GameSession extends Thread {
 
 	private GameState state;
 	private String name;
 	private ArrayList<PlayerThread> players;
+	private Server server;
+	private UUID uuid;
 
 	public void setExpectedNumberOfPlayers(int expectedNumberOfPlayers) {
 		this.expectedNumberOfPlayers = expectedNumberOfPlayers;
@@ -23,8 +26,10 @@ public class GameSession extends Thread {
 
 	public GameState getGameState() { return state; }
 
-	public GameSession(String name) {
+	public GameSession(String name, UUID uuid, Server server) {
 		this.name = name;
+		this.uuid = uuid;
+		this.server = server;
 		players = new ArrayList<PlayerThread>();
 		isGameRunning = true;
 		state = new GameState();
@@ -39,7 +44,7 @@ public class GameSession extends Thread {
 	}
 
 	public void endGame() {
-		state.isGameOver = true;
+		state.setGameOver(true);
 	}
 
 	public boolean isFull() {
@@ -104,6 +109,9 @@ public class GameSession extends Thread {
 	public void executeGameLoop() {
 		new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
 			public boolean shouldContinue() {
+				if (state.shouldTerminate() || state.isGameOver()) {
+					return false;
+				}
 				for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
 					if (p.wantsTermination())
 						return false;
@@ -119,7 +127,10 @@ public class GameSession extends Thread {
 	}
 
 	public void terminateConnections() {
+		System.out.println("TerminateConnections called");
+		state.setTerminate();
 		for (PlayerThread p : players) {
+			System.out.println("Sending terminate state");
 			p.sendUpdate(state);
 			p.terminateConnection();
 		}
@@ -139,12 +150,20 @@ public class GameSession extends Thread {
 			System.out.println("Starting game loop...");
 			prepareGame();
 			executeGameLoop();
-			System.out.println("Ending game...");
+		} else {
+			System.out.println("Something went wrong before we could start the game.");
 		}
+		System.out.println("Ending game...");
 		terminateConnections();
+		System.out.println("Ending game session.");
+		server.gameEnded(this);
 	}
 
 	public int connectedPlayers() {
 		return players.size();
+	}
+
+	public UUID getUuid() {
+		return uuid;
 	}
 }

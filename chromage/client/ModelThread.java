@@ -34,11 +34,12 @@ public class ModelThread extends Thread {
                     String output = input.readLine();
                     //System.out.println(output);
                     state = GameState.deserializeFromString(output);
+                    if (state.shouldTerminate()) {
+                        System.out.println("receive: exit.");
+                        break;
+                    }
                     if (state != null) {
                         //System.out.println("client: receive(x, y): " + state.x + ", " + state.y);
-                    }
-                    if (state == null) {  //if bye or terminate received, end connection
-                        System.out.println("receive: exit.");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -10,16 +10,22 @@ import java.util.Random;
 public class GameState implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
 
-    public boolean isGameOver;
+    private boolean isGameOver;
     private long currentTick;
     public int livingPlayers;
     public int awaitedPlayers;
 	public ArrayList<Entity> entities;
+    private boolean shouldTerminate;
+
+    public boolean isGameOver() {
+        return isGameOver;
+    }
 
     /** Default constructor. */
     public GameState() {
     	entities = new ArrayList<Entity>();
-        this.isGameOver = false;
+        isGameOver = false;
+        shouldTerminate = false;
     }
 
     public void initialize(ArrayList<Mage> players) {
@@ -46,6 +52,7 @@ public class GameState implements Serializable {
     		e.update(entities);
     	}
         livingPlayers = count;
+        isGameOver = livingPlayers == 1;
 
         ArrayList<Entity> toRemove = new ArrayList<Entity>();
         for (Entity e : entities) {
@@ -83,10 +90,22 @@ public class GameState implements Serializable {
 	     return DatatypeConverter.printBase64Binary(bo.toByteArray());
     }
     
-    public static GameState deserializeFromString(String s) throws ClassNotFoundException, IOException { 
-	     byte b[] = DatatypeConverter.parseBase64Binary(s); 
+    public static GameState deserializeFromString(String s) throws ClassNotFoundException, IOException {
+	     byte b[] = DatatypeConverter.parseBase64Binary(s);
 	     ByteArrayInputStream bi = new ByteArrayInputStream(b);
 	     ObjectInputStream si = new ObjectInputStream(bi);
 	     return (GameState)si.readObject();
+    }
+
+    public boolean shouldTerminate() {
+        return shouldTerminate;
+    }
+    
+    public void setTerminate() {
+        this.shouldTerminate = true;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.isGameOver = gameOver;
     }
 }

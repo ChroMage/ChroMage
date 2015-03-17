@@ -86,6 +86,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 			}
 			return games;
 		} catch (IOException e) {
+			returnToLobby();
 			e.printStackTrace();
 		}
 		return new ArrayList<GameInfo>();
@@ -111,10 +112,12 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 
 	@Override
 	public void returnToLobby() {
-		try {
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!socket.isClosed()) {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		System.out.println("Returning to lobby");
 		mainWindow.setContentPane(new ConnectMenu(this));

@@ -30,7 +30,7 @@ public class Server extends Thread {
     public void createAndJoinGame(PlayerThread host, String name, int expectedNumberOfPlayers) {
         UUID gameUuid = UUID.randomUUID();
         name = name.replace(" ", "").replace("\n", "").replace(",", "");
-        GameSession game = new GameSession(name);
+        GameSession game = new GameSession(name, gameUuid, this);
         game.setExpectedNumberOfPlayers(expectedNumberOfPlayers);
         System.out.println(expectedNumberOfPlayers);
         games.put(gameUuid, game);
@@ -92,5 +92,10 @@ public class Server extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void gameEnded(GameSession gameSession) {
+        System.out.println("Game ended: " + gameSession.getGameName());
+        games.remove(gameSession.getUuid());
     }
 }
