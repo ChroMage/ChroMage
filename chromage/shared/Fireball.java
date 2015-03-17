@@ -49,7 +49,7 @@ public class Fireball extends Spell {
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 40;
+		return 30;
 	}
 
 	@Override

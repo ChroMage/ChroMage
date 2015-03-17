@@ -60,7 +60,9 @@ public class Server extends Thread {
         while (keyEnumeration.hasMoreElements()) {
             UUID id = keyEnumeration.nextElement();
             GameSession session = cloned.get(id);
-            list.append(id + " " + session.getGameName() + " " + session.connectedPlayers() + ",");
+            if(session.getGameState() != null && session.getGameState().x != -5){
+            	list.append(id + " " + session.getGameName() + " " + session.connectedPlayers() + ",");
+            }
         }
         stream.writeBytes(list.toString() + "\n");
     }

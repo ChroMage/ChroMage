@@ -39,7 +39,7 @@ public class Blink extends Spell {
 	@Override
 	public int getCoolDown() {
 		// TODO Auto-generated method stub
-		return 60;
+		return 30;
 	}
 
 	@Override

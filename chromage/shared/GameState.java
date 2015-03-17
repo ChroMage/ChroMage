@@ -29,6 +29,10 @@ public class GameState implements Serializable {
         for (Mage m : players) {
             entities.add(m);
         }
+        if(players.size() < 2){
+        	//Add a dummy mage to fight
+            entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
+        }
     }
 
     /**
@@ -58,7 +62,7 @@ public class GameState implements Serializable {
 
     public void spreadPlayers(ArrayList<Mage> players){
     	for (Mage m : players) {
-            m.setPosition(new Point(1000, 1000));
+            m.setPosition(new Point(500 + (int)Math.random()*3000, 1000));
         }
     }
     
@@ -69,8 +73,6 @@ public class GameState implements Serializable {
         entities.add(new Block(-10, -10, 310, 4010));
         entities.add(new Block(3700, -10, 310, 4010));
         
-        //Add mages
-        entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
 	}
 
 	public String serializeToString() throws IOException{

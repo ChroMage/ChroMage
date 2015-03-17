@@ -28,12 +28,11 @@ public class Projectile extends Entity implements Serializable {
 	@Override
 	public void applyHits(ArrayList<Entity> entities) {
 		//for each projectile, check if it should activate
-			for(Entity target : entities){
-				if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
-					target.takeDamage(damage, slowAmount);
-					System.out.println("COLLISION! DELETING PROJECTILE!");
-					setShouldBeRemoved(true);
-				}
+		for(Entity target : entities){
+			if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
+				target.takeDamage(damage, slowAmount);
+				setShouldBeRemoved(true);
 			}
+		}
 	}
 }

@@ -13,7 +13,7 @@ public class Mage extends Entity implements Serializable {
 	private double slowAmount = 1.0;
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int DEFAULT_WIDTH = 100;
-	public static final int MAX_HP = 300;
+	public static final int MAX_HP = 400;
 	public Point2D.Double getVelocity() {
 		return new Point2D.Double(velocity.x*slowAmount, velocity.y*slowAmount);
 	}
