@@ -60,11 +60,7 @@ public class Server extends Thread {
         while (keyEnumeration.hasMoreElements()) {
             UUID id = keyEnumeration.nextElement();
             GameSession session = cloned.get(id);
-            if(session.getGameState() != null && session.getGameState().x != -5){
-            	list.append(id + " " + session.getGameName() + " " + session.connectedPlayers() + ",");
-            }
-            //might have a leak with dead games here.
-            //TODO: safely remove finished games
+            list.append(id + " " + session.getGameName() + " " + session.connectedPlayers() + ",");
         }
         stream.writeBytes(list.toString() + "\n");
     }

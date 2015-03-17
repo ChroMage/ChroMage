@@ -37,7 +37,7 @@ public class ModelThread extends Thread {
                     if (state != null) {
                         //System.out.println("client: receive(x, y): " + state.x + ", " + state.y);
                     }
-                    if (state != null && state.x == -5) {  //if bye or terminate received, end connection
+                    if (state == null) {  //if bye or terminate received, end connection
                         System.out.println("receive: exit.");
                     }
                 } catch (Exception e) {

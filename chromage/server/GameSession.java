@@ -119,7 +119,6 @@ public class GameSession extends Thread {
 	}
 
 	public void terminateConnections() {
-		state.x = -5;
 		for (PlayerThread p : players) {
 			p.sendUpdate(state);
 			p.terminateConnection();
