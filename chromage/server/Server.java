@@ -63,6 +63,8 @@ public class Server extends Thread {
             if(session.getGameState() != null && session.getGameState().x != -5){
             	list.append(id + " " + session.getGameName() + " " + session.connectedPlayers() + ",");
             }
+            //might have a leak with dead games here.
+            //TODO: safely remove finished games
         }
         stream.writeBytes(list.toString() + "\n");
     }

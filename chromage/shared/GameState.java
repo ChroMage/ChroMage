@@ -1,9 +1,11 @@
 package chromage.shared;
 
 import javax.xml.bind.DatatypeConverter;
+
 import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameState implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -62,7 +64,8 @@ public class GameState implements Serializable {
 
     public void spreadPlayers(ArrayList<Mage> players){
     	for (Mage m : players) {
-            m.setPosition(new Point(500 + (int)Math.random()*3000, 1000));
+    		Random r = new Random();
+            m.setPosition(new Point(500 + (int)r.nextInt(3000), 1000));
         }
     }
     
