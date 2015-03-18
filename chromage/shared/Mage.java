@@ -49,11 +49,11 @@ public class Mage extends Entity implements Serializable {
 	}
 
 	public Mage(int x, int y, int width, int height, Color color){
-		this.setPosition(new Point(x, y));
-		this.setVelocity(new Point2D.Double(0, 0));
-		this.width = width;
-		this.height = height;
-		this.color = color;
+		setPosition(new Point2D.Double(x, y));
+		setVelocity(new Point2D.Double(0, 0));
+		setWidth(width);
+		setHeight(height);
+        setColor(color);
 		type = Constants.MAGE_TYPE;
 	}
 	
@@ -143,8 +143,8 @@ public class Mage extends Entity implements Serializable {
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(getPosition().x*widthFactor);
 		int y = (int)(getPosition().y*heightFactor);
-		int scaledWidth = (int) (width * widthFactor);
-		int scaledHeight = (int) (height * heightFactor);
+		int scaledWidth = (int) (getWidth() * widthFactor);
+		int scaledHeight = (int) (getHeight() * heightFactor);
 		g.setColor(color);
 		g.fillRect(x, y, scaledWidth, scaledHeight);
 		g.setColor(Color.white);

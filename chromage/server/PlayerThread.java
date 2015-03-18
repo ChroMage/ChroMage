@@ -67,8 +67,17 @@ public class PlayerThread extends Thread {
     }
 
     public void initiateHandshake() throws IOException {
-        toClient.writeBytes("Hello!" + '\n');
-        this.playerName = fromClient.readLine().split(" ")[1];
+        toClient.writeBytes("Enter your username.\n");
+        String line = fromClient.readLine();
+        String[] parts = line.split(" ");
+        if (parts.length != 2) {
+            toClient.writeBytes("Bad handshake. Disconnecting.\n");
+            server.disconnectPlayer(this);
+        }
+        else {
+            playerName = parts[1];
+            toClient.writeBytes("Welcome.\n");
+        }
     }
 
     public void terminateConnection() {

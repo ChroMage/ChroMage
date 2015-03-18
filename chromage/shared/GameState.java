@@ -3,6 +3,7 @@ package chromage.shared;
 import javax.xml.bind.DatatypeConverter;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -69,7 +70,7 @@ public class GameState implements Serializable {
     public void spreadPlayers(ArrayList<Mage> players){
     	for (Mage m : players) {
     		Random r = new Random();
-            m.setPosition(new Point(500 + (int)r.nextInt(3000), 1000));
+            m.setPosition(new Point2D.Double(500 + (int)r.nextInt(3000), 1000));
         }
     }
     

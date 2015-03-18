@@ -1,8 +1,7 @@
 package chromage.shared;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
+import java.awt.geom.Dimension2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
@@ -11,35 +10,14 @@ import java.util.ArrayList;
 public class Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
 
-    private Point position = new Point(2000,2000);
+    public static final double DEFAULT_WIDTH = 100;
+    public static final double DEFAULT_HEIGHT = 100;
+
+    public Rectangle2D.Double bounds = new Rectangle2D.Double();
 	public Point2D.Double velocity = new Point2D.Double(0,0);
-
-	protected int width = 100;
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	protected int height = 100;
+//    private Point2D.Double position = new Point2D.Double(2000,2000);
+//	protected double width = DEFAULT_WIDTH;
+//	protected double height = DEFAULT_HEIGHT;
 	protected Color color = Color.MAGENTA;
 	protected boolean isMobile = true;
 	protected int type = 0;
@@ -58,7 +36,8 @@ public class Entity implements Serializable {
 		int x = (int)(getPosition().x*widthFactor);
 		int y = (int)(getPosition().y*heightFactor);
 		g.setColor(color);
-		g.fillRect(x, y, (int) (width * widthFactor), (int) (height * heightFactor));
+//        ((Graphics2D)g).fill(bounds);
+		g.fillRect(x, y, (int) (getWidth() * widthFactor), (int) (getHeight() * heightFactor));
 	}
 	public void takeDamage(int dmg, int slowAmount) {
 	}
@@ -112,40 +91,39 @@ public class Entity implements Serializable {
 		}
 	}
 	
-	public Rectangle2D.Double getHitbox(){
-		return new Rectangle2D.Double(getPosition().x, getPosition().y, width, height);
+	public Rectangle2D.Double getHitbox() {
+		return getBounds();
 	}
 
 	public void updatePosition(ArrayList<Entity> entities) {
-		if(isMobile){
-			this.position.x += this.getVelocity().x;
-			this.position.y += this.getVelocity().y;
+		if(isMobile) {
+            setPosition(Utilities.add(getPosition(), getVelocity()));
 			if (velocity.y < 0) isGrounded = false;
 			for(Entity e : entities){
 				if(((type & Constants.MAGE_TYPE) != 0)){
 					//Stop the object on top of immobile objects
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
 						this.velocity.y = 0;
-						this.position.y = e.getPosition().y - this.height + 1;
+                        setPosition(getPosition().getX(), e.getBounds().getMinY() - getHeight() + 1);
 						isGrounded = true;
 					}
 					
 					//Stop the object on hitting ceiling
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
 						this.velocity.y = 0;
-						this.getPosition().y = e.getPosition().y + e.height + 1;
+                        setPosition(getPosition().getX(), e.getBounds().getMaxY() + 1);
 					}
 					
 					//stop when hitting a wall going right
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
 						this.velocity.x = 0;
-						this.getPosition().x = e.getPosition().x - this.width - 1;
+                        setPosition(e.getBounds().getMinX() - getWidth() - 1, getPosition().getY());
 					}
 					
 					//stop when hitting a wall going left
 					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
 						this.velocity.x = 0;
-						this.getPosition().x = e.getPosition().x + e.width + 1;
+                        setPosition(e.getBounds().getMaxX() + 1, getPosition().getY());
 					}
 				}
 				else if(((e.type & Constants.BLOCK_TYPE) != 0) && getHitbox().intersects(e.getHitbox())){
@@ -166,102 +144,48 @@ public class Entity implements Serializable {
 	
 	//Ignore how ugly my overlap code is!
 	private boolean overlapsTheBottomOf(Entity wall) {
-		//and object bottom is above my bottom
-		//if object bottom is under my top
-		//and its left is left of my right
-		//and its right is right of my left
-		int myTop = getPosition().y;
-		int myBottom = getPosition().y + height;
-		int myRight = getPosition().x + width;
-		int myLeft = getPosition().x;
-		int wallTop = wall.getPosition().y;
-		int wallBottom = wall.getPosition().y + wall.height;
-		int wallRight = wall.getPosition().x + wall.width;
-		int wallLeft = wall.getPosition().x;
-		if(		wallBottom < myBottom				
-				&& wallBottom > myTop	
-				&& wallLeft < myRight	
-				&& wallRight > myLeft){
-			return true;
-		}
-		
-		return false;
+        Rectangle2D.Double r = new Rectangle2D.Double();
+        Rectangle2D.intersect(bounds, wall.getBounds(), r);
+        return !r.isEmpty() && r.getMaxY() == wall.getBounds().getMaxY();
 	}
 
 	private boolean overlapsRightOf(Entity wall) {
-		//if object top is above my bottom
-		//and object bottom is below my top
-		//and its right is right of my left
-		//and its right is left of my right
-		int myTop = getPosition().y;
-		int myBottom = getPosition().y + height;
-		int myRight = getPosition().x + width;
-		int myLeft = getPosition().x;
-		int wallTop = wall.getPosition().y;
-		int wallBottom = wall.getPosition().y + wall.height;
-		int wallRight = wall.getPosition().x + wall.width;
-		int wallLeft = wall.getPosition().x;
-		if(		wallTop < myBottom				
-				&& wallBottom > myTop	
-				&& wallRight < myRight	
-				&& wallRight > myLeft){
-			return true;
-		}
-		return false;
+        Rectangle2D.Double r = new Rectangle2D.Double();
+        Rectangle2D.intersect(bounds, wall.getBounds(), r);
+        return !r.isEmpty() && r.getMaxX() == wall.getBounds().getMaxX();
 	}
 
 	private boolean overlapsLeftOf(Entity wall) {
-		//if object top is above my bottom
-		//and object bottom is below my top
-		//and its left is left of my right
-		//and its left is right of my left
-		int myTop = getPosition().y;
-		int myBottom = getPosition().y + height;
-		int myRight = getPosition().x + width;
-		int myLeft = getPosition().x;
-		int wallTop = wall.getPosition().y;
-		int wallBottom = wall.getPosition().y + wall.height;
-		int wallRight = wall.getPosition().x + wall.width;
-		int wallLeft = wall.getPosition().x;
-		if(		wallTop < myBottom				
-				&& wallBottom > myTop	
-				&& wallLeft < myRight	
-				&& wallLeft > myLeft){
-			return true;
-		}
-		return false;
+        Rectangle2D.Double r = new Rectangle2D.Double();
+        Rectangle2D.intersect(bounds, wall.getBounds(), r);
+        return !r.isEmpty() && r.getMinX() == wall.getBounds().getMinX();
 	}
 
 	private boolean overlapsTheTopOf(Entity wall) {
-		//if object top is under my top
-		//and object top is above my bottom
-		//and its left is left of my right
-		//and its right is right of my left
-		int myTop = getPosition().y;
-		int myBottom = getPosition().y + height;
-		int myRight = getPosition().x + width;
-		int myLeft = getPosition().x;
-		int wallTop = wall.getPosition().y;
-		int wallBottom = wall.getPosition().y + wall.height;
-		int wallRight = wall.getPosition().x + wall.width;
-		int wallLeft = wall.getPosition().x;
-		if(		wallTop > myTop				
-				&& wallTop < myBottom	
-				&& wallLeft < myRight	
-				&& wallRight > myLeft){
-			return true;
-		}
-		
-		return false;
+        Rectangle2D.Double r = new Rectangle2D.Double();
+        Rectangle2D.intersect(bounds, wall.getBounds(), r);
+        return !r.isEmpty() && r.getMinY() == wall.getBounds().getMinY();
 	}
 
-	public Point getPosition() {
-		return position;
+    public Rectangle2D.Double getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(Rectangle2D.Double bounds) {
+        this.bounds = bounds;
+    }
+
+	public Point2D.Double getPosition() {
+		return new Point2D.Double(bounds.getX(), bounds.getY());
 	}
 
-	public void setPosition(Point position) {
-		this.position = position;
+	public void setPosition(Point2D.Double position) {
+		bounds.setFrame(position.x, position.y, getWidth(), getHeight());
 	}
+
+    public void setPosition(double x, double y) {
+        setPosition(new Point2D.Double(x,y));
+    }
 
 	public Point2D.Double getVelocity() {
 		return velocity;
@@ -270,4 +194,27 @@ public class Entity implements Serializable {
 	public void setVelocity(Point2D.Double velocity) {
 		this.velocity = velocity;
 	}
+    public double getWidth() {
+        return bounds.getWidth();
+    }
+
+    public void setWidth(double width) {
+        bounds.width = width;
+    }
+
+    public double getHeight() {
+        return bounds.getHeight();
+    }
+
+    public void setHeight(double height) {
+        bounds.height = height;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 }
