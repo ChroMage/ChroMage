@@ -116,8 +116,11 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 	public void createGame(int numberOfPlayers, String name, MageType mageType) {
 		System.out.println("Trying to create game");
 		try {
+            System.out.println("Sending: " +"new " + name + " " + numberOfPlayers + " " + mageType + "\n");
 			toServer.writeBytes("new " + name + " " + numberOfPlayers + " " + mageType + "\n");
+            System.out.println("sent");
 			String line = fromServer.readLine();
+            System.out.println("Receiving: " + line);
 			if ("success".equals(line)) {
 				System.out.println("Setting content pane to game");
 				mainWindow.setContentPane(new GamePanel(this, toServer, fromServer));
