@@ -1,6 +1,8 @@
 package chromage.client;
 
+import chromage.shared.Entity;
 import chromage.shared.GameState;
+import chromage.shared.Mage;
 
 import java.io.BufferedReader;
 
@@ -32,9 +34,16 @@ public class ModelThread extends Thread {
             while (true) {
                 try {
                     String output = input.readLine();
-                    //System.out.println(output);
                     state = GameState.deserializeFromString(output);
                     if (state.shouldTerminate()) {
+                        for (Entity e : state.entities) {
+                            if (e instanceof Mage) {
+                                Mage m = (Mage)e;
+                                if (!m.isDead()) {
+                                    System.out.println(m.getName() + " is living at the end of the round.");
+                                }
+                            }
+                        }
                         System.out.println("receive: exit.");
                         break;
                     }

@@ -185,6 +185,7 @@ public class Mage extends Entity implements Serializable {
 		g.drawString(name, x, y-30);
 	}
 
+    public String getName() { return name; }
 	public void setName(String playerName) {
 		name = playerName;
 	}
