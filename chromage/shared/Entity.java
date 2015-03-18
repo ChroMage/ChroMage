@@ -175,6 +175,10 @@ public class Entity implements Serializable {
         this.bounds = bounds;
     }
 
+    public Point2D.Double getCenter() {
+        return new Point2D.Double(bounds.getCenterX(), bounds.getCenterY());
+    }
+
 	public Point2D.Double getPosition() {
 		return new Point2D.Double(bounds.getX(), bounds.getY());
 	}

@@ -23,10 +23,11 @@ public abstract class Spell implements Serializable{
 	public abstract boolean isAffectedByGravity();
 
     public Point2D.Double getProjectileStartPosition(Mage mage, Point2D.Double direction) {
-        direction = Utilities.normalize(direction);
-        double x = mage.getPosition().getX() + mage.getWidth()/2 + Math.signum(direction.x) * (mage.getWidth()/2 + getWidth() + 10);
-        double y = mage.getPosition().getY() + mage.getHeight()/2 + Math.signum(direction.y) * (mage.getHeight() / 2 + getHeight() + 10);
-        return new Point2D.Double(x,y);
+        // fire from a circle around your character
+        return Utilities.add(
+                mage.getCenter(),
+                Utilities.scaleTo(direction, Math.sqrt(mage.getWidth()*mage.getWidth() + mage.getHeight()*mage.getHeight()))
+        );
     }
 
 	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
