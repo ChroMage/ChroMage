@@ -38,7 +38,7 @@ public class Lightning extends Spell {
 	@Override
 	public int getCoolDown() {
 		// TODO Auto-generated method stub
-		return 90;
+		return 120;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class Lightning extends Spell {
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 90;
+		return 100;
 	}
 
 	@Override
@@ -93,8 +93,8 @@ public class Lightning extends Spell {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void update(ArrayList<Entity> e) {
 				super.update(e);
-				width += 10;
-				height += 10;
+				width += 5;
+				height += 5;
 			}
 		};
 		p.isGravitated = isAffectedByGravity();
