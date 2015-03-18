@@ -13,24 +13,16 @@ public class ModelThread extends Thread {
 
     public GameState state;
     BufferedReader input;
+    GamePanel panel;
 
-    public ModelThread(BufferedReader input) {
+    public ModelThread(BufferedReader input, GamePanel panel) {
         state = new GameState();
         this.input = input;
+        this.panel = panel;
     }
 
     public void run() {
         try {
-
-            // ignore the handshake
-            input.readLine();
-            System.out.println("Handshake successful");
-
-            String joined = input.readLine();
-//            if (!"success".equals(joined)) {
-//                throw new Exception();
-//            }
-
             while (true) {
                 try {
                     String output = input.readLine();
@@ -44,6 +36,7 @@ public class ModelThread extends Thread {
                                 }
                             }
                         }
+                        panel.gameEnded();
                         System.out.println("receive: exit.");
                         break;
                     }

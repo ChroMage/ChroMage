@@ -74,7 +74,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 
 
 			sender = new SenderThread(toServer);
-			model = new ModelThread(fromServer);
+			model = new ModelThread(fromServer, this);
 			sender.start();
 			model.start();
 			new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
@@ -104,7 +104,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 						userInput.wantsTermination = true;
 					}
 					sender.userInput = userInput;
-					sender.isRunning = !model.state.isGameOver();
+					sender.isRunning = !model.state.shouldTerminate();
 					repaint();
 					if (!model.isAlive() || !sender.isAlive()) {
 						delegate.returnToLobby();
@@ -119,6 +119,10 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 		getParent().revalidate();
 		getParent().repaint();
 	}
+
+    public void gameEnded() {
+        sender.isRunning = false;
+    }
 
 	@Override
 	public void paintComponent(Graphics g) {
