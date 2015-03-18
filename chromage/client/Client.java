@@ -58,7 +58,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 
 			// read handshake
 			System.out.println(fromServer.readLine());
-            toServer.writeBytes("setName " + playerName + '\n');
+            toServer.writeBytes("setName " + playerName.replace(" ", "_") + '\n');
             String welcome = fromServer.readLine();
             System.out.println(welcome);
             if (!"Welcome.".equals(welcome)) {
@@ -117,9 +117,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 		System.out.println("Trying to create game");
 		try {
             name = name.replace(" ", "_");
-            System.out.println("Sending: " +"new " + name + " " + numberOfPlayers + " " + mageType + "\n");
 			toServer.writeBytes("new " + name + " " + numberOfPlayers + " " + mageType + "\n");
-            System.out.println("sent");
 			String line = fromServer.readLine();
             System.out.println("Receiving: " + line);
 			if ("success".equals(line)) {
