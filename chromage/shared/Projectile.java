@@ -46,7 +46,15 @@ public class Projectile extends Entity implements Serializable {
 	
 	public void hitTarget(Entity target){
 		target.takeDamage(damage, slowAmount, comboValue);
-		target.applyKnockup(knockup);
+        target.setVelocity(
+            Utilities.add(
+                Utilities.scaleTo(
+                        Utilities.subtract(target.getCenter(), this.getCenter()),
+                        knockup
+                ),
+                target.getVelocity()
+            )
+        );
 	}
 
 }
