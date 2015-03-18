@@ -1,4 +1,4 @@
-package chromage.shared;
+package chromage.shared.utils;
 
 public class Constants {
 	public static final int MAX_HEIGHT = 4000;

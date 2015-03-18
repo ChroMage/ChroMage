@@ -1,9 +1,9 @@
 package chromage.server;
 
-import chromage.shared.Constants;
-import chromage.shared.GameState;
+import chromage.shared.utils.Constants;
+import chromage.shared.engine.GameState;
 import chromage.shared.Mage;
-import chromage.shared.RateLimitedLoop;
+import chromage.shared.utils.RateLimitedLoop;
 
 import java.util.ArrayList;
 import java.util.UUID;

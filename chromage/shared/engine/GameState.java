@@ -1,4 +1,6 @@
-package chromage.shared;
+package chromage.shared.engine;
+
+import chromage.shared.Mage;
 
 import javax.xml.bind.DatatypeConverter;
 

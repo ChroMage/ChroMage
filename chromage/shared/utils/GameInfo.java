@@ -1,4 +1,4 @@
-package chromage.client;
+package chromage.shared.utils;
 
 import java.util.UUID;
 

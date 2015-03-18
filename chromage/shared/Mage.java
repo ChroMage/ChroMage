@@ -1,5 +1,12 @@
 package chromage.shared;
 
+import chromage.shared.engine.Entity;
+import chromage.shared.engine.GameState;
+import chromage.shared.engine.Projectile;
+import chromage.shared.spells.*;
+import chromage.shared.utils.Constants;
+import chromage.shared.utils.UserInput;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -36,11 +43,18 @@ public class Mage extends Entity implements Serializable {
 		System.out.println("DAMAGE: " + getDamageWithCombo(dmg, combo) + ". HP: " + hp + "COMBO: " + combo);
 		combo += comboValue;
 		this.slowAmount = slowAmount/100.0;
-		if(hp <= 0) {
+		if (hp <= 0) {
 			hp = 0;
 			this.setShouldBeRemoved(true);
 		}
 	}
+
+    @Override
+    public void healDamage(int damage) {
+        hp += damage;
+        hp = Math.min(hp, MAX_HP);
+    }
+
 	
 	private int getDamageWithCombo(int damage, int combo) {
 		return (int) (damage * Math.pow(1.1, combo));
@@ -131,7 +145,7 @@ public class Mage extends Entity implements Serializable {
 	public void castSpell(UserInput input, GameState state) {
 		if(getCoolDown() <= 0){
 			Spell s = null;
-			if (input.spell.equals(SpellInput.LEFT)){ 
+			if (input.spell.equals(SpellInput.LEFT)){
 				s = leftSpell;
 			}
 			else if (input.spell.equals(SpellInput.RIGHT)){ 

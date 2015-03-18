@@ -1,11 +1,15 @@
-package chromage.shared;
+package chromage.shared.spells;
+
+import chromage.shared.Mage;
+import chromage.shared.engine.Projectile;
+import chromage.shared.engine.Entity;
+import chromage.shared.engine.GameState;
+import chromage.shared.utils.Utilities;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
-public class Blink extends Spell {
+public class Lifesteal extends Spell {
 
 	/**
 	 * 
@@ -33,49 +37,53 @@ public class Blink extends Spell {
 	@Override
 	public int getSlow() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 90;
 	}
 
 	@Override
 	public int getCoolDown() {
 		// TODO Auto-generated method stub
-		return 30;
+		return 2;
 	}
 
 	@Override
 	public int getManaCost() {
 		// TODO Auto-generated method stub
-		return 50;
+		return 2;
 	}
 
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 1;
+	}
+	
+	public int getHeal() {
+		return 1;
 	}
 
 	@Override
 	public double getWidth() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 70;
 	}
 
 	@Override
 	public double getHeight() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 70;
 	}
 
 	@Override
 	public int getSpeed() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 50;
 	}
 
 	@Override
 	public Color getColor() {
 		// TODO Auto-generated method stub
-		return null;
+		return Color.GREEN;
 	}
 
 	@Override
@@ -85,23 +93,24 @@ public class Blink extends Spell {
 	}
 	
 	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
-		Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, 1, 1);
-		boolean canBlink = true;
-		for(Entity e: state.entities){
-			if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){
-				canBlink = false;
+		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
+        Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
+		Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
+                getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity()) {
+			private static final long serialVersionUID = 188689086533652783L;
+			public void hitTarget(Entity target){
+				super.hitTarget(target);
+				if (target instanceof Mage){
+					getOwner().healDamage(getHeal());
+				}
 			}
-		}
-		if (canBlink) {
-			mage.setPosition(target);
-		}
-		return null;
+		};
+		return p;
 	}
 
 	@Override
 	public int getKnockup() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 6;
 	}
-
 }

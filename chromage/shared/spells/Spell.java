@@ -1,10 +1,12 @@
-package chromage.shared;
+package chromage.shared.spells;
+
+import chromage.shared.Mage;
+import chromage.shared.engine.Projectile;
+import chromage.shared.engine.GameState;
+import chromage.shared.utils.Utilities;
 
 import java.awt.Color;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 
 public abstract class Spell implements Serializable{
@@ -31,8 +33,7 @@ public abstract class Spell implements Serializable{
         Point2D.Double direction = new Point2D.Double(target.getX() - mage.getCenter().getX(), target.getY() - mage.getCenter().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
 		Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
-                getDamage(), getSlow(), getKnockup(), getColor(), mage);
-		p.isGravitated = isAffectedByGravity();
+                getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity());
 		return p;
 	}
 }

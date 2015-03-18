@@ -1,6 +1,4 @@
-package chromage.client;
-
-import chromage.shared.Constants;
+package chromage.client.util;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;

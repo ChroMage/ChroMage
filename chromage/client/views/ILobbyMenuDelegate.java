@@ -1,5 +1,6 @@
-package chromage.client;
+package chromage.client.views;
 
+import chromage.shared.utils.GameInfo;
 import chromage.shared.MageType;
 
 import java.util.ArrayList;

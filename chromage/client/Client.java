@@ -1,6 +1,9 @@
 package chromage.client;
 
+import chromage.client.util.Keyboard;
+import chromage.client.views.*;
 import chromage.shared.MageType;
+import chromage.shared.utils.GameInfo;
 
 import javax.swing.*;
 import java.io.BufferedReader;

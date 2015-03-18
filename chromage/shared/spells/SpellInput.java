@@ -1,4 +1,4 @@
-package chromage.shared;
+package chromage.shared.spells;
 
 public enum SpellInput {
 	LEFT(),

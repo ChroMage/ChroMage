@@ -1,4 +1,4 @@
-package chromage.shared;
+package chromage.shared.utils;
 
 import java.awt.geom.Point2D;
 

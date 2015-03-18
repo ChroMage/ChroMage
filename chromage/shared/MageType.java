@@ -1,5 +1,7 @@
 package chromage.shared;
 
+import chromage.shared.spells.*;
+
 import java.awt.Color;
 
 /**

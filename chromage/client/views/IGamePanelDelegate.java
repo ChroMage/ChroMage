@@ -1,4 +1,4 @@
-package chromage.client;
+package chromage.client.views;
 
 /**
  * Created by ahruss on 3/14/15.

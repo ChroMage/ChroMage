@@ -1,4 +1,4 @@
-package chromage.shared;
+package chromage.shared.utils;
 
 /**
  * Created by ahruss on 3/13/15.

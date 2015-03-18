@@ -1,4 +1,9 @@
-package chromage.shared;
+package chromage.shared.engine;
+
+import chromage.shared.Mage;
+import chromage.shared.engine.Entity;
+import chromage.shared.utils.Constants;
+import chromage.shared.utils.Utilities;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -8,13 +13,14 @@ import java.util.ArrayList;
 
 public class Projectile extends Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
-	boolean isGravitated = false;
-	int damage = 1;
-	int slowAmount = 100;
-	int knockup = 0;
-	int comboValue = 1;
+	protected boolean isGravitated = false;
+	protected int damage = 1;
+	protected int slowAmount = 100;
+	protected int knockup = 0;
+	protected int comboValue = 1;
 	Mage owner = null;
-	public Projectile(Rectangle2D.Double startRect, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner){
+
+	public Projectile(Rectangle2D.Double startRect, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner, boolean isAfftectedByGravity){
 		this.setBounds(startRect);
 		this.damage = damage;
 		this.slowAmount = slowAmount;
@@ -23,10 +29,11 @@ public class Projectile extends Entity implements Serializable {
 		this.color = color;
 		this.owner = owner;
 		this.knockup = knockup;
+        this.isGravitated = isAfftectedByGravity;
 	}
 
-    public Projectile(Point2D.Double initialPosition, double width, double height, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner){
-        this(new Rectangle2D.Double(initialPosition.x, initialPosition.y, width, height), velocity, damage, slowAmount, knockup, color, owner);
+    public Projectile(Point2D.Double initialPosition, double width, double height, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner, boolean isAffectedByGravity){
+        this(new Rectangle2D.Double(initialPosition.x, initialPosition.y, width, height), velocity, damage, slowAmount, knockup, color, owner, isAffectedByGravity);
     }
 
 	public boolean isAffectedByGravity(){
@@ -62,7 +69,7 @@ public class Projectile extends Entity implements Serializable {
                                 getVelocity(),
                                 knockup * (1 - elasticity) * (1 - pureVertical)
                         ),
-                        new Point2D.Double(0, -knockup*pureVertical),
+                        new Point2D.Double(0, -knockup * pureVertical),
                         target.getVelocity()
                 )
         );

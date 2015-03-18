@@ -1,7 +1,9 @@
-package chromage.shared;
+package chromage.shared.engine;
+
+import chromage.shared.engine.Entity;
+import chromage.shared.utils.Constants;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.io.Serializable;
 
 public class Block extends Entity implements Serializable {

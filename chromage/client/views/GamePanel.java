@@ -1,6 +1,15 @@
-package chromage.client;
+package chromage.client.views;
 
-import chromage.shared.*;
+import chromage.client.util.Keyboard;
+import chromage.shared.Mage;
+import chromage.shared.engine.Entity;
+import chromage.shared.engine.GameState;
+import chromage.shared.engine.HorizontalDirection;
+import chromage.shared.engine.VerticalDirection;
+import chromage.shared.spells.SpellInput;
+import chromage.shared.utils.Constants;
+import chromage.shared.utils.RateLimitedLoop;
+import chromage.shared.utils.UserInput;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -61,7 +70,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
  		addAncestorListener(this);
  	}
  	private SenderThread sender;
-	private ModelThread model; 
+	private ReceiverThread receiver;
 	public void ancestorMoved(AncestorEvent e) {}
 	public void ancestorRemoved(AncestorEvent e) {}
 	public void ancestorAdded(AncestorEvent e) {
@@ -74,9 +83,9 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 
 
 			sender = new SenderThread(toServer);
-			model = new ModelThread(fromServer, this);
+			receiver = new ReceiverThread(fromServer, this);
 			sender.start();
-			model.start();
+			receiver.start();
 			new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
 				@Override
 				public void body() {
@@ -104,9 +113,9 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 						userInput.wantsTermination = true;
 					}
 					sender.userInput = userInput;
-					sender.isRunning = !model.state.shouldTerminate();
+					sender.isRunning = !receiver.state.shouldTerminate();
 					repaint();
-					if (!model.isAlive() || !sender.isAlive()) {
+					if (!receiver.isAlive() || !sender.isAlive()) {
 						delegate.returnToLobby();
 						setBreak();
 					}
@@ -122,6 +131,14 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 
     public void gameEnded() {
         sender.isRunning = false;
+        for (Entity e : receiver.state.entities) {
+            if (e instanceof Mage) {
+                Mage m = (Mage)e;
+                if (!m.isDead()) {
+                    System.out.println(m.getName() + " is living at the end of the round.");
+                }
+            }
+        }
     }
 
 	@Override
@@ -130,14 +147,76 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, (int) (Constants.MAX_WIDTH * WIDTH_FACTOR(this.getWidth())),
 			             (int) (Constants.MAX_HEIGHT * HEIGHT_FACTOR(this.getHeight())));
-		//drawCircle(this, model.state.x, model.state.y, g);
-		for(Entity e : model.state.entities){
+		for(Entity e : receiver.state.entities){
 			e.draw(g, HEIGHT_FACTOR(this.getHeight()), WIDTH_FACTOR(this.getWidth()));
 		}
-		if (model.state.awaitedPlayers != 0) {
+		if (receiver.state.awaitedPlayers != 0) {
 			g.setColor(Color.BLACK);
-			g.drawString("Awaiting players, need " + model.state.awaitedPlayers + " more.",
+			g.drawString("Awaiting players, need " + receiver.state.awaitedPlayers + " more.",
 					(int)(this.getWidth()/2*WIDTH_FACTOR(this.getWidth())), (int)(this.getHeight()/2*HEIGHT_FACTOR(this.getHeight())));
 		}
 	}
+
+    public static class ReceiverThread extends Thread {
+        public GameState state;
+        BufferedReader input;
+        GamePanel panel;
+
+        public ReceiverThread(BufferedReader input, GamePanel panel) {
+            state = new GameState();
+            this.input = input;
+            this.panel = panel;
+        }
+
+        public void run() {
+            try {
+                while (true) {
+                    try {
+                        String output = input.readLine();
+                        state = GameState.deserializeFromString(output);
+                        if (state.shouldTerminate()) {
+                            panel.gameEnded();
+                            System.out.println("receive: exit.");
+                            break;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static class SenderThread extends Thread {
+
+        DataOutputStream output;
+        public UserInput userInput = new UserInput();
+        public boolean isRunning;
+
+        public SenderThread(DataOutputStream output) {
+            isRunning = true;
+            this.output = output;
+        }
+
+        public void run() {
+           new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+                public boolean shouldContinue() {
+                    return isRunning;
+                }
+                public void body() {
+                    try {
+                        UserInput u = userInput;
+                        output.writeBytes(u.serializeToString() + "\n");
+                        if (userInput.wantsTermination()) setBreak();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        setBreak();
+                    }
+                }
+            }.run();
+        }
+    }
 }

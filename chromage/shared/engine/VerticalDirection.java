@@ -1,4 +1,4 @@
-package chromage.shared;
+package chromage.shared.engine;
 
 public enum VerticalDirection {
 	JUMP(),

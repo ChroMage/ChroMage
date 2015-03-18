@@ -1,4 +1,8 @@
-package chromage.shared;
+package chromage.shared.spells;
+
+import chromage.shared.Mage;
+import chromage.shared.engine.Projectile;
+import chromage.shared.engine.GameState;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -82,8 +86,7 @@ public class FruitPunch extends Spell {
 
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
         Projectile p = new Projectile(startPosition, getWidth(), getHeight(), new Point2D.Double(0, -getSpeed()),
-                getDamage(), getSlow(), getKnockup(), getColor(), mage);
-		p.isGravitated = isAffectedByGravity();
+                getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity());
 		return p;
 	}
 

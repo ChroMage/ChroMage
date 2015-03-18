@@ -1,4 +1,10 @@
-package chromage.shared;
+package chromage.shared.spells;
+
+import chromage.shared.Mage;
+import chromage.shared.engine.Projectile;
+import chromage.shared.engine.Entity;
+import chromage.shared.engine.GameState;
+import chromage.shared.utils.Utilities;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -86,7 +92,7 @@ public class Lightning extends Spell {
 		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
         Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
-                getDamage(), getSlow(), getKnockup(), getColor(), mage) {
+                getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity()) {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void update(ArrayList<Entity> e) {
 				super.update(e);
@@ -94,7 +100,6 @@ public class Lightning extends Spell {
                 setHeight(getHeight() + 3);
 			}
 		};
-		p.isGravitated = isAffectedByGravity();
 		return p;
 	}
 

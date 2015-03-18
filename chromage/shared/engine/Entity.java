@@ -1,7 +1,9 @@
-package chromage.shared;
+package chromage.shared.engine;
+
+import chromage.shared.utils.Constants;
+import chromage.shared.utils.Utilities;
 
 import java.awt.*;
-import java.awt.geom.Dimension2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
@@ -39,14 +41,12 @@ public class Entity implements Serializable {
 //        ((Graphics2D)g).fill(bounds);
 		g.fillRect(x, y, (int) (getWidth() * widthFactor), (int) (getHeight() * heightFactor));
 	}
-	public void takeDamage(int dmg, int slowAmount, int comboValue) {
-	}
+	public void takeDamage(int dmg, int slowAmount, int comboValue) { }
+    public void healDamage(int damage) { }
 	public void zeroVerticalVelocity() {
 		velocity.setLocation(velocity.getX(), 0.0);
 	}
-	public boolean isAffectedByGravity(){
-		return false;
-	}
+	public boolean isAffectedByGravity(){ return false; }
 	
 	public boolean canCollideWith(Entity e){
 		//collide if I am a projectile and they aren't and they aren't my owner

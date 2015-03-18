@@ -1,6 +1,7 @@
-package chromage.client;
+package chromage.client.views;
 
-import chromage.shared.Constants;
+import chromage.client.util.Configuration;
+import chromage.client.MenuStyles;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;

@@ -1,4 +1,8 @@
-package chromage.shared;
+package chromage.shared.utils;
+
+import chromage.shared.engine.HorizontalDirection;
+import chromage.shared.spells.SpellInput;
+import chromage.shared.engine.VerticalDirection;
 
 import javax.xml.bind.DatatypeConverter;
 import java.awt.geom.Point2D;

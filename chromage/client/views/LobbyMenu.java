@@ -1,6 +1,8 @@
-package chromage.client;
+package chromage.client.views;
 
-import chromage.shared.Constants;
+import chromage.client.util.Configuration;
+import chromage.shared.utils.GameInfo;
+import chromage.client.MenuStyles;
 import chromage.shared.MageType;
 
 import javax.swing.*;

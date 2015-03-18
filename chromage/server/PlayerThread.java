@@ -1,9 +1,9 @@
 package chromage.server;
 
-import chromage.shared.GameState;
+import chromage.shared.engine.GameState;
 import chromage.shared.Mage;
 import chromage.shared.MageType;
-import chromage.shared.UserInput;
+import chromage.shared.utils.UserInput;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
