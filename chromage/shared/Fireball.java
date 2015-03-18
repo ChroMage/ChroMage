@@ -32,7 +32,7 @@ public class Fireball extends Spell {
 	}
 	@Override
 	public int getDamage() {
-		return 30;
+		return 40;
 	}
 	@Override
 	public double getWidth() {
@@ -56,6 +56,6 @@ public class Fireball extends Spell {
 	}
 	@Override
 	public int getKnockup() {
-		return 30;
+		return 40;
 	}
 }
