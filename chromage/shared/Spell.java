@@ -22,10 +22,10 @@ public abstract class Spell implements Serializable{
 	public abstract Color getColor();
 	public abstract boolean isAffectedByGravity();
 
-    public Point2D.Double getProjectileStartPosition(Mage m, Point2D.Double direction) {
+    public Point2D.Double getProjectileStartPosition(Mage mage, Point2D.Double direction) {
         direction = Utilities.normalize(direction);
-        double x = m.getPosition().getX() + Math.signum(direction.x) * m.getWidth() / 2;
-        double y = m.getPosition().getY() + direction.y / direction.x * x;
+        double x = mage.getPosition().getX() + Math.signum(direction.x) * (mage.getWidth()/2 + getWidth() + 10);
+        double y = mage.getPosition().getY();
         return new Point2D.Double(x,y);
     }
 
