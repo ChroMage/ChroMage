@@ -33,13 +33,13 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         JButton joinGameButton = new JButton("Join");
         JButton refreshGameButton = new JButton("Refresh");
         JLabel gameSizeLabel = new JLabel("Game Size");
-        gameSizeField = new JTextField("2");
+        gameSizeField = new JTextField("1");
         JLabel gameNameLabel = new JLabel("Game Name");
         gameNameField = new JTextField("ChroMage");
 
-        orange = new JRadioButton("Red + Yellow");
-        green = new JRadioButton("Blue + Yellow");
-        purple = new JRadioButton("Red + Blue");
+        orange = new JRadioButton("Orange Mage (Red + Yellow)");
+        green = new JRadioButton("Green Mage (Blue + Yellow)");
+        purple = new JRadioButton("Purple Mage (Red + Blue)");
         typeRadio = new ButtonGroup();
 
         add(gameSizeLabel);

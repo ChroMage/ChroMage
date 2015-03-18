@@ -54,7 +54,7 @@ public class Lifesteal extends Spell {
 	}
 	
 	public int getHeal() {
-		return 2;
+		return 1;
 	}
 
 	@Override
