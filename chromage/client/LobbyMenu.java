@@ -1,10 +1,12 @@
 package chromage.client;
 
+import chromage.shared.Constants;
 import chromage.shared.MageType;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -21,41 +23,122 @@ public class LobbyMenu extends JPanel implements AncestorListener {
     JRadioButton orange, green, purple;
     ButtonGroup typeRadio;
     ArrayList<GameInfo> games;
+    GridBagLayout layout;
 
     public LobbyMenu(ILobbyMenuDelegate delegate) {
+        System.out.println("Joining lobby");
         games = new ArrayList<GameInfo>();
         this.delegate = delegate;
         addAncestorListener(this);
 
-        gameList = new JList();
+        setLayout(layout = new GridBagLayout());
 
-        JButton newGameButton = new JButton("Create");
-        JButton joinGameButton = new JButton("Join");
-        JButton refreshGameButton = new JButton("Refresh");
-        JLabel gameSizeLabel = new JLabel("Game Size");
-        gameSizeField = new JTextField("2");
-        JLabel gameNameLabel = new JLabel("Game Name");
-        gameNameField = new JTextField("ChroMage");
+        GridBagConstraints c = new GridBagConstraints();
 
-        orange = new JRadioButton("Red + Yellow");
-        green = new JRadioButton("Blue + Yellow");
-        purple = new JRadioButton("Red + Blue");
+        MenuStyles.styleMainPanel(this);
+        gameList = MenuStyles.createGameList();
+
+        JButton newGameButton = MenuStyles.createButton("Create");
+        JButton joinGameButton = MenuStyles.createButton("Join");
+        JButton refreshGameButton = MenuStyles.createButton("Refresh");
+        JComponent gameSizeLabel = MenuStyles.createLabel("Game Size", 15);
+        gameSizeField = MenuStyles.createTextField();
+        gameSizeField.setText(Integer.toString(Constants.DEFAULT_GAME_SIZE));
+        JComponent gameNameLabel = MenuStyles.createLabel("Game Name", 15);
+        gameNameField = MenuStyles.createTextField();
+        gameNameField.setText(Constants.DEFAULT_GAME_NAME);
+
+        orange = MenuStyles.createRadio("Red + Yellow");
+        green = MenuStyles.createRadio("Blue + Yellow");
+        purple = MenuStyles.createRadio("Red + Blue");
         typeRadio = new ButtonGroup();
-
-        add(gameSizeLabel);
-        add(gameSizeField);
-        add(gameNameLabel);
-        add(gameNameField);
-        add(gameList);
-        add(newGameButton);
-        add(joinGameButton);
-        add(refreshGameButton);
         typeRadio.add(orange);
         typeRadio.add(green);
         typeRadio.add(purple);
-        add(orange);
-        add(green);
-        add(purple);
+
+        c.fill = GridBagConstraints.BOTH;
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        add(MenuStyles.createLabel("Select a game.", 15), c);
+
+        c.weightx = c.weighty = 1.0;
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridheight = 3;
+        c.gridwidth = 2;
+
+        JPanel p = new JPanel();
+        p.setAlignmentX(JPanel.LEFT_ALIGNMENT);
+        p.add(gameList);
+        p.setOpaque(false);
+        JScrollPane listScrollPanel = new JScrollPane(p);
+        MenuStyles.styleMainPanel(listScrollPanel.getViewport());
+        listScrollPanel.setBorder(BorderFactory.createEmptyBorder());
+        listScrollPanel.setPreferredSize(new Dimension(350, 50));
+        add(listScrollPanel, c);
+
+        c.weightx = c.weighty = 0.0;
+        c.gridx = 2;
+        c.gridy = 2;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        add(refreshGameButton, c);
+
+        c.gridx = 2;
+        c.gridy = 3;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        add(joinGameButton, c);
+
+        c.gridx = 2;
+        c.gridy = 0;
+        c.gridheight = 2;
+        c.gridwidth = 1;
+        c.weighty = 2.0;
+
+        JPanel colorPanel = new JPanel();
+        colorPanel.setLayout(new BoxLayout(colorPanel, BoxLayout.Y_AXIS));
+        colorPanel.setOpaque(false);
+        colorPanel.add(orange);
+        colorPanel.add(green);
+        colorPanel.add(purple);
+        add(colorPanel, c);
+
+        c.weighty = 0.0;
+
+        c.weightx = 0.5;
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        add(gameNameLabel, c);
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        add(gameNameField, c);
+
+
+        c.weightx = 0.2;
+        c.gridx = 1;
+        c.gridy = 4;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        add(gameSizeLabel, c);
+        c.gridx = 1;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        add(gameSizeField, c);
+
+        c.gridx = 2;
+        c.gridy = 4;
+        c.gridheight = 2;
+        c.gridwidth = 1;
+        add(newGameButton, c);
 
         newGameButton.addActionListener(new ActionListener() {
             @Override

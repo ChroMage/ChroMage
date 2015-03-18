@@ -5,6 +5,6 @@ package chromage.client;
  */
 public interface IConnectMenuDelegate {
 
-    public void initiateConnection(int port, String ipAddress);
+    public void initiateConnection(int port, String ipAddress, String playerName);
 
 }
