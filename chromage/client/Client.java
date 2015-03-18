@@ -51,20 +51,29 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 	@Override
 	public void initiateConnection(int port, String ipAddress, String playerName) {
 		try {
+            System.out.println("Initiating connection to " + ipAddress + ", " + port);
 			socket = new Socket(ipAddress, port);
 			toServer = new DataOutputStream(socket.getOutputStream());
 			fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 			// read handshake
-			fromServer.readLine();
+			System.out.println(fromServer.readLine());
             toServer.writeBytes("setName " + playerName + '\n');
-			mainWindow.setContentPane(new LobbyMenu(this));
-            mainWindow.pack();
+            String welcome = fromServer.readLine();
+            System.out.println(welcome);
+            if (!"Welcome.".equals(welcome)) {
+                System.out.println("Connection failed.");
+                returnToLobby();
+            } else {
+                System.out.println("Connection succeeded. Moving to lobby.");
+                mainWindow.setContentPane(new LobbyMenu(this));
+                mainWindow.pack();
+                mainWindow.setLocationRelativeTo(null);
+            }
 		} catch (IOException e) {
 			e.printStackTrace();
 			returnToLobby();
 		}
-		System.out.println("Initiating connection to " + ipAddress + ", " + port);
 	}
 
 	@Override

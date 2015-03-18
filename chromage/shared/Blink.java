@@ -55,13 +55,13 @@ public class Blink extends Spell {
 	}
 
 	@Override
-	public int getWidth() {
+	public double getWidth() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public int getHeight() {
+	public double getHeight() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -92,8 +92,8 @@ public class Blink extends Spell {
 				canBlink = false;
 			}
 		}
-		if(canBlink){
-			mage.setPosition(new Point((int)target.x, (int)target.y));
+		if (canBlink) {
+			mage.setPosition(target);
 		}
 		return null;
 	}

@@ -52,13 +52,13 @@ public class Iceball extends Spell {
 	}
 
 	@Override
-	public int getWidth() {
+	public double getWidth() {
 		// TODO Auto-generated method stub
 		return 70;
 	}
 
 	@Override
-	public int getHeight() {
+	public double getHeight() {
 		// TODO Auto-generated method stub
 		return 70;
 	}

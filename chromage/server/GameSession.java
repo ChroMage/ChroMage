@@ -166,4 +166,8 @@ public class GameSession extends Thread {
 	public UUID getUuid() {
 		return uuid;
 	}
+
+    public int getExpectedNumberOfPlayers() {
+        return expectedNumberOfPlayers;
+    }
 }

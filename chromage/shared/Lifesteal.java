@@ -58,13 +58,13 @@ public class Lifesteal extends Spell {
 	}
 
 	@Override
-	public int getWidth() {
+	public double getWidth() {
 		// TODO Auto-generated method stub
 		return 70;
 	}
 
 	@Override
-	public int getHeight() {
+	public double getHeight() {
 		// TODO Auto-generated method stub
 		return 70;
 	}
@@ -89,12 +89,9 @@ public class Lifesteal extends Spell {
 	
 	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
 		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
-		int x = (int) (mage.getPosition().getX() + direction.getX()/direction.distance(0, 0)*mage.getHeight());
-		int y = (int) (mage.getPosition().getY() + direction.getY()/direction.distance(0, 0)*mage.getHeight());
-		Projectile p = new Projectile(x, y, 
-						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
-				        getWidth(), getHeight(), 
-				        getDamage(), getSlow(), getKnockup(), getColor(), mage) {
+        Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
+		Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
+                getDamage(), getSlow(), getKnockup(), getColor(), mage) {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void hitTarget(Entity target){
 				super.hitTarget(target);

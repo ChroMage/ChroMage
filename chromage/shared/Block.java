@@ -7,9 +7,9 @@ import java.io.Serializable;
 public class Block extends Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
 	public Block(int x, int y, int width, int height){
-		this.setPosition(new Point(x, y));
-		this.width = width;
-		this.height = height;
+		setPosition(x, y);
+		setWidth(width);
+		setHeight(height);
 		this.color = Color.GRAY;
 		isMobile = false;
 		type = Constants.BLOCK_TYPE;

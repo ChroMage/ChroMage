@@ -119,7 +119,7 @@ public class MenuStyles {
                 c.gridheight = 1;
                 c.gridwidth = 1;
                 c.anchor = GridBagConstraints.EAST;
-                item.add(createLabel(Integer.toString(game.getNumberOfPlayers()), 20, 10), c);
+                item.add(createLabel(game.getNumberOfPlayers() + " of " + game.getExpectedNumberOfPlayers(), 20, 10), c);
                 return item;
             }
         });

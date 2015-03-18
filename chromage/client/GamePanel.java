@@ -47,15 +47,10 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 	 		case MouseEvent.BUTTON3: userInput.spell = SpellInput.NONE; break;
 	 	}
     }
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(MouseEvent e) {  }
+    public void mouseEntered(MouseEvent e) { }
+    public void mouseExited(MouseEvent e) { }
 
-    }
-    public void mouseEntered(MouseEvent e) {
-    	//set flag to positive
-    }
-    public void mouseExited(MouseEvent e) {
-    	//set flag to negative
-    }
  	public GamePanel(IGamePanelDelegate delegate, DataOutputStream toServer, BufferedReader fromServer) {
 		this.delegate = delegate;
 		System.out.println("creating game panel");
@@ -136,26 +131,9 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 			e.draw(g, HEIGHT_FACTOR(this.getHeight()), WIDTH_FACTOR(this.getWidth()));
 		}
 		if (model.state.awaitedPlayers != 0) {
-			System.out.println("Awaiting");
 			g.setColor(Color.BLACK);
 			g.drawString("Awaiting players, need " + model.state.awaitedPlayers + " more.",
 					(int)(this.getWidth()/2*WIDTH_FACTOR(this.getWidth())), (int)(this.getHeight()/2*HEIGHT_FACTOR(this.getHeight())));
 		}
-		//System.out.println("Called");
-	}
-	
-	public static void drawCircle(JPanel panel, int dx, int dy, Graphics g) {
-		int x = (int)(dx*WIDTH_FACTOR(panel.getWidth()));
-		int y = (int)(dy*HEIGHT_FACTOR(panel.getHeight()));
-		g.setColor(Color.BLACK);
-		g.fillOval(x, y, (int) (100 * WIDTH_FACTOR(panel.getWidth())), (int) (100 * HEIGHT_FACTOR(panel.getHeight())));
-	}
-
-	public static void drawLineTo(JFrame frame, int dx, int dy) {
-	    Graphics g = frame.getGraphics();
-	    int x = (int)(dx*WIDTH_FACTOR(frame.getWidth()));
-	    int y = (int)(dy*HEIGHT_FACTOR(frame.getHeight()));
-	    g.drawLine(0, 0, x, y);
-	    g.dispose();
 	}
 }
