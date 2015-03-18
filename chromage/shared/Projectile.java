@@ -51,7 +51,7 @@ public class Projectile extends Entity implements Serializable {
 	public void hitTarget(Entity target){
 		target.takeDamage(damage, slowAmount, comboValue);
         double elasticity = 0.5;
-        double pureVertical = 0.8;
+        double pureVertical = 0.7;
         target.setVelocity(
                 Utilities.addAll(
                         Utilities.scaleTo(

@@ -30,7 +30,6 @@ public class SenderThread extends Thread {
                 try {
                     UserInput u = userInput;
                     output.writeBytes(u.serializeToString() + "\n");
-                    System.out.println("sending: " + u.toString());
                     if (userInput.wantsTermination()) setBreak();
                 } catch (Exception e) {
                     e.printStackTrace();
