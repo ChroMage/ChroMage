@@ -13,13 +13,14 @@ public class Mage extends Entity implements Serializable {
 	private double slowAmount = 1.0;
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int DEFAULT_WIDTH = 100;
-	public static final int MAX_HP = 600;
+	public static final int MAX_HP = 1000;
 	public Point2D.Double getVelocity() {
 		return new Point2D.Double(velocity.x*slowAmount, velocity.y*slowAmount);
 	}
 	private int coolDown = 0;
 	public int hp = MAX_HP;
 	public int mana = 300;
+	private int combo;
 	private String name = "Training Bot";
 	public Spell leftSpell = new Fireball();
 	public Spell middleSpell = new Blink();
@@ -30,13 +31,23 @@ public class Mage extends Entity implements Serializable {
 		return hp == 0;
 	}
 
-	public void takeDamage(int dmg, int slowAmount) {
-		hp -= dmg;
+	public void takeDamage(int dmg, int slowAmount, int comboValue) {
+		hp -= getDamageWithCombo(dmg, combo);
+		System.out.println("DAMAGE: " + getDamageWithCombo(dmg, combo) + ". HP: " + hp + "COMBO: " + combo);
+		combo += comboValue;
 		this.slowAmount = slowAmount/100.0;
 		if(hp <= 0) {
 			hp = 0;
 			this.setShouldBeRemoved(true);
 		}
+	}
+	
+	private int getDamageWithCombo(int damage, int combo) {
+		return (int) (damage * Math.pow(1.1, combo));
+	}
+
+	public void addCombo(int comboValue) {
+		setCombo(getCombo() + comboValue);
 	}
 	
 	protected void applyKnockup(int knockup) {
@@ -156,7 +167,15 @@ public class Mage extends Entity implements Serializable {
 		g.setColor(Color.green);
 		g.fillRect(x, y - 25, scaledWidth * hp / MAX_HP, 10);
 		writePlayerName(g, x, y);
+		writeComboCounter(g, x, y);
 
+	}
+
+	private void writeComboCounter(Graphics g, int x, int y) {
+		g.setColor(Color.BLACK);
+		Font f = new Font("Verdana", Font.PLAIN, 12 + combo);
+		g.setFont(f);
+		g.drawString(Integer.toString(combo), x, y-40);
 	}
 
 	private void writePlayerName(Graphics g, int x, int y) {
@@ -168,5 +187,17 @@ public class Mage extends Entity implements Serializable {
 
 	public void setName(String playerName) {
 		name = playerName;
+	}
+
+	public int getCombo() {
+		return combo;
+	}
+
+	public void setCombo(int combo) {
+		this.combo = combo;
+	}
+	
+	public void clearCombo() {
+		combo = 0;
 	}
 }
