@@ -158,8 +158,10 @@ public class Entity implements Serializable {
 		}
 	}
 
+	//override these if needed
 	public void applyHits(ArrayList<Entity> entities) {
-
+	}
+	protected void applyKnockup(int knockup) {
 	}
 	
 	//Ignore how ugly my overlap code is!

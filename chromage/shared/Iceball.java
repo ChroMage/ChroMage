@@ -30,7 +30,7 @@ public class Iceball extends Spell {
 	@Override
 	public int getSlow() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 20;
 	}
 
 	@Override
@@ -78,6 +78,12 @@ public class Iceball extends Spell {
 	public boolean isAffectedByGravity() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int getKnockup() {
+		// TODO Auto-generated method stub
+		return 90;
 	}
 
 }

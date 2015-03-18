@@ -98,4 +98,10 @@ public class Blink extends Spell {
 		return null;
 	}
 
+	@Override
+	public int getKnockup() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -56,13 +56,13 @@ public class Lightning extends Spell {
 	@Override
 	public int getWidth() {
 		// TODO Auto-generated method stub
-		return 150;
+		return 50;
 	}
 
 	@Override
 	public int getHeight() {
 		// TODO Auto-generated method stub
-		return 150;
+		return 50;
 	}
 
 	@Override
@@ -89,16 +89,22 @@ public class Lightning extends Spell {
 		Projectile p = new Projectile(x, y, 
 						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
 				        getWidth(), getHeight(), 
-				        getDamage(), getSlow(), getColor(), mage) {
+				        getDamage(), getSlow(), getKnockup(), getColor(), mage) {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void update(ArrayList<Entity> e) {
 				super.update(e);
-				width += 5;
-				height += 5;
+				width += 3;
+				height += 3;
 			}
 		};
 		p.isGravitated = isAffectedByGravity();
 		return p;
+	}
+
+	@Override
+	public int getKnockup() {
+		// TODO Auto-generated method stub
+		return 80;
 	}
 
 }

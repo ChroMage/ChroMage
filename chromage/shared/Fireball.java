@@ -81,4 +81,10 @@ public class Fireball extends Spell {
 		return true;
 	}
 
+	@Override
+	public int getKnockup() {
+		// TODO Auto-generated method stub
+		return 30;
+	}
+
 }

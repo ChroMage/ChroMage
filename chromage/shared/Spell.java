@@ -6,6 +6,7 @@ import java.awt.geom.Point2D.Double;
 import java.io.Serializable;
 
 public abstract class Spell implements Serializable{
+	public abstract int getKnockup();
 	public abstract int getWidth();
 	public abstract int getHeight();
 	public abstract int getStun();
@@ -25,7 +26,7 @@ public abstract class Spell implements Serializable{
 		Projectile p = new Projectile(x, y, 
 						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
 				        getWidth(), getHeight(), 
-				        getDamage(), getSlow(), getColor(), mage);
+				        getDamage(), getSlow(), getKnockup(), getColor(), mage);
 		p.isGravitated = isAffectedByGravity();
 		return p;
 	}

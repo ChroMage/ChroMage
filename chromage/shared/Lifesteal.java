@@ -94,10 +94,10 @@ public class Lifesteal extends Spell {
 		Projectile p = new Projectile(x, y, 
 						(int)(direction.x/direction.distance(0, 0)*getSpeed()), (int)(direction.y/direction.distance(0,0)*getSpeed()),
 				        getWidth(), getHeight(), 
-				        getDamage(), getSlow(), getColor(), mage) {
+				        getDamage(), getSlow(), getKnockup(), getColor(), mage) {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void hitTarget(Entity target){
-				target.takeDamage(getDamage(), getSlow());
+				super.hitTarget(target);
 				if(target instanceof Mage){
 					owner.hp += getHeal();
 					owner.hp = Math.min(owner.hp, Mage.MAX_HP);
@@ -106,5 +106,11 @@ public class Lifesteal extends Spell {
 		};
 		p.isGravitated = isAffectedByGravity();
 		return p;
+	}
+
+	@Override
+	public int getKnockup() {
+		// TODO Auto-generated method stub
+		return 6;
 	}
 }

@@ -36,6 +36,11 @@ public class Mage extends Entity implements Serializable {
 			this.setShouldBeRemoved(true);
 		}
 	}
+	
+	protected void applyKnockup(int knockup) {
+		velocity.y -= knockup;
+	}
+	
 	public Mage(MageType mageType){
 		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color);
 		leftSpell = mageType.leftSpell;
