@@ -54,7 +54,7 @@ public class Lifesteal extends Spell {
 	}
 	
 	public int getHeal() {
-		return 2;
+		return 1;
 	}
 
 	@Override
@@ -98,8 +98,10 @@ public class Lifesteal extends Spell {
 			private static final long serialVersionUID = 188689086533652783L;
 			public void hitTarget(Entity target){
 				target.takeDamage(getDamage(), getSlow());
-				owner.hp += getHeal();
-				owner.hp = Math.min(owner.hp, Mage.MAX_HP);
+				if(target instanceof Mage){
+					owner.hp += getHeal();
+					owner.hp = Math.min(owner.hp, Mage.MAX_HP);
+				}
 			}
 		};
 		p.isGravitated = isAffectedByGravity();
