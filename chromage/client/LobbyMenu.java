@@ -43,10 +43,10 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         JButton refreshGameButton = MenuStyles.createButton("Refresh");
         JComponent gameSizeLabel = MenuStyles.createLabel("Game Size", 15);
         gameSizeField = MenuStyles.createTextField();
-        gameSizeField.setText(Integer.toString(Constants.DEFAULT_GAME_SIZE));
+        gameSizeField.setText(Integer.toString(Configuration.GAME_SIZE.get()));
         JComponent gameNameLabel = MenuStyles.createLabel("Game Name", 15);
         gameNameField = MenuStyles.createTextField();
-        gameNameField.setText(Constants.DEFAULT_GAME_NAME);
+        gameNameField.setText(Configuration.GAME_NAME.get());
 
         orange = MenuStyles.createRadio("Red + Yellow");
         green = MenuStyles.createRadio("Blue + Yellow");
@@ -143,6 +143,7 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                saveDefaults();
                 int players = getGameSize();
                 if (players == -1) return;
                 LobbyMenu.this.delegate.createGame(
@@ -172,7 +173,11 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         });
 
         gameList.setVisible(true);
+    }
 
+    public void saveDefaults() {
+        Configuration.GAME_NAME.set(getGameName());
+        Configuration.GAME_SIZE.set(getGameSize());
     }
 
     public MageType getMageType() {

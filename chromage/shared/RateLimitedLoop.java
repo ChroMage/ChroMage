@@ -7,6 +7,7 @@ public abstract class RateLimitedLoop implements Runnable {
 
     private long executionsPerSecond;
     private boolean shouldBreak;
+    private Object result;
 
     public RateLimitedLoop(long rate) {
         executionsPerSecond = rate;
@@ -20,6 +21,26 @@ public abstract class RateLimitedLoop implements Runnable {
         }.start();
     }
 
+    public void setResult(Object result) {
+        this.result = result;
+    }
+
+    public Object runAndGetResult() {
+        run();
+        return getResult();
+    }
+
+    public Object getResult() {
+        if (result == null) {
+            return defaultResult();
+        } else {
+            return result;
+        }
+    }
+
+    public Object defaultResult() {
+        return null;
+    }
 
     public abstract void body();
 

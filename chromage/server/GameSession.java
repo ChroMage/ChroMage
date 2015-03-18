@@ -65,16 +65,23 @@ public class GameSession extends Thread {
 	}
 
 	public boolean waitForPlayers() {
-		while (players.size() < expectedNumberOfPlayers && !allPlayersReady()) {
-			for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
-				if (p.wantsTermination())
-					return false;
-			}
-			System.out.println("waiting");
-			// wait until all the players have joined the game.
-            sendUpdates();
-		}
-		return true;
+        return (Boolean)(new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+            public Object defaultResult() { return true; }
+            public boolean shouldContinue() {
+                return players.size() < expectedNumberOfPlayers && !allPlayersReady();
+            }
+            public void body() {
+                setResult(true);
+                for (PlayerThread p : (ArrayList<PlayerThread>) players.clone()) {
+                    if (p.wantsTermination()) {
+                        setResult(false);
+                        setBreak();
+                    }
+                }
+                // wait until all the players have joined the game.
+                sendUpdates();
+            }
+        }.runAndGetResult());
 	}
 
 	public void sendUpdates() {

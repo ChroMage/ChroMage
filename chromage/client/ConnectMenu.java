@@ -22,23 +22,22 @@ public class ConnectMenu extends JPanel implements AncestorListener {
         System.out.println("Opening");
         addAncestorListener(this);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         Dimension textFieldSize = new Dimension(300, 80);
 
         final JTextField nameField = MenuStyles.createTextField();
-        nameField.setText(Constants.DEFAULT_NAME);
+        nameField.setText(Configuration.PLAYER_NAME.get());
         nameField.setPreferredSize(textFieldSize);
         nameField.setMinimumSize(textFieldSize);
         nameField.setMaximumSize(textFieldSize);
 
         final JTextField ipField = MenuStyles.createTextField();
-        ipField.setText(Constants.DEFAULT_IP);
+        ipField.setText(Configuration.SERVER_IP.get());
         ipField.setPreferredSize(textFieldSize);
         ipField.setMinimumSize(textFieldSize);
         ipField.setMaximumSize(textFieldSize);
 
         final JTextField portField = MenuStyles.createTextField();
-        portField.setText(Integer.toString(Constants.DEFAULT_PORT));
+        portField.setText(Integer.toString(Configuration.SERVER_PORT.get()));
         portField.setPreferredSize(textFieldSize);
         portField.setMinimumSize(textFieldSize);
         portField.setMaximumSize(textFieldSize);
@@ -66,6 +65,9 @@ public class ConnectMenu extends JPanel implements AncestorListener {
                 try {
                     int port = Integer.parseInt(portField.getText());
                     String ip = ipField.getText();
+                    Configuration.SERVER_IP.set(ip);
+                    Configuration.SERVER_PORT.set(port);
+                    Configuration.PLAYER_NAME.set(nameField.getText());
                     ConnectMenu.this.delegate.initiateConnection(port, ip, nameField.getText());
                 } catch (NumberFormatException ex) {
                     // port wasn't a number
