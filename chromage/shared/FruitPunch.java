@@ -26,7 +26,7 @@ public class FruitPunch extends Spell {
 	@Override
 	public int getSlow() {
 
-		return 100;
+		return 40;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class FruitPunch extends Spell {
 	@Override
 	public int getDamage() {
 
-		return 70;
+		return 100;
 	}
 
 	@Override
@@ -89,6 +89,6 @@ public class FruitPunch extends Spell {
 
 	@Override
 	public int getKnockup() {
-		return 45;
+		return 100;
 	}
 }
