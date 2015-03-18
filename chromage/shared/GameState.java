@@ -36,7 +36,7 @@ public class GameState implements Serializable {
         }
         if(players.size() < 2){
         	//Add a dummy mage to fight
-            entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE));
+            entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE, "Bot"));
         }
     }
 

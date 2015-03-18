@@ -111,6 +111,7 @@ public class PlayerThread extends Thread {
             }
             else if ("new".equals(action) && parts.length == 4) {
                 mage = new Mage(MageType.valueOf(parts[3]));
+                mage.setName(playerName);
                 server.createAndJoinGame(this, parts[1], Integer.parseInt(parts[2]));
                 toClient.writeBytes("success\n");
                 
@@ -118,6 +119,7 @@ public class PlayerThread extends Thread {
             }
             else if ("join".equals(action) && parts.length == 3) {
                 mage = new Mage(MageType.valueOf(parts[2]));
+                mage.setName(playerName);
                 if (server.joinGame(this, UUID.fromString(parts[1]))) {
                     toClient.writeBytes("success\n");
                 } else toClient.writeBytes("failure\n");

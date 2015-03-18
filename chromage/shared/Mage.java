@@ -20,10 +20,12 @@ public class Mage extends Entity implements Serializable {
 	private int coolDown = 0;
 	public int hp = MAX_HP;
 	public int mana = 300;
+	private String name = "Training Bot";
 	public Spell leftSpell = new Fireball();
 	public Spell middleSpell = new Blink();
 	public Spell rightSpell = new Iceball();
 	public MageType mageType;
+	
 	public boolean isDead() {
 		return hp == 0;
 	}
@@ -42,18 +44,19 @@ public class Mage extends Entity implements Serializable {
 	}
 	
 	public Mage(MageType mageType){
-		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color);
+		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color, "Training Bot");
 		leftSpell = mageType.leftSpell;
 		middleSpell = mageType.middleSpell;
 		rightSpell = mageType.rightSpell;
 	}
 
-	public Mage(int x, int y, int width, int height, Color color){
+	public Mage(int x, int y, int width, int height, Color color, String name){
 		this.setPosition(new Point(x, y));
 		this.setVelocity(new Point2D.Double(0, 0));
 		this.width = width;
 		this.height = height;
 		this.color = color;
+		this.name = name;
 		type = Constants.MAGE_TYPE;
 	}
 	
@@ -151,6 +154,18 @@ public class Mage extends Entity implements Serializable {
 		g.fillRect(x, y - 5, scaledWidth, 5);
 		g.setColor(Color.green);
 		g.fillRect(x, y - 25, scaledWidth * hp / MAX_HP, 10);
+		writePlayerName(g, x, y);
 
+	}
+
+	private void writePlayerName(Graphics g, int x, int y) {
+		g.setColor(Color.BLACK);
+		Font f = new Font("Verdana", Font.PLAIN, 12);
+		g.setFont(f);
+		g.drawString(name, x, y-30);
+	}
+
+	public void setName(String playerName) {
+		name = playerName;
 	}
 }
