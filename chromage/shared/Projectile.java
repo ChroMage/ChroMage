@@ -12,6 +12,7 @@ public class Projectile extends Entity implements Serializable {
 	int damage = 1;
 	int slowAmount = 100;
 	int knockup = 0;
+	int comboValue = 1;
 	Mage owner = null;
 	public Projectile(Rectangle2D.Double startRect, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner){
 		this.setBounds(startRect);
@@ -44,7 +45,7 @@ public class Projectile extends Entity implements Serializable {
 	}
 	
 	public void hitTarget(Entity target){
-		target.takeDamage(damage, slowAmount);
+		target.takeDamage(damage, slowAmount, comboValue);
 		target.applyKnockup(knockup);
 	}
 

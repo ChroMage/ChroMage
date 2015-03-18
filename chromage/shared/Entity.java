@@ -39,7 +39,7 @@ public class Entity implements Serializable {
 //        ((Graphics2D)g).fill(bounds);
 		g.fillRect(x, y, (int) (getWidth() * widthFactor), (int) (getHeight() * heightFactor));
 	}
-	public void takeDamage(int dmg, int slowAmount) {
+	public void takeDamage(int dmg, int slowAmount, int comboValue) {
 	}
 	public void zeroVerticalVelocity() {
 		velocity.setLocation(velocity.getX(), 0.0);
@@ -106,6 +106,7 @@ public class Entity implements Serializable {
 						this.velocity.y = 0;
                         setPosition(getPosition().getX(), e.getBounds().getMinY() - getHeight() + 1);
 						isGrounded = true;
+						this.clearCombo();
 					}
 					
 					//Stop the object on hitting ceiling
@@ -137,12 +138,13 @@ public class Entity implements Serializable {
 	}
 
 	//override these if needed
+	public void clearCombo() {
+	}
 	public void applyHits(ArrayList<Entity> entities) {
 	}
 	protected void applyKnockup(int knockup) {
 	}
 	
-	//Ignore how ugly my overlap code is!
 	private boolean overlapsTheBottomOf(Entity wall) {
         Rectangle2D.Double r = new Rectangle2D.Double();
         Rectangle2D.intersect(bounds, wall.getBounds(), r);
@@ -221,4 +223,8 @@ public class Entity implements Serializable {
     public void setColor(Color color) {
         this.color = color;
     }
+    
+	public void addCombo(int comboValue) {
+		
+	}
 }
