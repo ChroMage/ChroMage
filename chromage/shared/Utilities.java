@@ -23,4 +23,12 @@ public class Utilities {
     public static final Point2D.Double add(Point2D.Double p, Point2D.Double v) {
         return new Point2D.Double(p.x + v.x, p.y + v.y);
     }
+
+    public static final Point2D.Double addAll(Point2D.Double... points) {
+        Point2D.Double sum = new Point2D.Double();
+        for (Point2D.Double p : points) {
+            sum = add(sum, p);
+        }
+        return sum;
+    }
 }

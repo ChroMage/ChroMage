@@ -50,14 +50,21 @@ public class Projectile extends Entity implements Serializable {
 	
 	public void hitTarget(Entity target){
 		target.takeDamage(damage, slowAmount, comboValue);
+        double elasticity = 0.5;
+        double pureVertical = 0.8;
         target.setVelocity(
-            Utilities.add(
-                Utilities.scaleTo(
-                        Utilities.subtract(target.getCenter(), this.getCenter()),
-                        knockup
-                ),
-                target.getVelocity()
-            )
+                Utilities.addAll(
+                        Utilities.scaleTo(
+                                Utilities.subtract(target.getCenter(), this.getCenter()),
+                                knockup * elasticity * (1 - pureVertical)
+                        ),
+                        Utilities.scaleTo(
+                                getVelocity(),
+                                knockup * (1 - elasticity) * (1 - pureVertical)
+                        ),
+                        new Point2D.Double(0, -knockup*pureVertical),
+                        target.getVelocity()
+                )
         );
 	}
 
