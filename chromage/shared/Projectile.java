@@ -32,6 +32,10 @@ public class Projectile extends Entity implements Serializable {
 	public boolean isAffectedByGravity(){
 		return isGravitated;
 	}
+	
+	protected Entity getOwner() {
+		return owner;
+	}
 
 	@Override
 	public void applyHits(ArrayList<Entity> entities) {
