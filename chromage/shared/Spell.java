@@ -24,8 +24,8 @@ public abstract class Spell implements Serializable{
 
     public Point2D.Double getProjectileStartPosition(Mage mage, Point2D.Double direction) {
         direction = Utilities.normalize(direction);
-        double x = mage.getPosition().getX() + Math.signum(direction.x) * (mage.getWidth()/2 + getWidth() + 10);
-        double y = mage.getPosition().getY() + direction.y / direction.x * x;
+        double x = mage.getPosition().getX() + mage.getWidth()/2 + Math.signum(direction.x) * (mage.getWidth()/2 + getWidth() + 10);
+        double y = mage.getPosition().getY() + mage.getHeight()/2 + Math.signum(direction.y) * (mage.getHeight() / 2 + getHeight() + 10);
         return new Point2D.Double(x,y);
     }
 
