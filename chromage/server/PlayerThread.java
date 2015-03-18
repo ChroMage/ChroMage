@@ -30,6 +30,7 @@ public class PlayerThread extends Thread {
     private boolean isReady;
     private GameState state = new GameState();
     private Server server;
+    private String playerName;
     public Mage mage;
     BufferedReader fromClient;
     DataOutputStream toClient;
@@ -40,6 +41,10 @@ public class PlayerThread extends Thread {
         this.lastUpdateTick = 0;
         resetCurrentInputState();
         this.server = server;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 
     public void run() {
@@ -63,6 +68,7 @@ public class PlayerThread extends Thread {
 
     public void initiateHandshake() throws IOException {
         toClient.writeBytes("Hello!" + '\n');
+        this.playerName = fromClient.readLine().split(" ")[1];
     }
 
     public void terminateConnection() {
@@ -89,7 +95,7 @@ public class PlayerThread extends Thread {
 
     public void enterLobby() throws IOException {
         if (wantsTermination) return;
-        System.out.println("Entered lobby");
+        System.out.println("Entered lobby: " + getPlayerName());
         shouldListenInLobby = true;
         while (shouldListenInLobby) {
             String clientMessage = fromClient.readLine();

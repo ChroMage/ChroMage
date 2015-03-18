@@ -30,19 +30,26 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 	}
 
 	public void run() throws Exception {
-		mainWindow = new JFrame();
-	 	mainWindow.setTitle("ChroMage");
-	 	mainWindow.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-	 	mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainWindow.setContentPane(new ConnectMenu(this));
-	 	mainWindow.setVisible(true);
-		mainWindow.setFocusable(true);
-		mainWindow.requestFocusInWindow();
-		mainWindow.addKeyListener(Keyboard.getInstance());
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                mainWindow = new JFrame();
+                mainWindow.setTitle("ChroMage");
+                mainWindow.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+                mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                mainWindow.setContentPane(new ConnectMenu(Client.this));
+                mainWindow.setVisible(true);
+                mainWindow.setFocusable(true);
+                mainWindow.requestFocusInWindow();
+                mainWindow.addKeyListener(Keyboard.getInstance());
+                mainWindow.pack();
+                mainWindow.setLocationRelativeTo(null);
+            }
+        });
 	}
 
 	@Override
-	public void initiateConnection(int port, String ipAddress) {
+	public void initiateConnection(int port, String ipAddress, String playerName) {
 		try {
 			socket = new Socket(ipAddress, port);
 			toServer = new DataOutputStream(socket.getOutputStream());
@@ -50,7 +57,9 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 
 			// read handshake
 			fromServer.readLine();
+            toServer.writeBytes("setName " + playerName + '\n');
 			mainWindow.setContentPane(new LobbyMenu(this));
+            mainWindow.pack();
 		} catch (IOException e) {
 			e.printStackTrace();
 			returnToLobby();
@@ -66,6 +75,8 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 			if ("success".equals(line)) {
 				System.out.println("Setting content pane to game");
 				mainWindow.setContentPane(new GamePanel(this, toServer, fromServer));
+                mainWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                mainWindow.setVisible(true);
 			} else {
 				System.out.println("Didn't get success from server, instead got: " + line);
 			}
@@ -101,6 +112,8 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 			if ("success".equals(line)) {
 				System.out.println("Setting content pane to game");
 				mainWindow.setContentPane(new GamePanel(this, toServer, fromServer));
+                mainWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                mainWindow.setVisible(true);
 			} else {
 				System.out.println("Didn't get success from server, instead got: " + line);
 			}
@@ -123,5 +136,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 		mainWindow.setContentPane(new ConnectMenu(this));
 		mainWindow.getContentPane().getParent().revalidate();
 		mainWindow.getContentPane().getParent().repaint();
+        mainWindow.pack();
+        mainWindow.setLocationRelativeTo(null);
 	}
 }

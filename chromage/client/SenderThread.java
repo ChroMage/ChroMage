@@ -22,14 +22,7 @@ public class SenderThread extends Thread {
     }
 
     public void run() {
-
-        try {
-            output.writeBytes("new test 1 a\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+       new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
             public boolean shouldContinue() {
                 return isRunning;
             }
