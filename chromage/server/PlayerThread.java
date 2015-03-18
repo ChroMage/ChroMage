@@ -134,6 +134,8 @@ public class PlayerThread extends Thread {
                 } else toClient.writeBytes("failure\n");
                 
                 break;
+            } else {
+                toClient.writeBytes("didn't understand that command\n");
             }
         }
     }

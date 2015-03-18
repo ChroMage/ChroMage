@@ -116,6 +116,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 	public void createGame(int numberOfPlayers, String name, MageType mageType) {
 		System.out.println("Trying to create game");
 		try {
+            name = name.replace(" ", "_");
             System.out.println("Sending: " +"new " + name + " " + numberOfPlayers + " " + mageType + "\n");
 			toServer.writeBytes("new " + name + " " + numberOfPlayers + " " + mageType + "\n");
             System.out.println("sent");
