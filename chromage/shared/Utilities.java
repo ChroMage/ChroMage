@@ -13,7 +13,7 @@ public class Utilities {
 
     public static final Point2D.Double scaleTo(Point2D.Double p, double newLength) {
         double scaleFactor = newLength / p.distance(0,0);
-        return new Point2D.Double(p.x / scaleFactor, p.y / scaleFactor);
+        return new Point2D.Double(p.x * scaleFactor, p.y * scaleFactor);
     }
 
     public static final Point2D.Double add(Point2D.Double p, Point2D.Double v) {
