@@ -49,9 +49,14 @@ public class Entity implements Serializable {
 	}
 	
 	public boolean canCollideWith(Entity e){
-		//collide if I am a projectile and they aren't
+		//collide if I am a projectile and they aren't and they aren't my owner
 		return ((e.type & Constants.PROJECTILE_TYPE) == 0)
-			&& ((type & Constants.PROJECTILE_TYPE) != 0);
+			&& ((type & Constants.PROJECTILE_TYPE) != 0)
+			&& getOwner() != e;
+	}
+	
+	protected Entity getOwner() {
+		return null;
 	}
 	
 	public void addUpRightVelocity(int x, int y){
