@@ -3,6 +3,8 @@ package chromage.server;
 import chromage.shared.engine.GameState;
 import chromage.shared.Mage;
 import chromage.shared.MageType;
+import chromage.shared.utils.Constants;
+import chromage.shared.utils.RateLimitedLoop;
 import chromage.shared.utils.UserInput;
 
 import java.io.BufferedReader;
@@ -53,6 +55,7 @@ public class PlayerThread extends Thread {
             toClient = new DataOutputStream(socket.getOutputStream());
             initiateHandshake();
             enterLobby();
+            startStateSending();
             listenForUpdates();
         } catch(IOException e){
             e.printStackTrace();
@@ -64,6 +67,27 @@ public class PlayerThread extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void startStateSending() {
+        new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+            public boolean shouldContinue() {
+                return PlayerThread.this.shouldKeepProcessing;
+            }
+            public void body() {
+                try {
+                    String serialization = state.serializeToString();
+                    toClient.writeBytes(serialization + '\n');
+                } catch (SocketException ex) {
+                    server.disconnectPlayer(PlayerThread.this);
+                    wantsTermination = true;
+                } catch (IOException e) {
+                    server.disconnectPlayer(PlayerThread.this);
+                    wantsTermination = true;
+                    e.printStackTrace();
+                }
+            }
+        }.runInBackground();
     }
 
     public void initiateHandshake() throws IOException {
@@ -88,18 +112,17 @@ public class PlayerThread extends Thread {
 
     public void sendUpdate(GameState state) {
         this.state = state;
-        try {
-            String serialization = state.serializeToString();
-//            System.out.println("Sending to " + playerNumber +": " + state.x + ", " + state.y);
-            toClient.writeBytes(serialization + '\n');
-        } catch (SocketException ex) {
-            server.disconnectPlayer(this);
-            wantsTermination = true;
-        } catch (IOException e) {
-            server.disconnectPlayer(this);
-            wantsTermination = true;
-            e.printStackTrace();
-        }
+//        try {
+//            String serialization = state.serializeToString();
+//            toClient.writeBytes(serialization + '\n');
+//        } catch (SocketException ex) {
+//            server.disconnectPlayer(this);
+//            wantsTermination = true;
+//        } catch (IOException e) {
+//            server.disconnectPlayer(this);
+//            wantsTermination = true;
+//            e.printStackTrace();
+//        }
     }
 
     public void enterLobby() throws IOException {

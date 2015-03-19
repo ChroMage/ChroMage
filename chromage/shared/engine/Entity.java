@@ -38,7 +38,6 @@ public class Entity implements Serializable {
 		int x = (int)(getPosition().x*widthFactor);
 		int y = (int)(getPosition().y*heightFactor);
 		g.setColor(color);
-//        ((Graphics2D)g).fill(bounds);
 		g.fillRect(x, y, (int) (getWidth() * widthFactor), (int) (getHeight() * heightFactor));
 	}
 	public void takeDamage(int dmg, int slowAmount, int comboValue) { }
