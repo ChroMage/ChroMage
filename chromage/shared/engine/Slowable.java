@@ -6,5 +6,5 @@ package chromage.shared.engine;
 public interface Slowable {
     public void slowBy(int amount);
 
-    public double getSlowAmount();
+    public double getSlowPercent();
 }

@@ -4,6 +4,7 @@ import chromage.shared.engine.*;
 import chromage.shared.spells.*;
 import chromage.shared.utils.Constants;
 import chromage.shared.utils.UserInput;
+import chromage.shared.utils.Utilities;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -26,12 +27,12 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
     public UserInput.SpellInput desiredSpell;
     public Point2D.Double target;
     public Type mageType;
-    private boolean secondJump = false;
-    private boolean firstJump = false;
-    private double slowAmount = 1.0;
+    private int jumpsRemaining = 2;
+    private double slowPercent = 1.0;
     private int coolDown = 0;
     private int combo;
     private String name = "Training Bot";
+    private boolean hasStoppedJumping = false;
 
     public Mage(Type mageType) {
         this(2000, 2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color, "Training Bot");
@@ -52,7 +53,7 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
     }
 
     public Point2D.Double getVelocity() {
-        return new Point2D.Double(super.getVelocity().x * slowAmount, super.getVelocity().y * slowAmount);
+        return new Point2D.Double(super.getVelocity().x * slowPercent, super.getVelocity().y * slowPercent);
     }
 
     public boolean isDead() {
@@ -68,7 +69,7 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
     }
 
     public void slowBy(int slowAmount) {
-        this.slowAmount += slowAmount / 100.0;
+        this.slowPercent *= (slowAmount / 100.0);
     }
 
     public void healDamage(int damage) {
@@ -101,49 +102,46 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
 
     public void hitGround() {
         super.hitGround();
+        jumpsRemaining = 2;
         clearCombo();
     }
 
     public void setVelocityWithInput(UserInput input) {
-        int x = 0, y = 0;
-        if (isGrounded) {
-            firstJump = true;
-            secondJump = false;
-        }
+        double xAcceleration = 0, yAcceleration = 0;
         switch (input.horizontalDirection) {
             case LEFT:
-                x = -1;
+                xAcceleration = -1;
                 break;
             case NONE:
-                x = 0;
+                xAcceleration = 0;
                 break;
             case RIGHT:
-                x = 1;
+                xAcceleration = 1;
                 break;
         }
         switch (input.verticalDirection) {
             case JUMP:
-                if (isGrounded) {
-                    y = 40;
-                } else if (!isGrounded && !firstJump) {
-                    y = 40;
-                    secondJump = true;
-                    firstJump = true;
+                if (jumpsRemaining > 0 && hasStoppedJumping) {
+                    hasStoppedJumping = false;
+                    --jumpsRemaining;
+                    yAcceleration = -velocity.y - 40;
                 }
                 break;
             case NONE:
-                y = 0;
-                if (!isGrounded && !secondJump) {
-                    firstJump = false;
+                // if we just released the jump button and we're still moving up,
+                // stop moving up so much. 
+                if (!hasStoppedJumping && velocity.y <= 0) {
+                    yAcceleration = -0.8*velocity.y;
+                    hasStoppedJumping = true;
                 }
                 break;
 
         }
-        slowAmount += 0.02;
-        if (slowAmount >= 1.0) {
-            slowAmount = 1.0;
+        slowPercent += 0.02;
+        if (slowPercent >= 1.0) {
+            slowPercent = 1.0;
         }
-        velocity.setLocation(velocity.getX() + x, velocity.getY() - y);
+        velocity = Utilities.add(velocity, new Point2D.Double(xAcceleration, yAcceleration));
     }
 
     public boolean isAffectedByGravity() {
@@ -281,8 +279,8 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
         return this.mana >= mana;
     }
 
-    public double getSlowAmount() {
-        return (slowAmount * 100);
+    public double getSlowPercent() {
+        return (slowPercent * 100);
     }
 
     public UserInput.SpellInput getDesiredSpell() {

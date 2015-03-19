@@ -98,7 +98,7 @@ public class MobileEntity extends Entity {
         if (velocity.y < 0) isGrounded = false;
         if (Utilities.length(getVelocity()) == 0) return;
         Point2D.Double normalized = Utilities.normalize(getVelocity());
-        int desiredDistance = (int)(getVelocity().distance(0,0));
+        int desiredDistance = (int)(Utilities.length(getVelocity()));
         for (int i = 0; i < desiredDistance; ++i) {
             moveBy(normalized);
 

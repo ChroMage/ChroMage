@@ -84,7 +84,7 @@ public class Projectile extends MobileEntity implements Serializable, CollisionP
                                 knockup * (1 - elasticity) * (1 - pureVertical)
                         ),
                         new Point2D.Double(0, -knockup * pureVertical),
-                        target.getVelocity()
+                        target.velocity
                 )
         );
         setShouldBeRemoved(true);
