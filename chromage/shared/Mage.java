@@ -22,6 +22,7 @@ public class Mage extends Entity implements Serializable {
 	public static final int DEFAULT_WIDTH = 100;
 	public static final int MAX_HP = 1000;
 	public static final int MAX_MANA = 300;
+	public static final int MANA_REGEN = 2;
 	public Point2D.Double getVelocity() {
 		return new Point2D.Double(velocity.x*slowAmount, velocity.y*slowAmount);
 	}
@@ -192,7 +193,7 @@ public class Mage extends Entity implements Serializable {
 
 	public ArrayList<? extends Entity> update(ArrayList<Entity> entities){
 		super.update(entities);
-		addMana(1);
+		addMana(MANA_REGEN);
         return castSpell(entities);
 	}
 

@@ -49,13 +49,13 @@ public class Lifesteal extends Spell {
 	@Override
 	public int getManaCost() {
 		// TODO Auto-generated method stub
-		return 2;
+		return 15;
 	}
 
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 1;
+		return 2;
 	}
 	
 	public int getHeal() {
@@ -87,6 +87,12 @@ public class Lifesteal extends Spell {
 	}
 
 	@Override
+	public int getKnockup() {
+		// TODO Auto-generated method stub
+		return 10;
+	}
+
+	@Override
 	public boolean isAffectedByGravity() {
 		// TODO Auto-generated method stub
 		return false;
@@ -94,7 +100,7 @@ public class Lifesteal extends Spell {
 
     @Override
 	public ArrayList<Projectile> createProjectiles(Mage mage, Point2D.Double target, ArrayList<Entity> entities) {
-		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
+		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getCenter().getX(), target.getY() - mage.getCenter().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
 		Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
                 getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity()) {
@@ -109,11 +115,5 @@ public class Lifesteal extends Spell {
         ArrayList<Projectile> a = new ArrayList<Projectile>();
         a.add(p);
 		return a;
-	}
-
-	@Override
-	public int getKnockup() {
-		// TODO Auto-generated method stub
-		return 6;
 	}
 }

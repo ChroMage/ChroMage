@@ -43,13 +43,13 @@ public class Blink extends Spell {
 	@Override
 	public int getCoolDown() {
 		// TODO Auto-generated method stub
-		return 30;
+		return 10;
 	}
 
 	@Override
 	public int getManaCost() {
 		// TODO Auto-generated method stub
-		return 50;
+		return 100;
 	}
 
 	@Override

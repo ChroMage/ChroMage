@@ -28,11 +28,11 @@ public class Fireball extends Spell {
 	}
 	@Override
 	public int getManaCost() {
-		return 30;
+		return 50;
 	}
 	@Override
 	public int getDamage() {
-		return 40;
+		return 60;
 	}
 	@Override
 	public double getWidth() {

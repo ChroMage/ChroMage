@@ -43,13 +43,13 @@ public class FruitPunch extends Spell {
 	@Override
 	public int getManaCost() {
 
-		return 0;
+		return 45;
 	}
 
 	@Override
 	public int getDamage() {
 
-		return 100;
+		return 80;
 	}
 
 	@Override
