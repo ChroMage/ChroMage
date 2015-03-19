@@ -1,7 +1,6 @@
 package chromage.shared;
 
 import chromage.shared.engine.Entity;
-import chromage.shared.engine.GameState;
 import chromage.shared.engine.Projectile;
 import chromage.shared.spells.*;
 import chromage.shared.utils.Constants;
@@ -34,6 +33,10 @@ public class Mage extends Entity implements Serializable {
 	public Spell leftSpell = new Fireball();
 	public Spell middleSpell = new Blink();
 	public Spell rightSpell = new Iceball();
+
+    public SpellInput desiredSpell;
+
+    public Point2D.Double target;
 	public MageType mageType;
 	
 	public boolean isDead() {
@@ -160,33 +163,36 @@ public class Mage extends Entity implements Serializable {
 		coolDown = i;
 	}
 
-	public void castSpell(UserInput input, GameState state) {
-		Spell s = null;
-		if (input.spell.equals(SpellInput.LEFT)){
-			s = leftSpell;
-		}
-		else if (input.spell.equals(SpellInput.RIGHT)){ 
-			s = rightSpell; 
-		}
-		else if (input.spell.equals(SpellInput.MIDDLE)) {
-			s = middleSpell;
-		}
-		if(getCoolDown() <= 0 && (s != null) && hasMana(s.getManaCost())){
-			Projectile projectile = s.createProjectile(this, input.mouseLocation, state);
+    public Spell getSpellForInput(SpellInput input) {
+        switch (input) {
+            case LEFT:  return leftSpell;
+            case RIGHT: return rightSpell;
+            case MIDDLE: return middleSpell;
+            default: return null;
+        }
+    }
+
+    public boolean canCast(Spell spell) {
+        return spell != null && getCoolDown() <= 0 && hasMana(spell.getManaCost());
+    }
+
+	public ArrayList<Projectile> castSpell(ArrayList<Entity> entities) {
+		Spell s = getSpellForInput(getDesiredSpell());
+		if (canCast(s)) {
 			setCoolDown(s.getCoolDown());
 			removeMana(s.getManaCost());
-			if (projectile != null) {
-				state.entities.add(projectile);
-			}
+            return s.createProjectiles(this, target, entities);
 		}
-		else{
+		else {
 			decrementCooldown();
 		}
+        return new ArrayList<Projectile>();
 	}
 
-	public void update(ArrayList<Entity> entities){
+	public ArrayList<? extends Entity> update(ArrayList<Entity> entities){
 		super.update(entities);
 		addMana(1);
+        return castSpell(entities);
 	}
 
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
@@ -236,7 +242,6 @@ public class Mage extends Entity implements Serializable {
 		combo = 0;
 	}
 	
-
 	public double getMana() {
 		return mana;
 	}
@@ -256,4 +261,21 @@ public class Mage extends Entity implements Serializable {
 	public boolean hasMana(double mana) {
 		return this.mana >= mana;
 	}
+
+    public SpellInput getDesiredSpell() {
+        return desiredSpell;
+    }
+
+    public void setDesiredSpell(SpellInput desiredSpell) {
+        this.desiredSpell = desiredSpell;
+    }
+
+    public Point2D.Double getTarget() {
+        return target;
+    }
+
+    public void setTarget(Point2D.Double target) {
+        this.target = target;
+    }
+
 }
