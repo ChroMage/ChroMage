@@ -10,6 +10,7 @@ import chromage.shared.utils.UserInput;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Mage extends Entity implements Serializable {
     static final long serialVersionUID = -50077493051991117L;
@@ -21,12 +22,13 @@ public class Mage extends Entity implements Serializable {
 	public static final int DEFAULT_HEIGHT = 300;
 	public static final int DEFAULT_WIDTH = 100;
 	public static final int MAX_HP = 1000;
+	public static final int MAX_MANA = 300;
 	public Point2D.Double getVelocity() {
 		return new Point2D.Double(velocity.x*slowAmount, velocity.y*slowAmount);
 	}
 	private int coolDown = 0;
 	public int hp = MAX_HP;
-	public int mana = 300;
+	public double mana = MAX_MANA;
 	private int combo;
 	private String name = "Training Bot";
 	public Spell leftSpell = new Fireball();
@@ -40,7 +42,6 @@ public class Mage extends Entity implements Serializable {
 
 	public void takeDamage(int dmg, int slowAmount, int comboValue) {
 		hp -= getDamageWithCombo(dmg, combo);
-		System.out.println("DAMAGE: " + getDamageWithCombo(dmg, combo) + ". HP: " + hp + "COMBO: " + combo);
 		combo += comboValue;
 		this.slowAmount = slowAmount/100.0;
 		if (hp <= 0) {
@@ -160,24 +161,22 @@ public class Mage extends Entity implements Serializable {
 	}
 
 	public void castSpell(UserInput input, GameState state) {
-		if(getCoolDown() <= 0){
-			Spell s = null;
-			if (input.spell.equals(SpellInput.LEFT)){
-				s = leftSpell;
-			}
-			else if (input.spell.equals(SpellInput.RIGHT)){ 
-				s = rightSpell; 
-			}
-			else if (input.spell.equals(SpellInput.MIDDLE)) {
-				s = middleSpell;
-			}
-			if (s != null) {
-				Projectile projectile = s.createProjectile(this, input.mouseLocation, state);
-				setCoolDown(s.getCoolDown());
-				mana -= s.getManaCost();
-				if (projectile != null) {
-					state.entities.add(projectile);
-				}
+		Spell s = null;
+		if (input.spell.equals(SpellInput.LEFT)){
+			s = leftSpell;
+		}
+		else if (input.spell.equals(SpellInput.RIGHT)){ 
+			s = rightSpell; 
+		}
+		else if (input.spell.equals(SpellInput.MIDDLE)) {
+			s = middleSpell;
+		}
+		if(getCoolDown() <= 0 && (s != null) && hasMana(s.getManaCost())){
+			Projectile projectile = s.createProjectile(this, input.mouseLocation, state);
+			setCoolDown(s.getCoolDown());
+			removeMana(s.getManaCost());
+			if (projectile != null) {
+				state.entities.add(projectile);
 			}
 		}
 		else{
@@ -185,6 +184,10 @@ public class Mage extends Entity implements Serializable {
 		}
 	}
 
+	public void update(ArrayList<Entity> entities){
+		super.update(entities);
+		addMana(1);
+	}
 
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(getPosition().x*widthFactor);
@@ -193,10 +196,10 @@ public class Mage extends Entity implements Serializable {
 		int scaledHeight = (int) (getHeight() * heightFactor);
 		g.setColor(color);
 		g.fillRect(x, y, scaledWidth, scaledHeight);
-		g.setColor(Color.white);
-		g.fillRect(x, y - 5, scaledWidth, 5);
-		g.setColor(Color.green);
+		g.setColor(Color.GREEN);
 		g.fillRect(x, y - 25, scaledWidth * hp / MAX_HP, 10);
+		g.setColor(Color.BLUE);
+		g.fillRect(x, y - 15, (int) (scaledWidth * mana / MAX_MANA), 10);
 		writePlayerName(g, x, y);
 		writeComboCounter(g, x, y);
 
@@ -231,5 +234,26 @@ public class Mage extends Entity implements Serializable {
 	
 	public void clearCombo() {
 		combo = 0;
+	}
+	
+
+	public double getMana() {
+		return mana;
+	}
+
+	public void setMana(double mana) {
+		this.mana = mana;
+	}
+	
+	public void addMana(double mana) {
+		this.mana = Math.min(mana + this.mana, MAX_MANA);
+	}
+	
+	public void removeMana(double mana) {
+		this.mana -= mana;
+	}
+	
+	public boolean hasMana(double mana) {
+		return this.mana >= mana;
 	}
 }
