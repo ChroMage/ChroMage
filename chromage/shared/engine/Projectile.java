@@ -25,7 +25,8 @@ public class Projectile extends Entity implements Serializable {
 		this.damage = damage;
 		this.slowAmount = slowAmount;
 		this.setVelocity(velocity);
-		this.type = Constants.PROJECTILE_TYPE;
+        this.collisionBitMask = Constants.MAGE_TYPE | Constants.BLOCK_TYPE;
+        this.categoryBitMask  = Constants.PROJECTILE_TYPE;
 		this.color = color;
 		this.owner = owner;
 		this.knockup = knockup;
@@ -34,6 +35,11 @@ public class Projectile extends Entity implements Serializable {
 
     public Projectile(Point2D.Double initialPosition, double width, double height, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner, boolean isAffectedByGravity){
         this(new Rectangle2D.Double(initialPosition.x, initialPosition.y, width, height), velocity, damage, slowAmount, knockup, color, owner, isAffectedByGravity);
+    }
+
+    @Override
+    public boolean canCollideWith(Entity e) {
+        return super.canCollideWith(e) && owner != e;
     }
 
 	public boolean isAffectedByGravity(){
@@ -45,14 +51,9 @@ public class Projectile extends Entity implements Serializable {
 	}
 
 	@Override
-	public void applyHits(ArrayList<Entity> entities) {
-		//for each projectile, check if it should activate
-		for(Entity target : entities){
-			if(canCollideWith(target) && getHitbox().intersects(target.getHitbox())){
-				hitTarget(target);
-				setShouldBeRemoved(true);
-			}
-		}
+	public void didCollideWith(Entity e) {
+        hitTarget(e);
+        setShouldBeRemoved(true);
 	}
 	
 	public void hitTarget(Entity target){

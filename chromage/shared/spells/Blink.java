@@ -93,7 +93,7 @@ public class Blink extends Spell {
 		Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, 1, 1);
 		boolean canBlink = true;
 		for(Entity e: state.entities){
-			if(((e.getType() & Constants.BLOCK_TYPE) != 0) && newHitBox.intersects(e.getHitbox())){
+			if (mage.canCollideWith(e) && newHitBox.intersects(e.getHitbox())){
 				canBlink = false;
 			}
 		}

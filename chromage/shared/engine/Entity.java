@@ -3,6 +3,7 @@ package chromage.shared.engine;
 import chromage.shared.utils.Constants;
 import chromage.shared.utils.Utilities;
 
+import javax.rmi.CORBA.Util;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -17,23 +18,23 @@ public class Entity implements Serializable {
 
     public Rectangle2D.Double bounds = new Rectangle2D.Double();
 	public Point2D.Double velocity = new Point2D.Double(0,0);
-//    private Point2D.Double position = new Point2D.Double(2000,2000);
-//	protected double width = DEFAULT_WIDTH;
-//	protected double height = DEFAULT_HEIGHT;
 	protected Color color = Color.MAGENTA;
 	protected boolean isMobile = true;
-	protected int type = 0;
-	public int getType() {
-		return type;
-	}
+
+    /**
+     * Tells what categories of Entities this Entity can collide with.
+     */
+    protected int collisionBitMask;
+
+    /**
+     * Tells what category of entity this is.
+     */
+    protected int categoryBitMask;
 
 	protected boolean isGrounded = false;
+
 	private boolean shouldBeRemoved = false;
-	public void setShouldBeRemoved(boolean v) {
-		shouldBeRemoved = v;
-	}
-	public boolean shouldBeRemoved() { return shouldBeRemoved; }
-	
+
 	public void draw(Graphics g, double heightFactor, double widthFactor) {
 		int x = (int)(getPosition().x*widthFactor);
 		int y = (int)(getPosition().y*heightFactor);
@@ -47,50 +48,20 @@ public class Entity implements Serializable {
 	}
 	public boolean isAffectedByGravity(){ return false; }
 	
-	public boolean canCollideWith(Entity e){
-		//collide if I am a projectile and they aren't and they aren't my owner
-		return ((e.type & Constants.PROJECTILE_TYPE) == 0)
-			&& ((type & Constants.PROJECTILE_TYPE) != 0)
-			&& getOwner() != e;
+	public boolean canCollideWith(Entity e) {
+        return (collisionBitMask & e.categoryBitMask) != 0 && e != this;
 	}
 	
-	protected Entity getOwner() {
-		return null;
-	}
-	
-	public void addUpRightVelocity(int x, int y){
-		if(isMobile){
-			this.velocity.x += x;
-			this.velocity.y -= y;
-		}
-	}
-	public void applyFriction() {
-		if((type & Constants.MAGE_TYPE) != 0){
-			if(Math.abs(this.velocity.x) > .4){
-				this.velocity.x -= .5*Math.signum(this.velocity.x);
-			}
-			else{
-				this.velocity.x = 0;
-			}
-			int maxXVelocity = 15;
-			if(this.velocity.x > maxXVelocity){
-				this.velocity.x = maxXVelocity;
-			}
-			if(this.velocity.x < -1*maxXVelocity){
-				this.velocity.x = -1*maxXVelocity;
-			}
-		}
-	}
+	public void applyFriction() { }
 	
 	public void update(ArrayList<Entity> entities){
 		applyGravity();
 		applyFriction();
 		updatePosition(entities);
-		applyHits(entities);
 	}
-	
-	public void applyGravity(){
-		if(isAffectedByGravity()){
+
+	public void applyGravity() {
+		if (isAffectedByGravity()){
 			this.velocity.y += 2;
 		}
 	}
@@ -99,78 +70,57 @@ public class Entity implements Serializable {
 		return getBounds();
 	}
 
+    public void moveBy(Point2D.Double p) {
+        setPosition(Utilities.add(getPosition(), p));
+    }
+
+    public void didCollideWith(Entity e) {
+        Rectangle2D.Double intersection = new Rectangle2D.Double();
+        Rectangle2D.intersect(getHitbox(), e.getHitbox(), intersection);
+
+        Point2D.Double d = Utilities.subtract(new Point2D.Double(), Utilities.normalize(getVelocity()));
+
+        if (intersection.getMinX() == getHitbox().getMinX() && getHitbox().getMaxX() == intersection.getMaxX()) {
+            // if the object extends past us in either direction in X, moving in X won't get us away from it.
+            if (d.y != 0) d.x = 0;
+        }
+        if (intersection.getMinY() == getHitbox().getMinY() && getHitbox().getMaxY() == intersection.getMaxY()) {
+            // if the object extends past us in either direction in Y, moving in Y won't get us away from it.
+            if (d.x != 0) d.y = 0;
+        }
+        while (getHitbox().intersects(e.getHitbox())) {
+            moveBy(d);
+        }
+        if (intersection.getMinY() == e.getHitbox().getMinY()) {
+            // hit the top of the object
+            hitGround();
+        } else if (intersection.getMaxY() == e.getHitbox().getMaxY()) {
+            // hit the bottom of the object
+            zeroVerticalVelocity();
+        } else if (intersection.getMinX() == e.getHitbox().getMinX()) {
+            // hit the right of the object
+            velocity.x = 0;
+        } else if (intersection.getMaxX() == e.getHitbox().getMaxX()) {
+            // hit the left  of the object
+            velocity.x = 0;
+        }
+    }
+
+    public void hitGround() {
+        isGrounded = true;
+        zeroVerticalVelocity();
+    }
+
 	public void updatePosition(ArrayList<Entity> entities) {
-		if(isMobile) {
+		if (isMobile) {
             setPosition(Utilities.add(getPosition(), getVelocity()));
 			if (velocity.y < 0) isGrounded = false;
-			for(Entity e : entities){
-				if(((type & Constants.MAGE_TYPE) != 0)){
-					//Stop the object on top of immobile objects
-					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheTopOf(e)){
-						this.velocity.y = 0;
-                        setPosition(getPosition().getX(), e.getBounds().getMinY() - getHeight() + 1);
-						isGrounded = true;
-						this.clearCombo();
-					}
-					
-					//Stop the object on hitting ceiling
-					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsTheBottomOf(e)){
-						this.velocity.y = 0;
-                        setPosition(getPosition().getX(), e.getBounds().getMaxY() + 1);
-					}
-					
-					//stop when hitting a wall going right
-					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsLeftOf(e)){
-						this.velocity.x = 0;
-                        setPosition(e.getBounds().getMinX() - getWidth() - 1, getPosition().getY());
-					}
-					
-					//stop when hitting a wall going left
-					if(((e.type & Constants.BLOCK_TYPE) != 0) && overlapsRightOf(e)){
-						this.velocity.x = 0;
-                        setPosition(e.getBounds().getMaxX() + 1, getPosition().getY());
-					}
-				}
-				else if(((e.type & Constants.BLOCK_TYPE) != 0) && getHitbox().intersects(e.getHitbox())){
-					/*
-					 * insert code here for projectile hits wall
-					 */
-					this.setShouldBeRemoved(true);
-				}
+			for (Entity e : entities) {
+                if (canCollideWith(e) && getHitbox().intersects(e.getHitbox())) {
+                    didCollideWith(e);
+                }
 			}
 		}
-	}
-
-	//override these if needed
-	public void clearCombo() {
-	}
-	public void applyHits(ArrayList<Entity> entities) {
-	}
-	protected void applyKnockup(int knockup) {
-	}
-	
-	private boolean overlapsTheBottomOf(Entity wall) {
-        Rectangle2D.Double r = new Rectangle2D.Double();
-        Rectangle2D.intersect(bounds, wall.getBounds(), r);
-        return !r.isEmpty() && r.getMaxY() == wall.getBounds().getMaxY();
-	}
-
-	private boolean overlapsRightOf(Entity wall) {
-        Rectangle2D.Double r = new Rectangle2D.Double();
-        Rectangle2D.intersect(bounds, wall.getBounds(), r);
-        return !r.isEmpty() && r.getMaxX() == wall.getBounds().getMaxX();
-	}
-
-	private boolean overlapsLeftOf(Entity wall) {
-        Rectangle2D.Double r = new Rectangle2D.Double();
-        Rectangle2D.intersect(bounds, wall.getBounds(), r);
-        return !r.isEmpty() && r.getMinX() == wall.getBounds().getMinX();
-	}
-
-	private boolean overlapsTheTopOf(Entity wall) {
-        Rectangle2D.Double r = new Rectangle2D.Double();
-        Rectangle2D.intersect(bounds, wall.getBounds(), r);
-        return !r.isEmpty() && r.getMinY() == wall.getBounds().getMinY();
 	}
 
     public Rectangle2D.Double getBounds() {
@@ -227,8 +177,8 @@ public class Entity implements Serializable {
     public void setColor(Color color) {
         this.color = color;
     }
-    
-	public void addCombo(int comboValue) {
-		
-	}
+    public void setShouldBeRemoved(boolean v) {
+        shouldBeRemoved = v;
+    }
+    public boolean shouldBeRemoved() { return shouldBeRemoved; }
 }

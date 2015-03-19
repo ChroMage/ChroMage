@@ -21,34 +21,84 @@ import java.util.UUID;
  */
 public class PlayerThread extends Thread {
 
+    /**
+     * the socket through which we are connected to this player.
+     */
     private Socket socket;
 
+    /**
+     * The most recent input state received from the client.
+     */
     private UserInput currentInputState;
-    private boolean wantsTermination;
-    private boolean shouldKeepProcessing;
-    private boolean shouldListenInLobby;
-    private int playerNumber;
+
+    /**
+     * The game tick in which we most recently got a packet from this player
+     */
     private long lastUpdateTick;
-    private boolean isReady;
+
+    /**
+     * True if the client has ever sent input requesting termination
+     */
+    private boolean wantsTermination;
+
+    /**
+     * True if we should keep listening to the player for input during the game
+     */
+    private boolean shouldKeepProcessing;
+
+    /**
+     * True iff we should keep listening to command to the lobby
+     */
+    private boolean shouldListenInLobby;
+
+    /**
+     * the most recent game state of which the server has informed this client
+     */
     private GameState state = new GameState();
+
+    /**
+     * The server this client is connected to
+     */
     private Server server;
-    private String playerName;
+
+    /**
+     * The mage associated with this player
+     */
     public Mage mage;
+
+    /**
+     * The input stream from the client
+     */
     BufferedReader fromClient;
+
+    /**
+     * The output stream to the client
+     */
     DataOutputStream toClient;
 
+    private String playerName;
+
+    /**
+     * Create a new player thread
+     * @param socket the socket on which this player is connected
+     * @param server the server to which the player connected
+     */
     public PlayerThread(Socket socket, Server server) {
         this.socket = socket;
         this.wantsTermination = false;
         this.lastUpdateTick = 0;
-        resetCurrentInputState();
         this.server = server;
+        resetCurrentInputState();
     }
 
-    public String getPlayerName() {
-        return playerName;
-    }
+    public String getPlayerName() { return playerName; }
 
+    /**
+     * Performs the whole process for a player from start to finish:
+     * First it does the handshake and gets the player's name; then
+     * it puts the player in the lobby and waits for them to choose a
+     * game, then actually puts them in the game
+     */
     public void run() {
         try {
             fromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -69,6 +119,9 @@ public class PlayerThread extends Thread {
         }
     }
 
+    /**
+     * Sends the current game state to the client every tick.
+     */
     private void startStateSending() {
         new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
             public boolean shouldContinue() {
@@ -76,8 +129,13 @@ public class PlayerThread extends Thread {
             }
             public void body() {
                 try {
-                    String serialization = state.serializeToString();
-                    toClient.writeBytes(serialization + '\n');
+                    synchronized (state) {
+                        String serialization = state.serializeToString();
+                        toClient.writeBytes(serialization + '\n');
+                        if (state.shouldTerminate()) {
+                            terminateConnection();
+                        }
+                    }
                 } catch (SocketException ex) {
                     server.disconnectPlayer(PlayerThread.this);
                     wantsTermination = true;
@@ -90,6 +148,13 @@ public class PlayerThread extends Thread {
         }.runInBackground();
     }
 
+    /**
+     * Read the player's username from the socket, then if
+     * it was given in the right format, tell them welcome;
+     * otherwise, disconnect them.
+     *
+     * @throws IOException
+     */
     public void initiateHandshake() throws IOException {
         toClient.writeBytes("Enter your username.\n");
         String line = fromClient.readLine();
@@ -104,27 +169,27 @@ public class PlayerThread extends Thread {
         }
     }
 
+    /**
+     * Sets the flags which make all the background processes stop.
+     */
     public void terminateConnection() {
         wantsTermination = true;
         shouldKeepProcessing = false;
         shouldListenInLobby = false;
     }
 
+    /**
+     * Sets the state to be sent next time the player gets an update from the server.
+     * @param state
+     */
     public void sendUpdate(GameState state) {
         this.state = state;
-//        try {
-//            String serialization = state.serializeToString();
-//            toClient.writeBytes(serialization + '\n');
-//        } catch (SocketException ex) {
-//            server.disconnectPlayer(this);
-//            wantsTermination = true;
-//        } catch (IOException e) {
-//            server.disconnectPlayer(this);
-//            wantsTermination = true;
-//            e.printStackTrace();
-//        }
     }
 
+    /**
+     * Listens for lobby commands until the player joins a game, then returns
+     * @throws IOException
+     */
     public void enterLobby() throws IOException {
         if (wantsTermination) return;
         System.out.println("Entered lobby: " + getPlayerName());
@@ -135,7 +200,6 @@ public class PlayerThread extends Thread {
                 server.disconnectPlayer(this);
             }
             System.out.println("Lobby: got message " + clientMessage);
-            // TODO: actually come up with protocol for joining game etc.
             String[] parts = clientMessage.split(" ");
             String action = parts[0];
             if ("list".equals(action) && parts.length == 1) {
@@ -163,6 +227,10 @@ public class PlayerThread extends Thread {
         }
     }
 
+    /**
+     * Listens on the socket for updates from the player about their input
+     * @throws IOException
+     */
     public void listenForUpdates() throws IOException {
         if (wantsTermination || state.shouldTerminate()) return;
         // Send initial connection info
@@ -172,9 +240,7 @@ public class PlayerThread extends Thread {
             if (clientMessage == null) break;
             try {
                 UserInput userInput = UserInput.deserializeFromString(clientMessage);
-                if (clientMessage == null) {
-                    break;
-                }
+
                 if (userInput.wantsTermination()) {
                     wantsTermination = true;
                 } else {
@@ -190,14 +256,7 @@ public class PlayerThread extends Thread {
         System.out.println("Terminating connection.");
     }
 
-    public boolean isReady() {
-        return isReady;
-    }
-
-    public long getLastUpdateTick() {
-        return lastUpdateTick;
-    }
-
+    public long getLastUpdateTick() { return lastUpdateTick; }
     public boolean wantsTermination() { return wantsTermination; }
     public UserInput getCurrentInputState() { return currentInputState; }
     public void resetCurrentInputState() { currentInputState = new UserInput(); }

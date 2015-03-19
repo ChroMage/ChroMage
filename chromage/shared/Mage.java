@@ -55,17 +55,29 @@ public class Mage extends Entity implements Serializable {
         hp = Math.min(hp, MAX_HP);
     }
 
-	
+    @Override
+    public void applyFriction() {
+        if(Math.abs(this.velocity.x) > .4){
+            this.velocity.x -= .5*Math.signum(this.velocity.x);
+        }
+        else{
+            this.velocity.x = 0;
+        }
+        int maxXVelocity = 15;
+        if(this.velocity.x > maxXVelocity){
+            this.velocity.x = maxXVelocity;
+        }
+        if(this.velocity.x < -1*maxXVelocity){
+            this.velocity.x = -1*maxXVelocity;
+        }
+    }
+
 	private int getDamageWithCombo(int damage, int combo) {
 		return (int) (damage * Math.pow(1.1, combo));
 	}
 
 	public void addCombo(int comboValue) {
 		setCombo(getCombo() + comboValue);
-	}
-	
-	protected void applyKnockup(int knockup) {
-		velocity.y -= knockup;
 	}
 	
 	public Mage(MageType mageType){
@@ -75,6 +87,10 @@ public class Mage extends Entity implements Serializable {
 		rightSpell = mageType.rightSpell;
 	}
 
+    public void hitGround() {
+        super.hitGround();
+        clearCombo();
+    }
 
 	public Mage(int x, int y, int width, int height, Color color, String name){
 		setPosition(new Point2D.Double(x, y));
@@ -83,7 +99,8 @@ public class Mage extends Entity implements Serializable {
 		setHeight(height);
         setColor(color);
         setName(name);
-		type = Constants.MAGE_TYPE;
+        collisionBitMask = Constants.BLOCK_TYPE;
+        categoryBitMask = Constants.MAGE_TYPE;
 	}
 	
 	public void setVelocityWithInput(UserInput input) {

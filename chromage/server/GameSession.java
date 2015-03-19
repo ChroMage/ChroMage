@@ -57,10 +57,6 @@ public class GameSession extends Thread {
 	}
 
 	public boolean allPlayersReady() {
-		for (PlayerThread player : players) {
-			if (!player.isReady())
-				return false;
-		}
 		return true;
 	}
 
@@ -126,21 +122,30 @@ public class GameSession extends Thread {
 				return true;
 			}
 			public void body() {
-				processInput();
-				state.update();
-				sendUpdates();
+                synchronized (state) {
+                    processInput();
+                    state.update();
+                    sendUpdates();
+                }
 			}
 		}.run();
 	}
 
 	public void terminateConnections() {
-		System.out.println("TerminateConnections called");
-		state.setTerminate();
+
+        // tell all the child threads to close their connections
 		for (PlayerThread p : players) {
-			System.out.println("Sending terminate state");
 			p.sendUpdate(state);
-			p.terminateConnection();
 		}
+
+        // keep this thread alive while we wait for the child threads to terminate gracefully
+        for (PlayerThread p : players) {
+            try {
+                p.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 	}
 
 	public void prepareGame() {
@@ -160,9 +165,9 @@ public class GameSession extends Thread {
 		} else {
 			System.out.println("Something went wrong before we could start the game.");
 		}
-		System.out.println("Ending game...");
+		System.out.println("Terminating connections...");
 		terminateConnections();
-		System.out.println("Ending game session.");
+		System.out.println("Game session ended.");
 		server.gameEnded(this);
 	}
 

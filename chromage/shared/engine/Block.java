@@ -14,6 +14,7 @@ public class Block extends Entity implements Serializable {
 		setHeight(height);
 		this.color = Color.GRAY;
 		isMobile = false;
-		type = Constants.BLOCK_TYPE;
+        collisionBitMask = 0;
+        categoryBitMask = Constants.BLOCK_TYPE;
 	}
 }

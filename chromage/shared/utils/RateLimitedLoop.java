@@ -13,12 +13,14 @@ public abstract class RateLimitedLoop implements Runnable {
         executionsPerSecond = rate;
     }
 
-    public void runInBackground() {
-        new Thread() {
+    public Thread runInBackground() {
+        Thread t =  new Thread() {
             public void run() {
                 RateLimitedLoop.this.run();
             }
-        }.start();
+        };
+        t.start();
+        return t;
     }
 
     public void setResult(Object result) {
