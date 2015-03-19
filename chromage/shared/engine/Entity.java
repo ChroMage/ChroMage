@@ -18,13 +18,13 @@ public class Entity implements Serializable {
     /**
      * Tells what categories of Entities this Entity can collide with.
      *
-     * @see Entity::canCollideWith
+     * @see Entity#canCollideWith
      */
     protected int collisionBitMask;
     /**
      * Tells what category of entity this is.
      *
-     * @see Entity::canCollideWith
+     * @see Entity#canCollideWith
      */
     protected int categoryBitMask;
     /**
@@ -59,7 +59,9 @@ public class Entity implements Serializable {
      * Entity A can collide with Entity B if A's collisionBitMask matches at least one bit of Entity B's category:
      * that is, if
      * <p/>
-     * collisionBitMask & e.categoryBitMask != 0
+     * <pre>
+     *     collisionBitMask & e.categoryBitMask != 0
+     * </pre>
      * <p/>
      * Note that subclasses can override this method, though, so more complex criteria can be expressed through
      * subclass overrides if necessary.
@@ -96,6 +98,10 @@ public class Entity implements Serializable {
      * @param p the vector by which to move this entity
      */
     public void moveBy(Point2D.Double p) {
+        if (Double.isNaN(p.x ) || Double.isNaN(p.y)) {
+            System.out.println("Moving to NaN");
+            new Exception().printStackTrace();
+        }
         setPosition(Utilities.add(getPosition(), p));
     }
 
