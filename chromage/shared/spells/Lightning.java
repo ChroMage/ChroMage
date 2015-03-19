@@ -44,19 +44,19 @@ public class Lightning extends Spell {
 	@Override
 	public int getCoolDown() {
 		// TODO Auto-generated method stub
-		return 120;
+		return 30;
 	}
 
 	@Override
 	public int getManaCost() {
 		// TODO Auto-generated method stub
-		return 80;
+		return 240;
 	}
 
 	@Override
 	public int getDamage() {
 		// TODO Auto-generated method stub
-		return 100;
+		return 120;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class Lightning extends Spell {
 	}
 	
 	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
-		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
+		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getCenter().getX(), target.getY() - mage.getCenter().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
         Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
                 getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity()) {

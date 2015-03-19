@@ -42,7 +42,7 @@ public class Iceball extends Spell {
 	@Override
 	public int getManaCost() {
 		// TODO Auto-generated method stub
-		return 40;
+		return 120;
 	}
 
 	@Override
