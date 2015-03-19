@@ -88,19 +88,22 @@ public class Lightning extends Spell {
 		return false;
 	}
 	
-	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
+	public ArrayList<Projectile> createProjectile(Mage mage, Point2D.Double target, GameState state) {
 		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
         Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
                 getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity()) {
 			private static final long serialVersionUID = 188689086533652783L;
-			public void update(ArrayList<Entity> e) {
+			public ArrayList<? extends Entity> update(ArrayList<Entity> e) {
 				super.update(e);
                 setWidth(getWidth() + 3);
                 setHeight(getHeight() + 3);
+                return new ArrayList<Entity>();
 			}
 		};
-		return p;
+        ArrayList<Projectile> a = new ArrayList<Projectile>();
+        a.add(p);
+		return a;
 	}
 
 	@Override

@@ -3,12 +3,11 @@ package chromage.shared.spells;
 import chromage.shared.Mage;
 import chromage.shared.engine.Projectile;
 import chromage.shared.engine.Entity;
-import chromage.shared.engine.GameState;
-import chromage.shared.utils.Constants;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 public class Blink extends Spell {
 
@@ -88,11 +87,12 @@ public class Blink extends Spell {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
+
+    @Override
+	public ArrayList<Projectile> createProjectiles(Mage mage, Point2D.Double target, ArrayList<Entity> entities) {
 		Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, 1, 1);
 		boolean canBlink = true;
-		for(Entity e: state.entities){
+		for (Entity e: entities){
 			if (mage.canCollideWith(e) && newHitBox.intersects(e.getHitbox())){
 				canBlink = false;
 			}
@@ -100,7 +100,7 @@ public class Blink extends Spell {
 		if (canBlink) {
 			mage.setPosition(target);
 		}
-		return null;
+		return new ArrayList<Projectile>();
 	}
 
 	@Override

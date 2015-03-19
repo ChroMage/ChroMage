@@ -164,6 +164,7 @@ public class Mage extends Entity implements Serializable {
 	}
 
     public Spell getSpellForInput(SpellInput input) {
+        if (input == null) { return null; }
         switch (input) {
             case LEFT:  return leftSpell;
             case RIGHT: return rightSpell;

@@ -48,14 +48,20 @@ public class GameState implements Serializable {
      */
     public void update(){
         int count = 0;
-    	for(Entity e : entities) {
+
+        ArrayList<Entity> toAdd = new ArrayList<Entity>();
+    	for (Entity e : entities) {
             if (e instanceof Mage) {
                 count++;
             }
-    		e.update(entities);
+    		toAdd.addAll(e.update(entities));
     	}
         livingPlayers = count;
         isGameOver = livingPlayers == 1;
+
+        for (Entity e : toAdd) {
+            entities.add(e);
+        }
 
         ArrayList<Entity> toRemove = new ArrayList<Entity>();
         for (Entity e : entities) {

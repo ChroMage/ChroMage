@@ -54,10 +54,11 @@ public class Entity implements Serializable {
 	
 	public void applyFriction() { }
 	
-	public void update(ArrayList<Entity> entities){
+	public ArrayList<? extends Entity> update(ArrayList<Entity> entities){
 		applyGravity();
 		applyFriction();
 		updatePosition(entities);
+        return new ArrayList<Entity>();
 	}
 
 	public void applyGravity() {

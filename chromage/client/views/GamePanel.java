@@ -82,7 +82,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 			String output = null;
 
 
-			sender = new SenderThread(toServer);
+			sender = new SenderThread(toServer, this);
 			receiver = new ReceiverThread(fromServer, this);
 			sender.start();
 			receiver.start();
@@ -115,8 +115,20 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 					sender.userInput = userInput;
 					sender.isRunning = !receiver.state.shouldTerminate();
 					repaint();
-					if (!receiver.isAlive() || !sender.isAlive()) {
-						delegate.returnToLobby();
+					if (!receiver.isRunning || !sender.isRunning) {
+                        System.out.println("Waiting for background processes to terminate...");
+                        receiver.isRunning = sender.isRunning = false;
+                        try {
+                            sender.join();
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                        try {
+                            receiver.join();
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                        delegate.returnToLobby();
 						setBreak();
 					}
 				}
@@ -141,6 +153,11 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
         }
     }
 
+    public void gameDismissed() {
+        sender.isRunning = false;
+        receiver.isRunning = false;
+    }
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -159,6 +176,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 
     public static class ReceiverThread extends Thread {
         public GameState state;
+        public boolean isRunning;
         BufferedReader input;
         GamePanel panel;
 
@@ -169,14 +187,17 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
         }
 
         public void run() {
+            isRunning = true;
             try {
-                while (true) {
+                while (isRunning) {
                     try {
                         String output = input.readLine();
-                        state = GameState.deserializeFromString(output);
-                        if (state.shouldTerminate()) {
+                        if (output != null)
+                            state = GameState.deserializeFromString(output);
+                        if (output == null || state.shouldTerminate()) {
                             panel.gameEnded();
                             System.out.println("receive: exit.");
+                            isRunning = false;
                             break;
                         }
                     } catch (Exception e) {
@@ -195,10 +216,12 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
         DataOutputStream output;
         public UserInput userInput = new UserInput();
         public boolean isRunning;
+        GamePanel panel;
 
-        public SenderThread(DataOutputStream output) {
+        public SenderThread(DataOutputStream output,  GamePanel panel) {
             isRunning = true;
             this.output = output;
+            this.panel = panel;
         }
 
         public void run() {
@@ -210,7 +233,10 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
                     try {
                         UserInput u = userInput;
                         output.writeBytes(u.serializeToString() + "\n");
-                        if (userInput.wantsTermination()) setBreak();
+                        if (userInput.wantsTermination()) {
+                            panel.gameDismissed();
+                            setBreak();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         setBreak();

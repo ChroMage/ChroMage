@@ -1,5 +1,6 @@
 package chromage.server;
 
+import chromage.shared.engine.Projectile;
 import chromage.shared.utils.Constants;
 import chromage.shared.engine.GameState;
 import chromage.shared.Mage;
@@ -94,15 +95,9 @@ public class GameSession extends Thread {
 				System.out.println("Player " + p + " wants to leave.");
 				return;
 			}
-
 			p.mage.setVelocityWithInput(p.getCurrentInputState());
-			if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
-				p.resetCurrentInputState();
-			}
-			
-			//process spell casts
-			p.mage.castSpell(p.getCurrentInputState(), state);
-
+            p.mage.setDesiredSpell(p.getCurrentInputState().spell);
+            p.mage.setTarget(p.getCurrentInputState().mouseLocation);
 			if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
 				p.resetCurrentInputState();
 			}
@@ -132,6 +127,7 @@ public class GameSession extends Thread {
 	}
 
 	public void terminateConnections() {
+        state.setTerminate();
 
         // tell all the child threads to close their connections
 		for (PlayerThread p : players) {

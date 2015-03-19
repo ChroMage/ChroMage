@@ -1,6 +1,7 @@
 package chromage.shared.spells;
 
 import chromage.shared.Mage;
+import chromage.shared.engine.Entity;
 import chromage.shared.engine.Projectile;
 import chromage.shared.engine.GameState;
 import chromage.shared.utils.Utilities;
@@ -8,6 +9,7 @@ import chromage.shared.utils.Utilities;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public abstract class Spell implements Serializable{
 	public abstract int getKnockup();
@@ -29,11 +31,13 @@ public abstract class Spell implements Serializable{
         return new Point2D.Double(mage.getCenter().x - getWidth()/2, mage.getCenter().y - getHeight()/2);
     }
 
-	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
+	public ArrayList<Projectile> createProjectiles(Mage mage, Point2D.Double target, ArrayList<Entity> entities) {
         Point2D.Double direction = new Point2D.Double(target.getX() - mage.getCenter().getX(), target.getY() - mage.getCenter().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
 		Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
                 getDamage(), getSlow(), getKnockup(), getColor(), mage, isAffectedByGravity());
-		return p;
+        ArrayList<Projectile> a = new ArrayList<Projectile>();
+        a.add(p);
+		return a;
 	}
 }

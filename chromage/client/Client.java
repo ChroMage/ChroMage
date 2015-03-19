@@ -139,6 +139,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 
 	@Override
 	public void returnToLobby() {
+        System.out.println("Trying to return to lobby.");
 		if (!socket.isClosed()) {
 			try {
 				socket.close();

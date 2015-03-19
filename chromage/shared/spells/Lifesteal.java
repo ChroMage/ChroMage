@@ -3,11 +3,11 @@ package chromage.shared.spells;
 import chromage.shared.Mage;
 import chromage.shared.engine.Projectile;
 import chromage.shared.engine.Entity;
-import chromage.shared.engine.GameState;
 import chromage.shared.utils.Utilities;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class Lifesteal extends Spell {
 
@@ -91,8 +91,9 @@ public class Lifesteal extends Spell {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	public Projectile createProjectile(Mage mage, Point2D.Double target, GameState state) {
+
+    @Override
+	public ArrayList<Projectile> createProjectiles(Mage mage, Point2D.Double target, ArrayList<Entity> entities) {
 		Point2D.Double direction = new Point2D.Double(target.getX() - mage.getPosition().getX(), target.getY() - mage.getPosition().getY());
         Point2D.Double startPosition =  getProjectileStartPosition(mage, direction);
 		Projectile p = new Projectile(startPosition, getWidth(), getHeight(), Utilities.scaleTo(direction, getSpeed()),
@@ -105,7 +106,9 @@ public class Lifesteal extends Spell {
 				}
 			}
 		};
-		return p;
+        ArrayList<Projectile> a = new ArrayList<Projectile>();
+        a.add(p);
+		return a;
 	}
 
 	@Override
