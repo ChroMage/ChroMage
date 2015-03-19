@@ -45,7 +45,7 @@ public class MobileEntity extends Entity {
     }
 
     public void applyGravity() {
-        if (isAffectedByGravity() && !isGrounded) {
+        if (isAffectedByGravity()) {
             this.velocity.y += 2;
         }
     }
@@ -67,7 +67,7 @@ public class MobileEntity extends Entity {
             moveBy(d);
         }
 
-        if (intersectionBounds.getMinY() == e.getHitbox().getBounds().getMinY()) {
+        if (intersectionBounds.getMinY() == e.getHitbox().getBounds().getMinY() && canCollideWith(e)) {
             // hit the top of the object
             hitGround();
         } else if (intersectionBounds.getMaxY() == e.getHitbox().getBounds().getMaxY()) {

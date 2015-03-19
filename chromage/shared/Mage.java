@@ -53,7 +53,7 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
     }
 
     public Point2D.Double getVelocity() {
-        return new Point2D.Double(super.getVelocity().x * slowPercent, super.getVelocity().y * slowPercent);
+        return new Point2D.Double(super.getVelocity().x * slowPercent, super.getVelocity().y);
     }
 
     public boolean isDead() {
