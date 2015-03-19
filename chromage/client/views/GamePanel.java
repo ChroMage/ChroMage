@@ -281,7 +281,7 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
                 public void body() {
                     try {
                         UserInput u = userInput;
-                        output.writeBytes(u.serializeToString() + "\n");
+                        output.writeBytes(Serializer.serializeToString(u) + "\n");
                         if (userInput.wantsTermination()) {
                             panel.gameDismissed();
                             setBreak();

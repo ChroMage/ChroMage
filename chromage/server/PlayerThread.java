@@ -228,7 +228,7 @@ public class PlayerThread extends Thread {
             String clientMessage = fromClient.readLine();
             if (clientMessage == null) break;
             try {
-                UserInput userInput = UserInput.deserializeFromString(clientMessage);
+                UserInput userInput = Serializer.deserializeFromString(clientMessage);
 
                 if (userInput.wantsTermination()) {
                     wantsTermination = true;
