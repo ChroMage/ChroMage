@@ -1,7 +1,6 @@
 package chromage.shared.engine;
 
 import chromage.shared.Mage;
-import chromage.shared.engine.Entity;
 import chromage.shared.utils.Constants;
 import chromage.shared.utils.Utilities;
 
@@ -9,32 +8,49 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 
-public class Projectile extends Entity implements Serializable {
+/**
+ * A generic projectile
+ */
+public class Projectile extends MobileEntity implements Serializable, CollisionProcessor {
     static final long serialVersionUID = -50077493051991117L;
-	protected boolean isGravitated = false;
-	protected int damage = 1;
-	protected int slowAmount = 100;
-	protected int knockup = 0;
-	protected int comboValue = 1;
-	Mage owner = null;
 
-	public Projectile(Rectangle2D.Double startRect, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner, boolean isAfftectedByGravity){
-		this.setBounds(startRect);
-		this.damage = damage;
-		this.slowAmount = slowAmount;
-		this.setVelocity(velocity);
+    /**
+     * The amount of damage this projectile does when it hits something.
+     */
+    protected int damage = 1;
+
+    /**
+     * The percentage by which this projectile slows its target
+     */
+    protected int slowAmount = 100;
+
+    /**
+     * The velocity at which this projectile launches its target assuming optimal hit angle
+     */
+    protected int knockup = 0;
+    /**
+     * The amount by which this projectile increases the combo counter
+     */
+    protected int comboValue = 1;
+
+    /**
+     * The owner of this projectile
+     */
+    Entity owner = null;
+
+    protected Projectile(Init<?, ?> init) {
+        this.setBounds(new Rectangle2D.Double(init.x, init.y, init.width, init.height));
+        this.damage = init.damage;
+        this.slowAmount = init.slowAmount;
+        this.setVelocity(init.velocityX, init.velocityY);
+        this.color = init.color;
+        this.owner = init.owner;
+        this.knockup = init.knockup;
+        this.comboValue = init.comboValue;
+        super.setIgnoresGravity(!init.isAffectedByGravity);
         this.collisionBitMask = Constants.MAGE_TYPE | Constants.BLOCK_TYPE;
-        this.categoryBitMask  = Constants.PROJECTILE_TYPE;
-		this.color = color;
-		this.owner = owner;
-		this.knockup = knockup;
-        this.isGravitated = isAfftectedByGravity;
-	}
-
-    public Projectile(Point2D.Double initialPosition, double width, double height, Point2D.Double velocity, int damage, int slowAmount, int knockup, Color color, Mage owner, boolean isAffectedByGravity){
-        this(new Rectangle2D.Double(initialPosition.x, initialPosition.y, width, height), velocity, damage, slowAmount, knockup, color, owner, isAffectedByGravity);
+        this.categoryBitMask = Constants.PROJECTILE_TYPE;
     }
 
     @Override
@@ -42,22 +58,19 @@ public class Projectile extends Entity implements Serializable {
         return super.canCollideWith(e) && owner != e;
     }
 
-	public boolean isAffectedByGravity(){
-		return isGravitated;
-	}
-	
-	protected Entity getOwner() {
-		return owner;
-	}
+    protected Entity getOwner() {
+        return owner;
+    }
 
-	@Override
-	public void didCollideWith(Entity e) {
-        hitTarget(e);
-        setShouldBeRemoved(true);
-	}
-	
-	public void hitTarget(Entity target){
-		target.takeDamage(damage, slowAmount, comboValue);
+    @Override
+    public void didCollideWith(Entity e) {
+        e.acceptCollisionFrom(this);
+    }
+
+    public void processCollision(Entity e) {
+    }
+
+    public void processCollision(MobileEntity target) {
         double elasticity = 0.5;
         double pureVertical = 0.7;
         target.setVelocity(
@@ -74,6 +87,147 @@ public class Projectile extends Entity implements Serializable {
                         target.getVelocity()
                 )
         );
-	}
+        setShouldBeRemoved(true);
+    }
 
+    public void processCollision(Slowable target) {
+        target.slowBy(slowAmount);
+        setShouldBeRemoved(true);
+    }
+
+    public void processCollision(Damagable target) {
+        target.takeDamage(damage);
+        setShouldBeRemoved(true);
+    }
+
+    public void processCollision(Comboable target) {
+        target.addCombo(comboValue);
+        setShouldBeRemoved(true);
+    }
+
+    public void processCollision(Block b) {
+        setShouldBeRemoved(true);
+    }
+
+    /**
+     * Subclass-able builder class
+     *
+     * @param <T> the subclass
+     */
+    public static abstract class Init<P, T extends Init<P, T>> {
+        private int damage = 1;
+        private int slowAmount = 100;
+        private int knockup = 0;
+        private int comboValue = 1;
+        private double x = 0;
+        private double y = 0;
+        private double width = 100;
+        private double height = 50;
+        private double velocityX = 0;
+        private double velocityY = 0;
+        private Mage owner = null;
+        private Color color = Color.MAGENTA;
+        private boolean isAffectedByGravity = false;
+
+        public T damage(int damage) {
+            this.damage = damage;
+            return self();
+        }
+
+        public T slowAmount(int slowAmount) {
+            this.slowAmount = slowAmount;
+            return self();
+        }
+
+        public T knockup(int knockup) {
+            this.knockup = knockup;
+            return self();
+        }
+
+        public T comboValue(int comboValue) {
+            this.comboValue = comboValue;
+            return self();
+        }
+
+        public T x(double x) {
+            this.x = x;
+            return self();
+        }
+
+        public T y(double y) {
+            this.y = y;
+            return self();
+        }
+
+        public T width(double width) {
+            this.width = width;
+            return self();
+        }
+
+        public T height(double height) {
+            this.height = height;
+            return self();
+        }
+
+        public T velocityX(double velocityX) {
+            this.velocityX = velocityX;
+            return self();
+        }
+
+        public T velocityY(double velocityY) {
+            this.velocityY = velocityY;
+            return self();
+        }
+
+        public T velocity(Point2D.Double velocity) {
+            this.velocityX = velocity.x;
+            this.velocityY = velocity.y;
+            return self();
+        }
+
+        public T owner(Mage owner) {
+            this.owner = owner;
+            return self();
+        }
+
+        public T color(Color color) {
+            this.color = color;
+            return self();
+        }
+
+        public T isAffectedByGravity(boolean isAffectedByGravity) {
+            this.isAffectedByGravity = isAffectedByGravity;
+            return self();
+        }
+
+        public T position(Point2D.Double p) {
+            this.x = p.x;
+            this.y = p.y;
+            return self();
+        }
+
+        public T bounds(Rectangle2D.Double rect) {
+            this.x = rect.getX();
+            this.y = rect.getY();
+            this.width = rect.getWidth();
+            this.height = rect.getHeight();
+            return self();
+        }
+
+        protected abstract T self();
+
+        public abstract P build();
+    }
+
+    public static class Builder extends Init<Projectile, Builder> {
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        public Projectile build() {
+            return new Projectile(this);
+        }
+    }
 }

@@ -7,13 +7,27 @@ import java.net.Socket;
 import java.util.*;
 
 /**
- * Created by ahruss on 3/13/15.
+ * Main class for the backend server.
  */
 public class Server extends Thread {
+    /**
+     * the socket we're listening for connections on
+     */
     private ServerSocket socket;
+
+    /**
+     * the port we listen on
+     */
     private int port = 9877;
 
+    /**
+     * The set of games that are currently either in-lobby or in-progress.
+     */
     private Hashtable<UUID, GameSession> games;
+
+    /**
+     * the set of players currently in the lobby
+     */
     private ArrayList<PlayerThread> lobbyPlayers;
 
     public Server() {
@@ -22,11 +36,16 @@ public class Server extends Thread {
     }
 
     public static void main(String args[]) throws IOException {
-        // TODO: make port configurable
         Server server = new Server();
         server.start();
     }
 
+    /**
+     * create a new game session and put the host in it. starts a new background thread
+     * @param host  the game session creator
+     * @param name  the name of the game to create
+     * @param expectedNumberOfPlayers   the size of the game
+     */
     public void createAndJoinGame(PlayerThread host, String name, int expectedNumberOfPlayers) {
         UUID gameUuid = UUID.randomUUID();
         name = name.replace(" ", "").replace("\n", "").replace(",", "");
@@ -36,22 +55,35 @@ public class Server extends Thread {
         games.put(gameUuid, game);
         joinGame(host, gameUuid);
         game.start();
+        System.out.println("started game");
     }
 
+    /**
+     * move the player into a game
+     * @param player    the player to move
+     * @param uuid      the uuid of the game to move them into
+     * @return  true if we successfully move the player into the game, false if the game is full or there's no game with
+     *              that UUID in our list.
+     */
     public boolean joinGame(PlayerThread player, UUID uuid) {
         GameSession game = games.get(uuid);
         if (game == null || game.isFull()) {
-            System.out.println(game.isFull());
-            System.out.println(game);
             System.out.println("Failed to join game.");
             return false;
         }
         lobbyPlayers.remove(player);
         game.connectPlayer(player);
-        System.out.println("started game");
         return true;
     }
 
+    /**
+     * Send the list of games to the player. Sends game all in one line, comma separated, each in the following format:
+     *
+     *    [uuid] [name] [number of players in game] [number of players expected]
+     *
+     * @param stream    the stream on which to send the list of games
+     * @throws IOException
+     */
     public void sendGameList(DataOutputStream stream) throws IOException {
         Dictionary<UUID, GameSession> cloned = (Hashtable<UUID, GameSession>)games.clone();
         Enumeration<UUID> keyEnumeration = cloned.keys();
@@ -65,11 +97,21 @@ public class Server extends Thread {
         stream.writeBytes(list.toString() + "\n");
     }
 
+    /**
+     * Removes a player from the lobby if they're in the lobby, then tells their thread to exit
+     * and waits for it to do so
+     * @param p the player to remove
+     */
     public void disconnectPlayer(PlayerThread p) {
         if (lobbyPlayers.contains(p)) {
             System.out.println("Disconnecting player " + p);
             lobbyPlayers.remove(p);
             p.terminateConnection();
+            try {
+                p.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -94,6 +136,10 @@ public class Server extends Thread {
         }
     }
 
+    /**
+     * Removes the game from the list of current games.
+     * @param gameSession
+     */
     public void gameEnded(GameSession gameSession) {
         System.out.println("Game ended: " + gameSession.getGameName());
         games.remove(gameSession.getUuid());

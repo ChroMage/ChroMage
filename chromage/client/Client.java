@@ -2,7 +2,7 @@ package chromage.client;
 
 import chromage.client.util.Keyboard;
 import chromage.client.views.*;
-import chromage.shared.MageType;
+import chromage.shared.Mage;
 import chromage.shared.utils.GameInfo;
 
 import javax.swing.*;
@@ -14,12 +14,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePanelDelegate {
+/**
+ * Game client main class. Creates the GUI.
+ */
+public class Client implements ConnectMenu.Delegate, LobbyMenu.Delegate, GamePanel.Delegate {
 
-	public static final int SCREEN_WIDTH = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
-	public static final int SCREEN_HEIGHT = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
-
-	public JFrame mainWindow;
+	JFrame mainWindow;
 	Socket socket;
 	DataOutputStream toServer;
 	BufferedReader fromServer;
@@ -38,19 +38,25 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
             public void run() {
                 mainWindow = new JFrame();
                 mainWindow.setTitle("ChroMage");
-                mainWindow.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
                 mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 mainWindow.setContentPane(new ConnectMenu(Client.this));
                 mainWindow.setVisible(true);
                 mainWindow.setFocusable(true);
                 mainWindow.requestFocusInWindow();
-                mainWindow.addKeyListener(Keyboard.getInstance());
+                Keyboard.listenTo(mainWindow);
                 mainWindow.pack();
                 mainWindow.setLocationRelativeTo(null);
             }
         });
 	}
 
+    /**
+     * Initiate a connection to the server. If we are successful, send the server our
+     * username, then move to the lobby panel
+     * @param port          the port entered by the user
+     * @param ipAddress     the ip address entered by the user
+     * @param playerName    the player name entered by the user
+     */
 	@Override
 	public void initiateConnection(int port, String ipAddress, String playerName) {
 		try {
@@ -66,7 +72,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
             System.out.println(welcome);
             if (!"Welcome.".equals(welcome)) {
                 System.out.println("Connection failed.");
-                returnToLobby();
+                returnToConnect();
             } else {
                 System.out.println("Connection succeeded. Moving to lobby.");
                 mainWindow.setContentPane(new LobbyMenu(this));
@@ -75,12 +81,17 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
             }
 		} catch (IOException e) {
 			e.printStackTrace();
-			returnToLobby();
+			returnToConnect();
 		}
 	}
 
+    /**
+     * Tell the server we want to join a game. If the server lets us do so, go to the game view
+     * @param id
+     * @param mageType
+     */
 	@Override
-	public void joinGame(UUID id, MageType mageType) {
+	public void joinGame(UUID id, Mage.Type mageType) {
 		try {
 			toServer.writeBytes("join " + id + " " + mageType + "\n");
 			String line = fromServer.readLine();
@@ -97,6 +108,11 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 		}
 	}
 
+    /**
+     * Get the list of games from the server
+     * @return  the list of games from the server if the request is successful; if there's an exception, returns an
+     *              empty list
+     */
 	@Override
 	public ArrayList<GameInfo> getGameList() {
 		try {
@@ -109,14 +125,20 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 			}
 			return games;
 		} catch (IOException e) {
-			returnToLobby();
+			returnToConnect();
 			e.printStackTrace();
 		}
 		return new ArrayList<GameInfo>();
 	}
 
+    /**
+     * Try to create a game. If we fail, go back to the connect menu
+     * @param numberOfPlayers
+     * @param name
+     * @param mageType
+     */
 	@Override
-	public void createGame(int numberOfPlayers, String name, MageType mageType) {
+	public void createGame(int numberOfPlayers, String name, Mage.Type mageType) {
 		System.out.println("Trying to create game");
 		try {
             name = name.replace(" ", "_");
@@ -133,13 +155,15 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			returnToLobby();
+			returnToConnect();
 		}
 	}
 
+    /**
+     * Take the player back to the connect menu
+     */
 	@Override
-	public void returnToLobby() {
-        System.out.println("Trying to return to lobby.");
+	public void returnToConnect() {
 		if (!socket.isClosed()) {
 			try {
 				socket.close();
@@ -147,7 +171,7 @@ public class Client implements IConnectMenuDelegate, ILobbyMenuDelegate, IGamePa
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Returning to lobby");
+		System.out.println("Returning to connect menu");
 		mainWindow.setContentPane(new ConnectMenu(this));
 		mainWindow.getContentPane().getParent().revalidate();
 		mainWindow.getContentPane().getParent().repaint();

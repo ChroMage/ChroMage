@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Created by ahruss on 3/18/15.
+ * Manages the creation and styling of elements for menus
  */
 public class MenuStyles {
 
@@ -19,10 +19,19 @@ public class MenuStyles {
     private static final Color FOREGROUND_COLOR = Color.WHITE;
     private static final Color BACKGROUND_COLOR = new Color(0, 22, 32);
 
+    /**
+     * Set up the style of the container panel
+     * @param panel
+     */
     public static void styleMainPanel(JComponent panel) {
         panel.setBackground(BACKGROUND_COLOR);
     }
 
+    /**
+     * Create a button with the given text.
+     * @param text the button text
+     * @return
+     */
     public static JButton createButton(String text) {
         JButton b = new JButton(text) {
 
@@ -68,6 +77,10 @@ public class MenuStyles {
         return b;
     }
 
+    /**
+     * Create a text field
+     * @return the text field created
+     */
     public static JTextField createTextField() {
         JTextField t = new JTextField();
 
@@ -79,12 +92,32 @@ public class MenuStyles {
         return t;
     }
 
+    /**
+     * Create a label with default font size and padding.
+     * @param text  the text of the label
+     * @return
+     */
     public static JLabel createLabel(String text) {
         return createLabel(text, 25);
     }
+
+    /**
+     * Create a label with default padding
+     * @param text      the text of the label
+     * @param fontSize  the font size to use, in points
+     * @return
+     */
     public static JLabel createLabel(String text, int fontSize) {
         return createLabel(text, fontSize, 5);
     }
+
+    /**
+     * Create a label with custom padding and font size
+     * @param text          the label text
+     * @param fontSize      the font size, in points
+     * @param padding       the padding to use, in pixels
+     * @return
+     */
     public static JLabel createLabel(String text, int fontSize, int padding) {
         JLabel l = new JLabel(text);
         l.setFont(new Font(l.getFont().getName(), l.getFont().getStyle(), fontSize));
@@ -93,6 +126,10 @@ public class MenuStyles {
         return l;
     }
 
+    /**
+     * Creates a game list, which expects its data elements to be objects of type GameInfo
+     * @return
+     */
     public static JList createGameList() {
         JList l = new JList();
         l.setForeground(FOREGROUND_COLOR);
@@ -127,6 +164,11 @@ public class MenuStyles {
         return l;
     }
 
+    /**
+     * Create a radio button
+     * @param text  the radio button text
+     * @return
+     */
     public static JRadioButton createRadio(String text) {
         JRadioButton b = new JRadioButton(text);
         b.setFont(new Font(b.getFont().getName(), b.getFont().getStyle(), 18));

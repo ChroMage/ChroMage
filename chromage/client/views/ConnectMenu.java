@@ -11,13 +11,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by ahruss on 3/14/15.
+ * A menu to connect to a server
  */
 public class ConnectMenu extends JPanel implements AncestorListener {
 
-    IConnectMenuDelegate delegate;
+    Delegate delegate;
 
-    public ConnectMenu(IConnectMenuDelegate delegate) {
+    /**
+     * Creates the connect menu and all its components
+     * @param delegate
+     */
+    public ConnectMenu(Delegate delegate) {
         MenuStyles.styleMainPanel(this);
         this.delegate = delegate;
         System.out.println("Opening");
@@ -82,5 +86,15 @@ public class ConnectMenu extends JPanel implements AncestorListener {
     public void ancestorRemoved(AncestorEvent e) {}
     public void ancestorAdded(AncestorEvent e) {
         System.out.println("Opened connect menu");
+    }
+
+    public static interface Delegate {
+        /**
+         * Called when the user presses the connect button to connect to a sever
+         * @param port          the port entered by the user
+         * @param ipAddress     the ip address entered by the user
+         * @param playerName    the player name entered by the user
+         */
+        public void initiateConnection(int port, String ipAddress, String playerName);
     }
 }

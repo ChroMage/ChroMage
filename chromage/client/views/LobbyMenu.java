@@ -1,9 +1,9 @@
 package chromage.client.views;
 
 import chromage.client.util.Configuration;
+import chromage.shared.Mage;
 import chromage.shared.utils.GameInfo;
 import chromage.client.MenuStyles;
-import chromage.shared.MageType;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -12,13 +12,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by ahruss on 3/14/15.
  */
 public class LobbyMenu extends JPanel implements AncestorListener {
 
-    ILobbyMenuDelegate delegate;
+    Delegate delegate;
     JList gameList;
     JTextField gameSizeField;
     JTextField gameNameField;
@@ -27,7 +28,7 @@ public class LobbyMenu extends JPanel implements AncestorListener {
     ArrayList<GameInfo> games;
     GridBagLayout layout;
 
-    public LobbyMenu(ILobbyMenuDelegate delegate) {
+    public LobbyMenu(Delegate delegate) {
         System.out.println("Joining lobby");
         games = new ArrayList<GameInfo>();
         this.delegate = delegate;
@@ -182,17 +183,17 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         Configuration.GAME_SIZE.set(getGameSize());
     }
 
-    public MageType getMageType() {
+    public Mage.Type getMageType() {
         if (orange.isSelected()) {
-            return MageType.ORANGE;
+            return Mage.Type.ORANGE;
         }
         else if (green.isSelected()) {
-            return MageType.GREEN;
+            return Mage.Type.GREEN;
         }
         else if (purple.isSelected()) {
-            return MageType.PURPLE;
+            return Mage.Type.PURPLE;
         }
-        return MageType.ORANGE;
+        return Mage.Type.ORANGE;
     }
 
     public String getGameName() {
@@ -213,5 +214,12 @@ public class LobbyMenu extends JPanel implements AncestorListener {
         System.out.println("Opened lobby menu");
         games = delegate.getGameList();
         gameList.setListData(games.toArray());
+    }
+
+    public static interface Delegate {
+        public void joinGame(UUID id, Mage.Type mageType);
+        public ArrayList<GameInfo> getGameList();
+        public void createGame(int numberOfPlayers, String name, Mage.Type mageType);
+        public void returnToConnect();
     }
 }

@@ -1,72 +1,105 @@
 package chromage.server;
 
-import chromage.shared.engine.Projectile;
-import chromage.shared.utils.Constants;
-import chromage.shared.engine.GameState;
 import chromage.shared.Mage;
+import chromage.shared.engine.GameState;
+import chromage.shared.utils.Constants;
 import chromage.shared.utils.RateLimitedLoop;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * Manages a game session from creation to the end of the game
+ */
 public class GameSession extends Thread {
 
-	private GameState state;
-	private String name;
-	private ArrayList<PlayerThread> players;
-	private Server server;
-	private UUID uuid;
+    /**
+     * The current state of the game we're managing
+     */
+    private GameState state;
 
-	public void setExpectedNumberOfPlayers(int expectedNumberOfPlayers) {
-		this.expectedNumberOfPlayers = expectedNumberOfPlayers;
-	}
+    /**
+     * The name of this game
+     */
+    private String name;
+    /**
+     * The list of players in the game.
+     */
+    private ArrayList<PlayerThread> players;
 
-	private int expectedNumberOfPlayers;
-	private long currentTick;
-	private boolean isGameRunning;
+    /**
+     * The server we're a part of
+     */
+    private Server server;
 
-	public GameState getGameState() { return state; }
+    /**
+     * The unique ID assigned to this game
+     */
+    private UUID uuid;
+    /**
+     * The number of players we want in game before we start.
+     */
+    private int expectedNumberOfPlayers;
 
-	public GameSession(String name, UUID uuid, Server server) {
-		this.name = name;
-		this.uuid = uuid;
-		this.server = server;
-		players = new ArrayList<PlayerThread>();
-		isGameRunning = true;
-		state = new GameState();
-	}
+    public GameSession(String name, UUID uuid, Server server) {
+        this.name = name;
+        this.uuid = uuid;
+        this.server = server;
+        players = new ArrayList<PlayerThread>();
+        state = new GameState();
+    }
 
-	public String getGameName() {
-		return name;
-	}
+    /**
+     * @return the current state of the game
+     */
+    public GameState getGameState() {
+        return state;
+    }
 
-	public boolean isGameRunning() {
-		return isGameRunning;
-	}
+    public String getGameName() {
+        return name;
+    }
 
-	public void endGame() {
-		state.setGameOver(true);
-	}
+    /**
+     * @return true iff the game has all the players it needs to start
+     */
+    public boolean isFull() {
+        return players.size() == expectedNumberOfPlayers;
+    }
 
-	public boolean isFull() {
-		return players.size() == expectedNumberOfPlayers;
-	}
+    /**
+     * Add a player to the list of players in game
+     *
+     * @param player the player to add
+     */
+    public void connectPlayer(PlayerThread player) {
+        synchronized (players) {
+            players.add(player);
+        }
+        state.setAwaitedPlayers(expectedNumberOfPlayers - players.size());
+    }
 
-	public void connectPlayer(PlayerThread player) {
-		players.add(player);
-		state.awaitedPlayers = expectedNumberOfPlayers - players.size();
-	}
+    public boolean allPlayersReady() {
+        return true;
+    }
 
-	public boolean allPlayersReady() {
-		return true;
-	}
+    /**
+     * Sends updates to all the players every tick until there are enough players in game to start playing.
+     *
+     * @return true if we finished with enough players to start the game, false if we terminated before getting enough
+     * players
+     */
+    public boolean waitForPlayers() {
+        System.out.println("Waiting for players.");
+        return (Boolean) (new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+            public Object defaultResult() {
+                return true;
+            }
 
-	public boolean waitForPlayers() {
-        return (Boolean)(new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
-            public Object defaultResult() { return true; }
             public boolean shouldContinue() {
                 return players.size() < expectedNumberOfPlayers && !allPlayersReady();
             }
+
             public void body() {
                 setResult(true);
                 for (PlayerThread p : (ArrayList<PlayerThread>) players.clone()) {
@@ -75,64 +108,79 @@ public class GameSession extends Thread {
                         setBreak();
                     }
                 }
-                // wait until all the players have joined the game.
                 sendUpdates();
             }
         }.runAndGetResult());
-	}
+    }
 
-	public void sendUpdates() {
-		for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
-			p.sendUpdate(state);
-		}
-	}
+    /**
+     * Send an update to every player in our list
+     */
+    public void sendUpdates() {
+        synchronized (players) {
+            for (PlayerThread p : players) {
+                p.sendUpdate(state);
+            }
+        }
+    }
 
-	public void processInput() {
-		int inputTimeoutTicks = 6;
-		for (PlayerThread p : players) {
-			if (p.wantsTermination()) {
-				// terminate if any of the players wants to.
-				System.out.println("Player " + p + " wants to leave.");
-				return;
-			}
-			p.mage.setVelocityWithInput(p.getCurrentInputState());
+    /**
+     * Update each player's desired actions for this tick based on their current input state
+     */
+    public void processInput() {
+        int inputTimeoutTicks = 6;
+        for (PlayerThread p : players) {
+            if (p.wantsTermination()) {
+                // terminate if any of the players wants to.
+                System.out.println("Player " + p + " wants to leave.");
+                return;
+            }
+            p.mage.setVelocityWithInput(p.getCurrentInputState());
             p.mage.setDesiredSpell(p.getCurrentInputState().spell);
             p.mage.setTarget(p.getCurrentInputState().mouseLocation);
-			if (currentTick - p.getLastUpdateTick() > inputTimeoutTicks) {
-				p.resetCurrentInputState();
-			}
-		}
-	}
+            if (state.getCurrentTick() - p.getLastUpdateTick() > inputTimeoutTicks) {
+                p.resetCurrentInputState();
+            }
+        }
+    }
 
-	public void executeGameLoop() {
-		new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
-			public boolean shouldContinue() {
-				if (state.shouldTerminate() || state.isGameOver()) {
-					return false;
-				}
-				for (PlayerThread p : (ArrayList<PlayerThread>)players.clone()) {
-					if (p.wantsTermination())
-						return false;
-				}
-				return true;
-			}
-			public void body() {
+    /**
+     * Run the main game loop.
+     */
+    public void executeGameLoop() {
+        new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
+            public boolean shouldContinue() {
+                if (state.shouldTerminate() || state.isGameOver()) {
+                    return false;
+                }
+                for (PlayerThread p : (ArrayList<PlayerThread>) players.clone()) {
+                    if (p.wantsTermination())
+                        return false;
+                }
+                return true;
+            }
+
+            public void body() {
                 synchronized (state) {
                     processInput();
                     state.update();
                     sendUpdates();
                 }
-			}
-		}.run();
-	}
+            }
+        }.run();
+    }
 
-	public void terminateConnections() {
+    /**
+     * Send an update to each player telling them the game is over, then wait
+     * for all of our background threads to terminate
+     */
+    public void terminateConnections() {
         state.setTerminate();
 
         // tell all the child threads to close their connections
-		for (PlayerThread p : players) {
-			p.sendUpdate(state);
-		}
+        for (PlayerThread p : players) {
+            p.sendUpdate(state);
+        }
 
         // keep this thread alive while we wait for the child threads to terminate gracefully
         for (PlayerThread p : players) {
@@ -142,40 +190,47 @@ public class GameSession extends Thread {
                 e.printStackTrace();
             }
         }
-	}
+    }
 
-	public void prepareGame() {
-		ArrayList<Mage> mages = new ArrayList<Mage>();
-		for (PlayerThread p : players) {
-			mages.add(p.mage);
-		}
-		state.initialize(mages);
-	}
+    /**
+     * Do any required pre-game initialization
+     */
+    public void prepareGame() {
+        ArrayList<Mage> mages = new ArrayList<Mage>();
+        for (PlayerThread p : players) {
+            mages.add(p.mage);
+        }
+        state.initialize(mages);
+    }
 
-	public void run() {
-		System.out.println("Waiting for players to connect...");
-		if (waitForPlayers()) {
-			System.out.println("Starting game loop...");
-			prepareGame();
-			executeGameLoop();
-		} else {
-			System.out.println("Something went wrong before we could start the game.");
-		}
-		System.out.println("Terminating connections...");
-		terminateConnections();
-		System.out.println("Game session ended.");
-		server.gameEnded(this);
-	}
+    public void run() {
+        System.out.println("Waiting for players to connect...");
+        if (waitForPlayers()) {
+            System.out.println("Starting game loop...");
+            prepareGame();
+            executeGameLoop();
+        } else {
+            System.out.println("Something went wrong before we could start the game.");
+        }
+        System.out.println("Terminating connections...");
+        terminateConnections();
+        System.out.println("Game session ended.");
+        server.gameEnded(this);
+    }
 
-	public int connectedPlayers() {
-		return players.size();
-	}
+    public int connectedPlayers() {
+        return players.size();
+    }
 
-	public UUID getUuid() {
-		return uuid;
-	}
+    public UUID getUuid() {
+        return uuid;
+    }
 
     public int getExpectedNumberOfPlayers() {
         return expectedNumberOfPlayers;
+    }
+
+    public void setExpectedNumberOfPlayers(int expectedNumberOfPlayers) {
+        this.expectedNumberOfPlayers = expectedNumberOfPlayers;
     }
 }

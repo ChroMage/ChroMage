@@ -2,6 +2,9 @@ package chromage.shared.utils;
 
 import java.util.UUID;
 
+/**
+ * Clientside representation of a game, for display in the list
+ */
 public class GameInfo {
     private String name;
     private UUID id;

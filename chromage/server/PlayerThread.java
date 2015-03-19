@@ -1,10 +1,10 @@
 package chromage.server;
 
-import chromage.shared.engine.GameState;
 import chromage.shared.Mage;
-import chromage.shared.MageType;
+import chromage.shared.engine.GameState;
 import chromage.shared.utils.Constants;
 import chromage.shared.utils.RateLimitedLoop;
+import chromage.shared.utils.Serializer;
 import chromage.shared.utils.UserInput;
 
 import java.io.BufferedReader;
@@ -22,60 +22,49 @@ import java.util.UUID;
 public class PlayerThread extends Thread {
 
     /**
-     * the socket through which we are connected to this player.
-     */
-    private Socket socket;
-
-    /**
-     * The most recent input state received from the client.
-     */
-    private UserInput currentInputState;
-
-    /**
-     * The game tick in which we most recently got a packet from this player
-     */
-    private long lastUpdateTick;
-
-    /**
-     * True if the client has ever sent input requesting termination
-     */
-    private boolean wantsTermination;
-
-    /**
-     * True if we should keep listening to the player for input during the game
-     */
-    private boolean shouldKeepProcessing;
-
-    /**
-     * True iff we should keep listening to command to the lobby
-     */
-    private boolean shouldListenInLobby;
-
-    /**
-     * the most recent game state of which the server has informed this client
-     */
-    private GameState state = new GameState();
-
-    /**
-     * The server this client is connected to
-     */
-    private Server server;
-
-    /**
      * The mage associated with this player
      */
     public Mage mage;
-
     /**
      * The input stream from the client
      */
     BufferedReader fromClient;
-
     /**
      * The output stream to the client
      */
     DataOutputStream toClient;
-
+    /**
+     * the socket through which we are connected to this player.
+     */
+    private Socket socket;
+    /**
+     * The most recent input state received from the client.
+     */
+    private UserInput currentInputState;
+    /**
+     * The game tick in which we most recently got a packet from this player
+     */
+    private long lastUpdateTick;
+    /**
+     * True if the client has ever sent input requesting termination
+     */
+    private boolean wantsTermination;
+    /**
+     * True if we should keep listening to the player for input during the game
+     */
+    private boolean shouldKeepProcessing;
+    /**
+     * True iff we should keep listening to command to the lobby
+     */
+    private boolean shouldListenInLobby;
+    /**
+     * the most recent game state of which the server has informed this client
+     */
+    private GameState state = new GameState();
+    /**
+     * The server this client is connected to
+     */
+    private Server server;
     private String playerName;
 
     /**
@@ -130,7 +119,7 @@ public class PlayerThread extends Thread {
             public void body() {
                 try {
                     synchronized (state) {
-                        String serialization = state.serializeToString();
+                        String serialization = Serializer.serializeToString(state);
                         toClient.writeBytes(serialization + '\n');
                         if (state.shouldTerminate()) {
                             terminateConnection();
@@ -206,7 +195,7 @@ public class PlayerThread extends Thread {
                 server.sendGameList(toClient);
             }
             else if ("new".equals(action) && parts.length == 4) {
-                mage = new Mage(MageType.valueOf(parts[3]));
+                mage = new Mage(Mage.Type.valueOf(parts[3]));
                 mage.setName(playerName);
                 server.createAndJoinGame(this, parts[1], Integer.parseInt(parts[2]));
                 toClient.writeBytes("success\n");
@@ -214,7 +203,7 @@ public class PlayerThread extends Thread {
                 break;
             }
             else if ("join".equals(action) && parts.length == 3) {
-                mage = new Mage(MageType.valueOf(parts[2]));
+                mage = new Mage(Mage.Type.valueOf(parts[2]));
                 mage.setName(playerName);
                 if (server.joinGame(this, UUID.fromString(parts[1]))) {
                     toClient.writeBytes("success\n");

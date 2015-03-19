@@ -1,7 +1,6 @@
 package chromage.shared;
 
-import chromage.shared.engine.Entity;
-import chromage.shared.engine.Projectile;
+import chromage.shared.engine.*;
 import chromage.shared.spells.*;
 import chromage.shared.utils.Constants;
 import chromage.shared.utils.UserInput;
@@ -10,167 +9,174 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
-public class Mage extends Entity implements Serializable {
+public class Mage extends MobileEntity implements Serializable, Damagable, Comboable, Slowable {
+    public static final int DEFAULT_HEIGHT = 300;
+    public static final int DEFAULT_WIDTH = 100;
+    public static final int MAX_HP = 1000;
+    public static final int MAX_MANA = 300;
+    public static final int MANA_REGEN = 2;
     static final long serialVersionUID = -50077493051991117L;
-
-	//added
-	private boolean secondJump = false;
-	private boolean firstJump = false;
-	private double slowAmount = 1.0;
-	public static final int DEFAULT_HEIGHT = 300;
-	public static final int DEFAULT_WIDTH = 100;
-	public static final int MAX_HP = 1000;
-	public static final int MAX_MANA = 300;
-	public static final int MANA_REGEN = 2;
-	public Point2D.Double getVelocity() {
-		return new Point2D.Double(velocity.x*slowAmount, velocity.y*slowAmount);
-	}
-	private int coolDown = 0;
-	public int hp = MAX_HP;
-	public double mana = MAX_MANA;
-	private int combo;
-	private String name = "Training Bot";
-	public Spell leftSpell = new Fireball();
-	public Spell middleSpell = new Blink();
-	public Spell rightSpell = new Iceball();
-
-    public SpellInput desiredSpell;
-
+    public int hp = MAX_HP;
+    public double mana = MAX_MANA;
+    public Spell leftSpell = new Fireball();
+    public Spell middleSpell = new Blink();
+    public Spell rightSpell = new Iceball();
+    public UserInput.SpellInput desiredSpell;
     public Point2D.Double target;
-	public MageType mageType;
-	
-	public boolean isDead() {
-		return hp == 0;
-	}
+    public Type mageType;
+    private boolean secondJump = false;
+    private boolean firstJump = false;
+    private double slowAmount = 1.0;
+    private int coolDown = 0;
+    private int combo;
+    private String name = "Training Bot";
 
-	public void takeDamage(int dmg, int slowAmount, int comboValue) {
-		hp -= getDamageWithCombo(dmg, combo);
-		combo += comboValue;
-		this.slowAmount = slowAmount/100.0;
-		if (hp <= 0) {
-			hp = 0;
-			this.setShouldBeRemoved(true);
-		}
-	}
+    public Mage(Type mageType) {
+        this(2000, 2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color, "Training Bot");
+        leftSpell = mageType.leftSpell;
+        middleSpell = mageType.middleSpell;
+        rightSpell = mageType.rightSpell;
+    }
 
-    @Override
+    public Mage(int x, int y, int width, int height, Color color, String name) {
+        setPosition(new Point2D.Double(x, y));
+        setVelocity(new Point2D.Double(0, 0));
+        setWidth(width);
+        setHeight(height);
+        setColor(color);
+        setName(name);
+        collisionBitMask = Constants.BLOCK_TYPE;
+        categoryBitMask = Constants.MAGE_TYPE;
+    }
+
+    public Point2D.Double getVelocity() {
+        return new Point2D.Double(super.getVelocity().x * slowAmount, super.getVelocity().y * slowAmount);
+    }
+
+    public boolean isDead() {
+        return hp == 0;
+    }
+
+    public void takeDamage(int dmg) {
+        hp -= getDamageWithCombo(dmg, combo);
+        if (hp <= 0) {
+            hp = 0;
+            this.setShouldBeRemoved(true);
+        }
+    }
+
+    public void slowBy(int slowAmount) {
+        this.slowAmount += slowAmount / 100.0;
+    }
+
     public void healDamage(int damage) {
         hp += damage;
         hp = Math.min(hp, MAX_HP);
     }
 
-    @Override
     public void applyFriction() {
-        if(Math.abs(this.velocity.x) > .4){
-            this.velocity.x -= .5*Math.signum(this.velocity.x);
-        }
-        else{
+        if (Math.abs(this.velocity.x) > .4) {
+            this.velocity.x -= .5 * Math.signum(this.velocity.x);
+        } else {
             this.velocity.x = 0;
         }
         int maxXVelocity = 15;
-        if(this.velocity.x > maxXVelocity){
+        if (this.velocity.x > maxXVelocity) {
             this.velocity.x = maxXVelocity;
         }
-        if(this.velocity.x < -1*maxXVelocity){
-            this.velocity.x = -1*maxXVelocity;
+        if (this.velocity.x < -1 * maxXVelocity) {
+            this.velocity.x = -1 * maxXVelocity;
         }
     }
 
-	private int getDamageWithCombo(int damage, int combo) {
-		return (int) (damage * Math.pow(1.1, combo));
-	}
+    private int getDamageWithCombo(int damage, int combo) {
+        return (int) (damage * Math.pow(1.1, combo));
+    }
 
-	public void addCombo(int comboValue) {
-		setCombo(getCombo() + comboValue);
-	}
-	
-	public Mage(MageType mageType){
-		this(2000,2000, DEFAULT_WIDTH, DEFAULT_HEIGHT, mageType.color, "Training Bot");
-		leftSpell = mageType.leftSpell;
-		middleSpell = mageType.middleSpell;
-		rightSpell = mageType.rightSpell;
-	}
+    public void addCombo(int comboValue) {
+        setCombo(getCombo() + comboValue);
+    }
 
     public void hitGround() {
         super.hitGround();
         clearCombo();
     }
 
-	public Mage(int x, int y, int width, int height, Color color, String name){
-		setPosition(new Point2D.Double(x, y));
-		setVelocity(new Point2D.Double(0, 0));
-		setWidth(width);
-		setHeight(height);
-        setColor(color);
-        setName(name);
-        collisionBitMask = Constants.BLOCK_TYPE;
-        categoryBitMask = Constants.MAGE_TYPE;
-	}
-	
-	public void setVelocityWithInput(UserInput input) {
-		int x = 0, y = 0;
-		if(isGrounded) {
-			firstJump = true;
-			secondJump = false;
-		}
-		switch (input.horizontalDirection) {
-			case LEFT: x = -1; break;
-            case NONE: x = 0; break;
-			case RIGHT: x = 1; break;
-		}
-		switch (input.verticalDirection) {
-			case JUMP:
-				if(isGrounded) {
-					y = 40;
-				}
-				else if(!isGrounded && !firstJump) {
-					zeroVerticalVelocity();
-					y = 40;
-					secondJump = true;
-					firstJump = true;
-				}
-			break;
-			case NONE: 
-			y = 0;
-			if(!isGrounded && !secondJump) {
-				firstJump = false;
-			}
-			break;
+    public void setVelocityWithInput(UserInput input) {
+        int x = 0, y = 0;
+        if (isGrounded) {
+            firstJump = true;
+            secondJump = false;
+        }
+        switch (input.horizontalDirection) {
+            case LEFT:
+                x = -1;
+                break;
+            case NONE:
+                x = 0;
+                break;
+            case RIGHT:
+                x = 1;
+                break;
+        }
+        switch (input.verticalDirection) {
+            case JUMP:
+                if (isGrounded) {
+                    y = 40;
+                } else if (!isGrounded && !firstJump) {
+                    y = 40;
+                    secondJump = true;
+                    firstJump = true;
+                }
+                break;
+            case NONE:
+                y = 0;
+                if (!isGrounded && !secondJump) {
+                    firstJump = false;
+                }
+                break;
 
-		}
-		slowAmount += 0.02;
-		if(slowAmount >= 1.0) {
-			slowAmount = 1.0;
-		}
-		velocity.setLocation(velocity.getX() + x, velocity.getY() - y);
-	}
-	
-	public boolean isAffectedByGravity(){
-		return true;
-	}
+        }
+        slowAmount += 0.02;
+        if (slowAmount >= 1.0) {
+            slowAmount = 1.0;
+        }
+        velocity.setLocation(velocity.getX() + x, velocity.getY() - y);
+    }
 
-	public void decrementCooldown() {
-		if(coolDown > 0){
-			coolDown--;
-		}
-	}
-	
-	public int getCoolDown(){
-		return coolDown;
-	}
+    public boolean isAffectedByGravity() {
+        return true;
+    }
 
-	public void setCoolDown(int i) {
-		coolDown = i;
-	}
+    public void decrementCooldown() {
+        if (coolDown > 0) {
+            coolDown--;
+        }
+    }
 
-    public Spell getSpellForInput(SpellInput input) {
-        if (input == null) { return null; }
+    public int getCoolDown() {
+        return coolDown;
+    }
+
+    public void setCoolDown(int i) {
+        coolDown = i;
+    }
+
+    public Spell getSpellForInput(UserInput.SpellInput input) {
+        if (input == null) {
+            return null;
+        }
         switch (input) {
-            case LEFT:  return leftSpell;
-            case RIGHT: return rightSpell;
-            case MIDDLE: return middleSpell;
-            default: return null;
+            case LEFT:
+                return leftSpell;
+            case RIGHT:
+                return rightSpell;
+            case MIDDLE:
+                return middleSpell;
+            default:
+                return null;
         }
     }
 
@@ -178,97 +184,112 @@ public class Mage extends Entity implements Serializable {
         return spell != null && getCoolDown() <= 0 && hasMana(spell.getManaCost());
     }
 
-	public ArrayList<Projectile> castSpell(ArrayList<Entity> entities) {
-		Spell s = getSpellForInput(getDesiredSpell());
-		if (canCast(s)) {
-			setCoolDown(s.getCoolDown());
-			removeMana(s.getManaCost());
-            return s.createProjectiles(this, target, entities);
-		}
-		else {
-			decrementCooldown();
-		}
+    public ArrayList<Projectile> castSpell(Collection<Entity> entities) {
+        Spell s = getSpellForInput(getDesiredSpell());
+        if (canCast(s)) {
+            setCoolDown(s.getCoolDown());
+            removeMana(s.getManaCost());
+            return s.cast(this, target, entities);
+        } else {
+            decrementCooldown();
+        }
         return new ArrayList<Projectile>();
-	}
+    }
 
-	public ArrayList<? extends Entity> update(ArrayList<Entity> entities){
-		super.update(entities);
-		addMana(MANA_REGEN);
-        return castSpell(entities);
-	}
+    public Collection<? extends Entity> update(Collection<Entity> entities) {
+        Collection<Entity> created = new ArrayList<Entity>();
+        created.addAll(super.update(entities));
+        applyFriction();
+        addMana(MANA_REGEN);
+        created.addAll(castSpell(entities));
+        return created;
+    }
 
-	public void draw(Graphics g, double heightFactor, double widthFactor) {
-		int x = (int)(getPosition().x*widthFactor);
-		int y = (int)(getPosition().y*heightFactor);
-		int scaledWidth = (int) (getWidth() * widthFactor);
-		int scaledHeight = (int) (getHeight() * heightFactor);
-		g.setColor(color);
-		g.fillRect(x, y, scaledWidth, scaledHeight);
-		g.setColor(Color.GREEN);
-		g.fillRect(x, y - 25, scaledWidth * hp / MAX_HP, 10);
-		g.setColor(Color.BLUE);
-		g.fillRect(x, y - 15, (int) (scaledWidth * mana / MAX_MANA), 10);
-		writePlayerName(g, x, y);
-		writeComboCounter(g, x, y);
+    public void draw(Graphics g, double heightFactor, double widthFactor) {
+        int x = (int) (getPosition().x * widthFactor);
+        int y = (int) (getPosition().y * heightFactor);
+        int scaledWidth = (int) (getWidth() * widthFactor);
+        int scaledHeight = (int) (getHeight() * heightFactor);
+        g.setColor(color);
+        g.fillRect(x, y, scaledWidth, scaledHeight);
+        g.setColor(Color.GREEN);
+        g.fillRect(x, y - 25, scaledWidth * hp / MAX_HP, 10);
+        g.setColor(Color.BLUE);
+        g.fillRect(x, y - 15, (int) (scaledWidth * mana / MAX_MANA), 10);
+        writePlayerName(g, x, y);
+        writeComboCounter(g, x, y);
+    }
 
-	}
+    public void acceptCollisionFrom(CollisionProcessor p) {
+        p.processCollision((Damagable) this);
+        p.processCollision((Comboable) this);
+        p.processCollision((Slowable) this);
+        p.processCollision((MobileEntity) this);
+    }
 
-	private void writeComboCounter(Graphics g, int x, int y) {
-		g.setColor(Color.BLACK);
-		Font f = new Font("Verdana", Font.PLAIN, 12 + combo);
-		g.setFont(f);
-		g.drawString(Integer.toString(combo), x, y-40);
-	}
+    private void writeComboCounter(Graphics g, int x, int y) {
+        g.setColor(Color.BLACK);
+        Font f = new Font("Verdana", Font.PLAIN, 12 + combo);
+        g.setFont(f);
+        g.drawString(Integer.toString(combo), x, y - 40);
+    }
 
-	private void writePlayerName(Graphics g, int x, int y) {
-		g.setColor(Color.BLACK);
-		Font f = new Font("Verdana", Font.PLAIN, 12);
-		g.setFont(f);
-		g.drawString(name, x, y-30);
-	}
+    private void writePlayerName(Graphics g, int x, int y) {
+        g.setColor(Color.BLACK);
+        Font f = new Font("Verdana", Font.PLAIN, 12);
+        g.setFont(f);
+        g.drawString(name, x, y - 30);
+    }
 
-    public String getName() { return name; }
-	public void setName(String playerName) {
-		name = playerName;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public int getCombo() {
-		return combo;
-	}
+    public void setName(String playerName) {
+        name = playerName;
+    }
 
-	public void setCombo(int combo) {
-		this.combo = combo;
-	}
-	
-	public void clearCombo() {
-		combo = 0;
-	}
-	
-	public double getMana() {
-		return mana;
-	}
+    public int getCombo() {
+        return combo;
+    }
 
-	public void setMana(double mana) {
-		this.mana = mana;
-	}
-	
-	public void addMana(double mana) {
-		this.mana = Math.min(mana + this.mana, MAX_MANA);
-	}
-	
-	public void removeMana(double mana) {
-		this.mana -= mana;
-	}
-	
-	public boolean hasMana(double mana) {
-		return this.mana >= mana;
-	}
+    public void setCombo(int combo) {
+        this.combo = combo;
+    }
 
-    public SpellInput getDesiredSpell() {
+    public void clearCombo() {
+        combo = 0;
+    }
+
+    public double getMana() {
+        return mana;
+    }
+
+    public void setMana(double mana) {
+        this.mana = mana;
+    }
+
+    public void addMana(double mana) {
+        this.mana = Math.min(mana + this.mana, MAX_MANA);
+    }
+
+    public void removeMana(double mana) {
+        this.mana -= mana;
+    }
+
+    public boolean hasMana(double mana) {
+        return this.mana >= mana;
+    }
+
+    public double getSlowAmount() {
+        return (slowAmount * 100);
+    }
+
+    public UserInput.SpellInput getDesiredSpell() {
         return desiredSpell;
     }
 
-    public void setDesiredSpell(SpellInput desiredSpell) {
+    public void setDesiredSpell(UserInput.SpellInput desiredSpell) {
         this.desiredSpell = desiredSpell;
     }
 
@@ -280,4 +301,26 @@ public class Mage extends Entity implements Serializable {
         this.target = target;
     }
 
+    public int getHealth() {
+        return hp;
+    }
+
+    public static enum Type {
+        ORANGE(new FruitPunch(), new Fireball(), new Lightning(), Color.ORANGE),
+        GREEN(new Iceball(), new Lifesteal(), new Lightning(), Color.GREEN),
+        PURPLE(new FruitPunch(), new Blink(), new Iceball(), Color.MAGENTA);
+
+        public final Spell leftSpell;
+        public final Spell middleSpell;
+        public final Spell rightSpell;
+        public final Color color;
+
+
+        Type(Spell left, Spell middle, Spell right, Color color) {
+            leftSpell = left;
+            middleSpell = middle;
+            rightSpell = right;
+            this.color = color;
+        }
+    }
 }
