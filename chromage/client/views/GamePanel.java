@@ -139,6 +139,10 @@ public class GamePanel extends JPanel implements AncestorListener, MouseMotionLi
 
 					if (Keyboard.isKeyDown(KeyEvent.VK_SHIFT)) {
 						userInput.spell = UserInput.SpellInput.MIDDLE;
+					} else if (Keyboard.isKeyDown(KeyEvent.VK_Z)) {
+						userInput.spell = UserInput.SpellInput.LEFT;
+					} else if (Keyboard.isKeyDown(KeyEvent.VK_X)) {
+						userInput.spell = UserInput.SpellInput.RIGHT;
 					}
 					if (Keyboard.isKeyDown(KeyEvent.VK_ESCAPE)) {
 						userInput.wantsTermination = true;
