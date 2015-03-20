@@ -2,9 +2,8 @@ package chromage.shared.engine;
 
 import chromage.shared.utils.Utilities;
 
-import java.awt.*;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -58,12 +57,11 @@ public class MobileEntity extends Entity {
      */
     @Override
     public void didCollideWith(Entity e) {
-        Area intersection = getHitbox();
-        intersection.intersect(e.getHitbox());
-        Rectangle intersectionBounds = intersection.getBounds();
+        Rectangle2D.Double intersectionBounds = new Rectangle2D.Double();
+        Rectangle2D.intersect(getHitbox(), e.getHitbox(), intersectionBounds);
         Point2D.Double d = Utilities.invert(Utilities.normalize(getVelocity()));
 
-        while (Utilities.areasIntersect(getHitbox(), e.getHitbox())) {
+        while (getHitbox().intersects(e.getHitbox())) {
             moveBy(d);
         }
 
@@ -97,16 +95,15 @@ public class MobileEntity extends Entity {
     public void updatePosition(Collection<Entity> entities) {
         if (velocity.y < 0) isGrounded = false;
         if (Utilities.length(getVelocity()) == 0) return;
-        Point2D.Double normalized = Utilities.normalize(getVelocity());
+        Point2D.Double normalized = Utilities.scaleTo(getVelocity(), 2);
         int desiredDistance = (int)(Utilities.length(getVelocity()));
-        for (int i = 0; i < desiredDistance; ++i) {
+        for (int i = 0; i < desiredDistance; i += 2) {
             moveBy(normalized);
 
             for (Entity e : entities) {
-                if (canCollideWith(e) && Utilities.areasIntersect(getHitbox(), e.getHitbox())) {
-                    Area intersection = getHitbox();
-                    intersection.intersect(e.getHitbox());
-                    Rectangle intersectionBounds = intersection.getBounds();
+                if (canCollideWith(e) && getHitbox().intersects(e.getHitbox())) {
+                    Rectangle2D.Double intersectionBounds = new Rectangle2D.Double();
+                    Rectangle2D.intersect(getHitbox(), e.getHitbox(), intersectionBounds);
 
                     if (intersectionBounds.getMinY() == e.getHitbox().getBounds().getMinY()) {
                         // hit the top of the object

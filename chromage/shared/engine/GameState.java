@@ -1,7 +1,6 @@
 package chromage.shared.engine;
 
 import chromage.shared.Mage;
-import chromage.shared.utils.Utilities;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -121,7 +120,7 @@ public class GameState implements Serializable {
     public void checkCollisions() {
         for (Entity a : entities) {
             for (Entity b : entities) {
-                if (a.canCollideWith(b) && Utilities.areasIntersect(a.getHitbox(), b.getHitbox())) {
+                if (a.canCollideWith(b) && a.getHitbox().intersects(b.getHitbox())) {
                     a.didCollideWith(b);
                 }
             }

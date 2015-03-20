@@ -3,7 +3,6 @@ package chromage.shared.engine;
 import chromage.shared.utils.Utilities;
 
 import java.awt.*;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
@@ -88,8 +87,8 @@ public class Entity implements Serializable {
     /**
      * @return the area of this entity which should be counted as colliding with other entities
      */
-    public Area getHitbox() {
-        return new Area(getBounds());
+    public Rectangle2D.Double getHitbox() {
+        return getBounds();
     }
 
     /**

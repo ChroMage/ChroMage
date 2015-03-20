@@ -3,10 +3,8 @@ package chromage.shared.spells;
 import chromage.shared.Mage;
 import chromage.shared.engine.Entity;
 import chromage.shared.engine.Projectile;
-import chromage.shared.utils.Utilities;
 
 import java.awt.*;
-import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -96,7 +94,7 @@ public class Blink extends Spell {
         Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, 1, 1);
         boolean canBlink = true;
         for (Entity e : entities) {
-            if (mage.canCollideWith(e) && Utilities.areasIntersect(new Area(newHitBox), e.getHitbox())) {
+            if (mage.canCollideWith(e) && newHitBox.intersects(e.getHitbox())) {
                 canBlink = false;
             }
         }
