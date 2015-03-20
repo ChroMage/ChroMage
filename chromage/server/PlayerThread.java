@@ -118,12 +118,13 @@ public class PlayerThread extends Thread {
             }
             public void body() {
                 try {
+                    String serialization = null;
                     synchronized (state) {
-                        String serialization = Serializer.serializeToString(state);
-                        toClient.writeBytes(serialization + '\n');
-                        if (state.shouldTerminate()) {
-                            terminateConnection();
-                        }
+                        serialization = Serializer.serializeToString(state);
+                    }
+                    toClient.writeBytes(serialization + '\n');
+                    if (state.shouldTerminate()) {
+                        terminateConnection();
                     }
                 } catch (SocketException ex) {
                     server.disconnectPlayer(PlayerThread.this);

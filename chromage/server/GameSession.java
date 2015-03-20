@@ -4,6 +4,7 @@ import chromage.shared.Mage;
 import chromage.shared.engine.GameState;
 import chromage.shared.utils.Constants;
 import chromage.shared.utils.RateLimitedLoop;
+import chromage.shared.utils.Timer;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -158,11 +159,34 @@ public class GameSession extends Thread {
             }
 
             public void body() {
-                synchronized (state) {
-                    processInput();
-                    state.update();
-                    sendUpdates();
-                }
+                Timer.time("whole tick", new Runnable() {
+                    @Override
+                    public void run() {
+                    synchronized (state) {
+                        Timer.time("processInput",
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        processInput();
+                                    }
+                                });
+                        Timer.time("state.update",
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        state.update();
+                                    }
+                                });
+                        Timer.time("sendUpdates",
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        sendUpdates();
+                                    }
+                                });
+                    }
+                    }
+                });
             }
         }.run();
     }
