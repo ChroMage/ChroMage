@@ -79,10 +79,6 @@ public class GameSession extends Thread {
         state.setAwaitedPlayers(expectedNumberOfPlayers - players.size());
     }
 
-    public boolean allPlayersReady() {
-        return true;
-    }
-
     /**
      * Sends updates to all the players every tick until there are enough players in game to start playing.
      *
@@ -90,22 +86,23 @@ public class GameSession extends Thread {
      * players
      */
     public boolean waitForPlayers() {
-        System.out.println("Waiting for players.");
         return (Boolean) (new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
             public Object defaultResult() {
                 return true;
             }
 
             public boolean shouldContinue() {
-                return players.size() < expectedNumberOfPlayers && !allPlayersReady();
+                return players.size() < expectedNumberOfPlayers;
             }
 
             public void body() {
                 setResult(true);
-                for (PlayerThread p : (ArrayList<PlayerThread>) players.clone()) {
-                    if (p.wantsTermination()) {
-                        setResult(false);
-                        setBreak();
+                synchronized (players) {
+                    for (PlayerThread p : players) {
+                        if (p.wantsTermination()) {
+                            setResult(false);
+                            setBreak();
+                        }
                     }
                 }
                 sendUpdates();
