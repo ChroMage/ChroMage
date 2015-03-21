@@ -71,7 +71,7 @@ public class GameState implements Serializable {
     }
 
     /**
-     * @return the collection of mages who are not dead yet
+     * @return the collection of mages who are not yet dead 
      */
     public ArrayList<Mage> getLivingPlayers() {
         ArrayList<Mage> mages = new ArrayList<Mage>();

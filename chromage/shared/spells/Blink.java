@@ -3,6 +3,7 @@ package chromage.shared.spells;
 import chromage.shared.Mage;
 import chromage.shared.engine.Entity;
 import chromage.shared.engine.Projectile;
+import chromage.shared.utils.Utilities;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -91,15 +92,25 @@ public class Blink extends Spell {
 
     @Override
     public ArrayList<Projectile> cast(Mage mage, Point2D.Double target, Collection<Entity> entities) {
-        Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x, target.y, 1, 1);
+        Rectangle2D.Double newHitBox = new Rectangle2D.Double(target.x - mage.getWidth()/2, target.y - getHeight()/2, mage.getWidth(), mage.getHeight());
         boolean canBlink = true;
         for (Entity e : entities) {
             if (mage.canCollideWith(e) && newHitBox.intersects(e.getHitbox())) {
-                canBlink = false;
+                Rectangle2D intersect = newHitBox.createIntersection(e.getHitbox());
+                if (intersect.equals(newHitBox)) {
+                	canBlink = false;
+                }
+                double differenceX = newHitBox.getCenterX() - intersect.getCenterX();
+                double differenceY = newHitBox.getCenterY() - intersect.getCenterY();
+                Point2D.Double dir = Utilities.normalize(new Point2D.Double(differenceX, differenceY));
+                while(newHitBox.intersects(e.getHitbox())){
+                	newHitBox = Utilities.moveRectangle(newHitBox, dir);
+                }
+                
             }
         }
         if (canBlink) {
-            mage.setPosition(target);
+            mage.setPosition(newHitBox.x, newHitBox.y);
         }
         return new ArrayList<Projectile>();
     }

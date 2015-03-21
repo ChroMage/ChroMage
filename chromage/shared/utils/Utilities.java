@@ -2,6 +2,10 @@ package chromage.shared.utils;
 
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+
+import chromage.shared.Mage;
 
 /**
  * A class to contain various utility functions
@@ -49,6 +53,13 @@ public class Utilities {
         }
         return sum;
     }
+    
+    /**
+     * @return the sum of the two vectors
+     */
+    public static final Rectangle2D.Double moveRectangle(Rectangle2D rect, Point2D.Double vector) {
+        return new Rectangle2D.Double(rect.getMinX() + vector.x, rect.getMinY() + vector.y, rect.getWidth(), rect.getHeight());
+    }
 
     /**
      * @return true iff a and b intersect
@@ -72,4 +83,17 @@ public class Utilities {
     public static double length(Point2D.Double v) {
         return v.distance(0, 0);
     }
+    
+    public static Mage getClosestEnemy(Mage self, ArrayList<Mage> mages) {
+		double minDist = java.lang.Double.POSITIVE_INFINITY;
+		Mage target = null;
+		for (Mage m : mages) {
+			double distanceToOtherMage = self.getCenter().distance(m.getCenter());
+			if (distanceToOtherMage < minDist && m != self) {
+				minDist = distanceToOtherMage;
+				target = m;
+			}
+		}
+		return target;
+	}
 }

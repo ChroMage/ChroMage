@@ -1,5 +1,6 @@
 package chromage.server;
 
+import chromage.ai.AIPlayer;
 import chromage.shared.Mage;
 import chromage.shared.engine.GameState;
 import chromage.shared.utils.Constants;
@@ -26,7 +27,7 @@ public class GameSession extends Thread {
     /**
      * The list of players in the game.
      */
-    private ArrayList<PlayerThread> players;
+    private ArrayList<Player> players;
 
     /**
      * The server we're a part of
@@ -46,7 +47,7 @@ public class GameSession extends Thread {
         this.name = name;
         this.uuid = uuid;
         this.server = server;
-        players = new ArrayList<PlayerThread>();
+        players = new ArrayList<Player>();
         state = new GameState();
     }
 
@@ -73,7 +74,7 @@ public class GameSession extends Thread {
      *
      * @param player the player to add
      */
-    public void connectPlayer(PlayerThread player) {
+    public void connectPlayer(Player player) {
         synchronized (players) {
             players.add(player);
         }
@@ -87,6 +88,9 @@ public class GameSession extends Thread {
      * players
      */
     public boolean waitForPlayers() {
+        if(expectedNumberOfPlayers < 2){
+        	connectPlayer(new AIPlayer());
+        }
         return (Boolean) (new RateLimitedLoop(Constants.TICKS_PER_SECOND) {
             public Object defaultResult() {
                 return true;
@@ -99,7 +103,7 @@ public class GameSession extends Thread {
             public void body() {
                 setResult(true);
                 synchronized (players) {
-                    for (PlayerThread p : players) {
+                    for (Player p : players) {
                         if (p.wantsTermination()) {
                             setResult(false);
                             setBreak();
@@ -116,7 +120,7 @@ public class GameSession extends Thread {
      */
     public void sendUpdates() {
         synchronized (players) {
-            for (PlayerThread p : players) {
+            for (Player p : players) {
                 p.sendUpdate(state);
             }
         }
@@ -126,19 +130,15 @@ public class GameSession extends Thread {
      * Update each player's desired actions for this tick based on their current input state
      */
     public void processInput() {
-        int inputTimeoutTicks = 6;
-        for (PlayerThread p : players) {
+        for (Player p : players) {
             if (p.wantsTermination()) {
                 // terminate if any of the players wants to.
                 System.out.println("Player " + p + " wants to leave.");
                 return;
             }
-            p.mage.setVelocityWithInput(p.getCurrentInputState());
-            p.mage.setDesiredSpell(p.getCurrentInputState().spell);
-            p.mage.setTarget(p.getCurrentInputState().mouseLocation);
-            if (state.getCurrentTick() - p.getLastUpdateTick() > inputTimeoutTicks) {
-                p.resetCurrentInputState();
-            }
+            p.getMage().setVelocityWithInput(p.getCurrentInputState());
+            p.getMage().setDesiredSpell(p.getCurrentInputState().spell);
+            p.getMage().setTarget(p.getCurrentInputState().mouseLocation);
         }
     }
 
@@ -151,9 +151,11 @@ public class GameSession extends Thread {
                 if (state.shouldTerminate() || state.isGameOver()) {
                     return false;
                 }
-                for (PlayerThread p : (ArrayList<PlayerThread>) players.clone()) {
-                    if (p.wantsTermination())
-                        return false;
+                synchronized (players){
+	                for (Player p : players) {
+	                    if (p.wantsTermination())
+	                        return false;
+	                }
                 }
                 return true;
             }
@@ -199,12 +201,12 @@ public class GameSession extends Thread {
         state.setTerminate();
 
         // tell all the child threads to close their connections
-        for (PlayerThread p : players) {
+        for (Player p : players) {
             p.sendUpdate(state);
         }
 
         // keep this thread alive while we wait for the child threads to terminate gracefully
-        for (PlayerThread p : players) {
+        for (Player p : players) {
             try {
                 p.join();
             } catch (InterruptedException e) {
@@ -218,8 +220,8 @@ public class GameSession extends Thread {
      */
     public void prepareGame() {
         ArrayList<Mage> mages = new ArrayList<Mage>();
-        for (PlayerThread p : players) {
-            mages.add(p.mage);
+        for (Player p : players) {
+            mages.add(p.getMage());
         }
         state.initialize(mages);
     }

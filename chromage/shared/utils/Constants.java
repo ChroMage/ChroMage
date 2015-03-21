@@ -26,4 +26,8 @@ public class Constants {
      * collision bitmask for projectiles
      */
     public static final int PROJECTILE_TYPE = 1 << 2;
+    /**
+     * How long to wait before stopping the last input with lag
+     */
+    public static final int INPUT_TIMEOUT_TICKS = 6;
 }

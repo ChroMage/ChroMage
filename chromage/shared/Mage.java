@@ -31,7 +31,7 @@ public class Mage extends MobileEntity implements Serializable, Damagable, Combo
     private double slowPercent = 1.0;
     private int coolDown = 0;
     private int combo;
-    private String name = "Training Bot";
+    private String name = "AI";
     private boolean hasStoppedJumping = false;
 
     public Mage(Type mageType) {

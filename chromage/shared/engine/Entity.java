@@ -84,7 +84,11 @@ public class Entity implements Serializable {
         return new ArrayList<Entity>();
     }
 
-    /**
+    public boolean isGrounded() {
+		return isGrounded;
+	}
+
+	/**
      * @return the area of this entity which should be counted as colliding with other entities
      */
     public Rectangle2D.Double getHitbox() {

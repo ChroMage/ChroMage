@@ -28,11 +28,11 @@ public class Server extends Thread {
     /**
      * the set of players currently in the lobby
      */
-    private ArrayList<PlayerThread> lobbyPlayers;
+    private ArrayList<HumanPlayer> lobbyPlayers;
 
     public Server() {
         games = new Hashtable<UUID, GameSession>();
-        lobbyPlayers = new ArrayList<PlayerThread>();
+        lobbyPlayers = new ArrayList<HumanPlayer>();
     }
 
     public static void main(String args[]) throws IOException {
@@ -46,7 +46,7 @@ public class Server extends Thread {
      * @param name  the name of the game to create
      * @param expectedNumberOfPlayers   the size of the game
      */
-    public void createAndJoinGame(PlayerThread host, String name, int expectedNumberOfPlayers) {
+    public void createAndJoinGame(HumanPlayer host, String name, int expectedNumberOfPlayers) {
         UUID gameUuid = UUID.randomUUID();
         name = name.replace(" ", "").replace("\n", "").replace(",", "");
         GameSession game = new GameSession(name, gameUuid, this);
@@ -65,7 +65,7 @@ public class Server extends Thread {
      * @return  true if we successfully move the player into the game, false if the game is full or there's no game with
      *              that UUID in our list.
      */
-    public boolean joinGame(PlayerThread player, UUID uuid) {
+    public boolean joinGame(HumanPlayer player, UUID uuid) {
         GameSession game = games.get(uuid);
         if (game == null || game.isFull()) {
             System.out.println("Failed to join game.");
@@ -102,7 +102,7 @@ public class Server extends Thread {
      * and waits for it to do so
      * @param p the player to remove
      */
-    public void disconnectPlayer(PlayerThread p) {
+    public void disconnectPlayer(HumanPlayer p) {
         if (lobbyPlayers.contains(p)) {
             System.out.println("Disconnecting player " + p);
             lobbyPlayers.remove(p);
@@ -121,7 +121,7 @@ public class Server extends Thread {
             try {
                 socket = new ServerSocket(port);
                 Socket connectionSocket = socket.accept();
-                PlayerThread player = new PlayerThread(connectionSocket, this);
+                HumanPlayer player = new HumanPlayer(connectionSocket, this);
                 lobbyPlayers.add(player);
                 System.out.println("Connected new player");
                 player.start();

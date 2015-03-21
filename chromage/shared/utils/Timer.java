@@ -8,6 +8,6 @@ public class Timer {
         long startTime = System.nanoTime();
         r.run();
         long endTime = System.nanoTime();
-        System.out.println(label + " took " + ((endTime - startTime) / (1000.0 * 1000.0 * 1000.0)));
+        //System.out.println(label + " took " + ((endTime - startTime) / (1000.0 * 1000.0 * 1000.0)));
     }
 }
