@@ -97,10 +97,6 @@ public class GameState implements Serializable {
         for (Mage m : players) {
             entities.add(m);
         }
-        if (players.size() < 2) {
-            //Add a dummy mage to fight
-            entities.add(new Mage(2000, 2000, 100, 200, Color.BLUE, "Bot"));
-        }
     }
 
     /**
@@ -170,6 +166,13 @@ public class GameState implements Serializable {
         entities.add(new Block(-10, -10, 4010, 310));
         entities.add(new Block(-10, -10, 310, 4010));
         entities.add(new Block(3700, -10, 310, 4010));
+        
+        //add more walls
+        entities.add(new Block(-10, 3100, 710, 1010));
+        entities.add(new Block(3300, 3100, 710, 1010));
+        
+        //add a moving platform
+        entities.add(new MovingBlock(2000, 2500, 400, 200, 1000, 0));
     }
 
     public boolean shouldTerminate() {

@@ -2,6 +2,7 @@ package chromage.ai;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
+import java.util.Random;
 
 import chromage.server.Player;
 import chromage.shared.Mage;
@@ -23,7 +24,12 @@ public class AIPlayer implements Player {
     public Mage mage;
 	
     public AIPlayer() {
-		mage = new Mage(Mage.Type.PURPLE);
+    	Random random = new Random();
+    	switch (random.nextInt(3)) {
+    	case 1: mage = new Mage(Mage.Type.PURPLE); break;
+    	case 2: mage = new Mage(Mage.Type.ORANGE); break;
+    	default: mage = new Mage(Mage.Type.GREEN);
+    	}
 		input = new UserInput();
 	}
     

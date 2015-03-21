@@ -56,7 +56,7 @@ public class FruitPunch extends Spell {
     @Override
     public double getWidth() {
 
-        return 100;
+        return 90;
     }
 
     @Override

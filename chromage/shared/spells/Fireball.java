@@ -40,7 +40,7 @@ public class Fireball extends Spell {
 
     @Override
     public int getDamage() {
-        return 60;
+        return 50;
     }
 
     @Override

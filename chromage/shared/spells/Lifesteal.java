@@ -51,7 +51,7 @@ public class Lifesteal extends Spell {
     @Override
     public int getManaCost() {
         // TODO Auto-generated method stub
-        return 15;
+        return 10;
     }
 
     @Override
